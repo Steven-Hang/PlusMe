@@ -50,7 +50,19 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover"
+        ],
+
+        "ci-env-setup": [
+            "php -r \"copy('.env.example','.env');\"",
+            "php artisan key:generate"
+        ],
+
+        "ci-db-setup": [
+            "touch storage/database.sqlite",
+            "php artisan migrate"
         ]
+
+
     },
     "config": {
         "preferred-install": "dist",
