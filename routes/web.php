@@ -14,28 +14,7 @@ Route::get('/map', 'MapController@index');
 
 //function Route to customise The Look of the Dashboard page google map API
 Route::get('/home', function () {
-
-    $config['center'] = 'RMIT, Australia';
-    $config['zoom'] = '18';
-    $config['map_height'] = '1000px';
-    //$config['map_width'] = '500px';
-    $config['scrollwheel'] = false;
-
-    // initialize maps using these configs above
-    GMaps::initialize($config);
-
-
-    // Add Marker
-    $marker['position']= 'RMIT,Australia';
-    $marker['infowindow_content']= 'RMIT University Melbourne,Australia';
-    // Using icons from google site at https://sites.google.com/site/gmapsdevelopment/
-    $marker['icon'] ='http://maps.google.com/mapfiles/kml/paddle/blu-circle.png';
-    Gmaps::add_marker($marker);
-
-    // creating map using $map variable so its accessible anywhere
-    $map = GMaps::create_map();
-
-    return view('home')->with('map',$map);
+    return view('home');
 });
 
 //return Index (welcome) page
@@ -54,16 +33,26 @@ Route::get('/faq', 'PagesController@faq')->name('faq');
 Route::get('/policy', 'PagesController@policy')->name('policy');
 Route::get('/admin', 'PagesController@admin')->name('admin');
 Route::get('/dashboard', 'PagesController@dashboard')->name('dashboard');
+
+//User routes 
 Route::get('/profile', 'PagesController@profile')->name('profile');
+Route::post('profile', 'UserController@update_avatar');
 Route::get('/bookinghistory', 'PagesController@bookinghistory')->name('bookinghistory');
 Route::get('/messagebox', 'PagesController@messagebox')->name('messagebox');
+
+//Booking routes 
 Route::get('/booking', 'PagesController@booking')->name('booking');
 Route::get('/booking/step2', 'PagesController@step2')->name('booking/step2');
 Route::get('/booking/step3', 'PagesController@step3')->name('booking/step3');
 Route::get('/booking/step3/checkout', 'PagesController@checkout')->name('checkout');
 Route::get('/booking/step3/checkout/payment/process', 'PaymentsController@process')->name('payment.process');
 
-//
+//Admin Route
+Route::match(['get','post'],'/admin','AdminController@login')->name('adminLogin');
+
+//Protected Admin routes(soon)
+Route::get('/admin/panel','AdminController@panel')->name('admin.panel');
+Route::get('/logout','AdminController@logout')->name('adminLogout');
+    //Resource routes 
 Route::resource('vehicles','VehiclesController');
-//
-Route::post('profile', 'UserController@update_avatar');
+

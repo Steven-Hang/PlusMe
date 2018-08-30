@@ -24,6 +24,7 @@ class CreateUsersTable extends Migration
             $table->boolean('terms');
             $table->string('avatar')->default('user.jpg');
             $table->boolean('is_activated')->default(false);
+            $table->boolean('is_admin')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
