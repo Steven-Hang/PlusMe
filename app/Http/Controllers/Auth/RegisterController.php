@@ -84,6 +84,9 @@ class RegisterController extends Controller
             'terms' => $data['terms'],
             'password' => Hash::make($data['password']),
         ]);
+
+        event(new \App\Events\UserReferred(request()->cookie('ref'), $user));
+        
         $activateUser = ActivateUser::create([
             'user_id' => $user->id,
             'token' => str_random(40)
