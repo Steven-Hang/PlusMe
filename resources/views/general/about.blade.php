@@ -310,8 +310,6 @@ Licence: <a href="https://www.os-templates.com/template-terms">Website Template 
 
 html{overflow-y:scroll;} /* Forces a scrollbar when the viewport is larger than the websites content - CSS3 */
 
-body{margin:0; padding:0; font-size:13px; font-family:Georgia, "Times New Roman", Times, serif; color:#919191; background-color:#232323;}
-
 .clear:after{content:"."; display:block; height:0; clear:both; visibility:hidden; line-height:0;}
 .clear{display:block; clear:both;}
 html[xmlns] .clear{display:block;}
@@ -325,17 +323,10 @@ code{font-weight:normal; font-style:normal; font-family:Georgia, "Times New Roma
 .fl_right{float:right;}
 
 img{margin:0; padding:0; border:none; line-height:normal; vertical-align:middle;}
-.imgholder, .imgl, .imgr{padding:4px; border:1px solid #D6D6D6; text-align:center;}
+.imgholder, .imgl, .imgr{padding:4px; text-align:center;}
 .imgl{float:left; margin:0 15px 15px 0; clear:left;}
 .imgr{float:right; margin:0 0 15px 15px; clear:right;}
 
-/*----------------------------------------------HTML 5 Overrides-------------------------------------*/
-
-address, article, aside, figcaption, figure, footer, header, nav, section{display:block; margin:0; padding:0;}
-
-q{display:block; padding:0 10px 8px 10px; color:#979797; background-color:#ECECEC; font-style:italic; line-height:normal;}
-q:before{content:'“ '; font-size:26px;}
-q:after{content:' „'; font-size:26px; line-height:0;}
 
 /* ----------------------------------------------Wrapper-------------------------------------*/
 
@@ -349,12 +340,6 @@ div.wrapper{display:block; width:100%; margin:0; padding:0; text-align:left;}
 .row4, .row4 a{color:#919191; background-color:#232323;}
 
 /*----------------------------------------------Generalise-------------------------------------*/
-
-#header, #container, #footer, #copyright{display:block; width:960px; margin:0 auto;}
-
-nav ul{margin:0; padding:0; list-style:none;}
-
-h1, h2, h3, h4, h5, h6{margin:0; padding:0; font-size:32px; font-weight:normal; font-style:italic; line-height:normal;}
 
 address{font-style:normal;}
 
@@ -385,9 +370,6 @@ input, textarea, select{font-size:5px; font-family:Georgia,"Times New Roman",Tim
 #container .last{margin:0;}
 #container .more{text-align:right;}
 
-/* ------boarder-----*/
-
-#container #boarder{}
 
 /* ------Main Content-----*/
 
@@ -415,7 +397,6 @@ input, textarea, select{font-size:5px; font-family:Georgia,"Times New Roman",Tim
 <div class="wrapper row2">
     <div id="container" class="clear">
       <!-- Boarder -->
-      <section id="Boarder"><a href="#"><img src="#" width="800" height="500"alt=""></a></section>
       <center><p><font size="10" color="orange">Our Story</font></p></center>
       <h3><p><font size="5" color="black">It started as a simple idea: What if you could rent a vehicle when every you like and wherever you are? PlusMe's vision is to be the best car rental company in Australia, offering our customers the ‘best’ service, the ‘best’ rates and the ‘best’ experience, so when someone think of renting a vehicle the first think in their mind will be PlusMe. Our friendly, professional team understands your rental needs. You might be after an; economical car, 4WD, family sedan, luxury car, a bus, van or truck etc we can rent every kind of vehicles to you. At PlusMe, we're always happy to help you choose the right passenger or commercial vehicle. So, from the moment you walk through the doors to the time you drive away, in one of our rental cars, you can expect great personal service all the way.</font></p></h3>
       <p><font size="3" color="black">These are the major cars that we rent:</font></p>

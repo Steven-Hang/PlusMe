@@ -4,7 +4,7 @@
 <div class="container">
         <div class="wrapper">
 
-                @include('layouts.partials.sidebar');
+                @include('layouts.partials.sidebar')
                 <div class="form-group row">
                         <div class="col-sm-4">
                             <div class="pickup-location-same">

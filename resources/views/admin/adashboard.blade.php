@@ -2,7 +2,8 @@
 
 @section('content')
 <div class="container">
-    <div class="content">
+    <div class="wrapper">
+            @include('layouts.partials.adminsidebar')
         <h2>Data</h2>
         <div class="row">
             <div class="col-sm-8 col-sm-push-8" style="background-color:lavender;">

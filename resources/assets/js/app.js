@@ -20,3 +20,19 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
 const app = new Vue({
     el: '#app'
 });
+
+import Vue from 'vue'
+import VueModalTor from 'vue-modaltor'
+Vue.use(VueModalTor)
+
+var app = new Vue({
+    el: '#app',
+    data: {
+        open: false
+    },
+    methods: {
+        hideModal() {
+            this.open = false
+        }
+    }
+})

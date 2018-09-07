@@ -4,7 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
+            <div class="card" style="opacity:0.96">
                 <div class="card-header">{{ __('Register') }}</div>
                     <div class="card-body">
                     <!-- Begin Register form -->
@@ -58,7 +58,7 @@
                             <label for="contact_number" class="col-md-4 col-form-label text-md-right">{{ __('Contact Number') }}</label>
 
                             <div class="col-md-6">
-                                <input id="contact_number" type="text" class="form-control{{ $errors->has('contact_number') ? ' is-invalid' : '' }}" name="contact_number" value="{{ old('contact_number') }}" required autofocus>
+                                <input id="contact_number" type="text" class="form-control{{ $errors->has('contact_number') ? ' is-invalid' : '' }}" name="contact_number" value="{{ old('contact_number') }}" pattern="^[\+]?[0-9\s\-\)\(]{8,17}" required autofocus>
 
                                 @if ($errors->has('contact_number'))
                                     <span class="invalid-feedback" role="alert">
@@ -102,12 +102,26 @@
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
                             </div>
+                            <!-- TODO:compare with pwd -->
+                        </div>
+                        <!-- Driver licence -->
+                        <div class="form-group row">
+                            <label for="driverlicence" class="col-md-4 col-form-label text-md-right">{{ __('Driver licence Number') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="driverlicence" type="text" class="form-control" name="driverlicence" required>
+                            </div>
                         </div>
                         <!-- Terms and Condition Checkbox -->
                         <div class="form-group row">
-                            <label for="terms" class="col-md-4 col-form-label text-md-right"> {{ __('I agree to the terms of service') }}</label>
-                                
-                            <div class="col-md-2"> 
+                            <label for="terms" class="col-md-8 col-form-label text-md-right"> I agree to the terms of service</label>
+
+                            <!-- <vue-modaltor :visible="terms" @hide="terms = false">
+                                <p>
+                                Terms of service
+                                ....</p>
+                            </vue-modaltor>-->
+                            <div class="col-md-2">
                                 <input type="checkbox" class="form-control" name="terms" value="1" class="form-control{{ $errors->has('terms') ? ' has-error' : '' }}" value="{{ old('terms') }}" />
 
                                  @if ($errors->has('terms'))
@@ -118,12 +132,14 @@
                              </div>
                         </div>
                         <!-- register button -->
-                        <div class="form-group row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                        <div class="form-group row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <button type="submit" class="btn-register">
                                     {{ __('Register') }}
                                 </button>
                             </div>
+                            <div class="col-md-2"></div>
                         </div>
                     </form>
                     <!-- end form -->
