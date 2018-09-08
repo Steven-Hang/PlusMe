@@ -1,37 +1,43 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    @include('layouts.partials.head')
-    <style>
-        body {
-            background-image: none !important;
-            background-color:white !important;
-        }
-    </style>
-</head>
-<body>
-    <div id="app">
-            @include('layouts.partials.nav')
-        <main>
-            <div class = "container">
-            <br>
-            <div class="row">
-                <div class="col-8">
-                    <img src="./css/images/404.gif" width="440px">
-                </div>
-                <div class="col-4" style="margin: 0; position: absolute; top: 40%; left: 50%;">
-                    <h2>ooops, page not found</h2>
-                    <p>
-                        Back to <a href="">homepage</a>
-                    </p>
-                </div>
-                </div>
-            </div>
 
-            @include('layouts.partials.footer')
-        </main>
+@include('layouts.partials.head')
+
+<style>
+    html,
+    body {
+        height: 100%
+        background-image: none !important;
+        background-color:white !important;
+    }
+</style>
+
+<body>
+
+<div class="container-fluid">
+        
+    @include('layouts.partials.nav')
+    
+    <br><br>
+    
+    <div class="h-100 row align-items-center">
+                
+        <div class="col">
+            <img src="./css/images/404.gif" width="440px">
+        </div>
+            
+        <div class="col" style="margin: 0; position: fixed; top: 40%; left: 200px;">
+            <h2>oOops, page not found 404</h2>
+            <p>Back <a href="/">home, you go now.</a></p>
+        </div>
+        
     </div>
-</body>
+    @include('layouts.partials.footer')
+</div>
+            
+       
+    
+    </body>
 </html>
 
 

@@ -1,5 +1,8 @@
+
+
+
 <nav class="navbar navbar-expand-md navbar-light bg-light" style="height: 60px">
-        <div class="container">
+    <div class="container-fluid">
             <!-- Left Side Of Navbar -->
             <a class="navbar-brand" href="{{ url('/') }}">
                 <img src="/css/images/orangelogo.png" width="40" height="40" alt="">
@@ -26,11 +29,12 @@
                     <a class="nav-link" href="{{ route('register') }}">REGISTER</a>
                 </li>
                 @else
-                <!--Logout -->
+                <!-- First Name of the user -->
                 <li class="nav-item">
-                    <a class="nav-link" href="#" >
+                    <a class="nav-link" href="/home" >
                             {{ Auth::user()->first_name }} <span class="caret"></span></a>
                 </li>
+                <!-- Logout of the user -->
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('logout') }}"
                             onclick="event.preventDefault();
@@ -38,11 +42,9 @@
                                 {{ __('Logout') }}
                     </a>
                 </li>
-                <form class="form-inline" id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                        @csrf
-                </form>
-                @endguest
-            </ul>
-        </div>
+            <form class="form-inline" id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+            </form>
+            @endguest
     </div>
 </nav>

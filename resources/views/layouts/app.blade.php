@@ -1,16 +1,8 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    @include('layouts.partials.head')
-</head>
+@include('layouts.partials.head')
 <body>
-    <div id="app">
-            @include('layouts.partials.nav')
+        @include('layouts.partials.nav')
         <main>
-            @yield('content')
-
-            @include('layouts.partials.footer')
+            @yield('content')      
         </main>
-    </div>
+    
 </body>
-</html>

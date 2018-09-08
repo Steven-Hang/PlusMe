@@ -53,5 +53,22 @@
             <!-- Submit file button -->
             <button type="submit" class="btn btn-primary">Submit</button>
     </form>
+     <!-- Output Referral Link -->
+     @forelse(auth()->user()->getReferrals() as $referral)
+          <h4>
+              {{ $referral->program->name }}
+          </h4>
+          <code>
+              {{ $referral->link }}
+          </code>
+          <p>
+              Number of referred users: {{ $referral->relationships()->count() }}
+          </p>
+        @empty
+            No referrals
+        @endforelse 
 </div>
-    @endsection
+@endsection
+@include('layouts.partials.footer') 
+
+   

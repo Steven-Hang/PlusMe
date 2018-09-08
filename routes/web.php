@@ -58,5 +58,5 @@ Route::get('/logout','AdminController@logout')->name('adminLogout');
 Route::resource('vehicles','VehiclesController');
 
 //pagenotfound route
-Route::get('pagenotfound',['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']);
+Route::get('404',['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']);
 
