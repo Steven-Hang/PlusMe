@@ -18,5 +18,10 @@
         "laravel-mix": "^2.0",
         "lodash": "^4.17.4",
         "vue": "^2.5.7"
+    },
+    "dependencies": {
+        "npm": "^6.4.1",
+        "v-slim-dialog": "0.0.9",
+        "vue-modaltor": "^1.2.9"
     }
 }

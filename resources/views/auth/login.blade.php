@@ -4,9 +4,9 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Login') }}</div>
-                <div class="card-body">     
+            <div class="card" style="opacity: 0.96">
+                <div class="card-header">{{ __('Login') }} to PlusMe</div>
+                <div class="card-body">
                   <!-- Display Session Status -->
                     @if (session('status'))
                         <div class="alert alert-success">
@@ -38,7 +38,6 @@
 
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
-
                             <div class="col-md-6">
                                 <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" required>
 
@@ -51,7 +50,18 @@
                         </div>
 
                         <div class="form-group row">
-                            <div class="col-md-6 offset-md-4">
+                            <div class="col-md-6"></div>
+                            <div class="col-md-4">
+                                <a class="forgetpwd" href="{{ route('password.request') }}" style="color=:coral;">
+                                        {{ __('Forgot Your Password?') }}
+                                </a>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
 
@@ -60,19 +70,28 @@
                                     </label>
                                 </div>
                             </div>
+                            <div class="col-md-2"></div>
                         </div>
 
-                        <div class="form-group row mb-0">
-                            <div class="col-md-8 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
+                        <div class="form-group row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8">
+                                <button type="submit" class="btn-login">
                                     {{ __('Login') }}
                                 </button>
-
-                                <a class="btn btn-link" href="{{ route('password.request') }}">
-                                    {{ __('Forgot Your Password?') }}
-                                </a>
                             </div>
+                            <div class="col-md-2"></div>
                         </div>
+
+                        <div class="form-group row">
+                                <div class="col-md-8">
+                                    Not a member?
+                                    <a class="signup" href="{{ route('register') }}">
+                                            {{ __('Sign up now !') }}
+                                    </a>
+                                </div>
+                                <div class="col-md-4"></div>
+                            </div>
                     </form>
                     <!-- end form -->
                 </div>

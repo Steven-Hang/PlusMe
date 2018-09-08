@@ -1,13 +1,11 @@
 @extends('layouts.app')
 <head>
-<!-- javascript for google map -->
-        {!! $map['js'] !!}
 </head>
 @section('content')
 <div class="row">
   <div class="col-8">
     <!-- display the google map -->
-    {!! $map['html'] !!}
+      @include('layouts.partials.map')
   </div>
   <div class="col-4">
     <div>
