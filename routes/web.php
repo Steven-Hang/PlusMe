@@ -34,13 +34,13 @@ Route::get('/policy', 'PagesController@policy')->name('policy');
 Route::get('/admin', 'PagesController@admin')->name('admin');
 Route::get('/dashboard', 'PagesController@dashboard')->name('dashboard');
 
-//User routes 
+//User routes
 Route::get('/profile', 'PagesController@profile')->name('profile');
 Route::post('profile', 'UserController@update_avatar');
 Route::get('/bookinghistory', 'PagesController@bookinghistory')->name('bookinghistory');
 Route::get('/messagebox', 'PagesController@messagebox')->name('messagebox');
 
-//Booking routes 
+//Booking routes
 Route::get('/booking', 'PagesController@booking')->name('booking');
 Route::get('/booking/step2', 'PagesController@step2')->name('booking/step2');
 Route::get('/booking/step3', 'PagesController@step3')->name('booking/step3');
@@ -53,6 +53,10 @@ Route::match(['get','post'],'/admin','AdminController@login')->name('adminLogin'
 //Protected Admin routes(soon)
 Route::get('/admin/panel','AdminController@panel')->name('admin.panel');
 Route::get('/logout','AdminController@logout')->name('adminLogout');
-    //Resource routes 
+
+//Resource routes
 Route::resource('vehicles','VehiclesController');
+
+//pagenotfound route
+Route::get('pagenotfound',['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']);
 

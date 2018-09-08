@@ -3,10 +3,10 @@
 <footer class="page-footer font-small indigo">
  <!-- Begin Row-->
     <div class="row">
-            <div class="col-md-3"></div>
+            <div class="col-md-3" style="padding:0px;"></div>
             <div class="col-md-1">
               <h6 class="text-uppercase">
-                <a class="footer-link" href="" >Home</a>
+                <a class="footer-link" href="#" >Home</a>
                   </h6>
             </div>
           <!-- My Account Link -->
@@ -33,7 +33,7 @@
                   <a class="footer-link" href="{{ route('about') }}">About</a>
                 </h6>
               </div>
-              <div class="col-md-3"></div>
+              <div class="col-md-3" style="padding:0px;"></div>
     <!--  End Row -->
     </div>
 
