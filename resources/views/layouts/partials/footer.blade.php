@@ -2,7 +2,6 @@
 <!--  Begin Footer -->
 <footer class="page-footer font-small indigo">
  <!-- Begin Row-->
- <div class="container">
     <div class="row">
             <div class="col-md-3" style="padding:0px;"></div>
             <div class="col-md-1">
@@ -37,10 +36,11 @@
               <div class="col-md-3" style="padding:0px;"></div>
     <!--  End Row -->
     </div>
-        <!-- Copyright -->
-        <div class="footer-copyright text2018 Copyright:-center py-3">
-          <p style="text-align: center;color: #263238;font-family:Century Gothic;font-size:11px;">&copy copyright Plus Me 2018</p>
-        </div>
+
+    <!-- Copyright -->
+    <div class=" text2018 Copyright:-center py-3">
+      <p style="text-align: center;color: #263238;font-family:Century Gothic;font-size:11px;">&copy copyright Plus Me 2018</p>
     </div>
+
 </footer>
 <!--  End Footer -->

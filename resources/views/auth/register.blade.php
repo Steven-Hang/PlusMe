@@ -106,23 +106,25 @@
                         </div>
                         <!-- Driver licence -->
                         <div class="form-group row">
-                            <label for="driverlicence" class="col-md-4 col-form-label text-md-right">{{ __('Driver licence Number') }}</label>
+                            <label for="licence_number" class="col-md-4 col-form-label text-md-right">{{ __('Driver licence number') }}</label>
 
                             <div class="col-md-6">
-                                <input id="driverlicence" type="text" class="form-control" name="driverlicence" required>
+                                <input id="licence_number" type="text" class="form-control{{ $errors->has('licence_number') ? ' is-invalid' : '' }}" name="licence_number" value="{{ old('licence_number') }}" required autofocus>
+
+                                @if ($errors->has('licence_number'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('licence_number') }}</strong>
+                                    </span>
+                                @endif
                             </div>
                         </div>
+        
                         <!-- Terms and Condition Checkbox -->
                         <div class="form-group row">
-                            <label for="terms" class="col-md-8 col-form-label text-md-right"> I agree to the terms of service</label>
+                        <label for="terms"> I agree to the <a href="#" data-toggle="modal" data-target="#TermsModalLong"> terms of service</a> </label>
 
-                            <!-- <vue-modaltor :visible="terms" @hide="terms = false">
-                                <p>
-                                Terms of service
-                                ....</p>
-                            </vue-modaltor>-->
                             <div class="col-md-2">
-                                <input type="checkbox" class="form-control" name="terms" value="1" class="form-control{{ $errors->has('terms') ? ' has-error' : '' }}" value="{{ old('terms') }}" />
+                                <input type="checkbox" class="" name="terms" value="1" class="form-control{{ $errors->has('terms') ? ' has-error' : '' }}" value="{{ old('terms') }}" />
 
                                  @if ($errors->has('terms'))
                                   <span class="help-block">
@@ -131,6 +133,7 @@
                                  @endif
                              </div>
                         </div>
+                        
                         <!-- register button -->
                         <div class="form-group row">
                             <div class="col-md-2"></div>
@@ -144,8 +147,33 @@
                     </form>
                     <!-- end form -->
                 </div>
+            <!-- End Card  -->
             </div>
+
+        <!-- Modal (the thing that pops up when you click terms of service) -->
+        <div class="modal fade" id="TermsModalLong" tabindex="-1" role="dialog" aria-labelledby="TermsLongTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                 <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="TermsLongTitle">TERMS OF SERVICE ---- OVERVIEW</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                    <div class="modal-body">
+                       @include('general.terms')
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">I Understand</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         </div>
     </div>
 </div>
 @endsection
+

@@ -2,10 +2,50 @@
 
 @section('content')
     <!-- The video -->
-<div class="">
+<div class="video">
     <video autoplay muted loop id="myVideo">
-        <source src="{{URL::asset('css/images/Blurred Bokeh Video.mp4')}}" type="video/mp4">
+        <source src="{{URL::asset('css/images/plusme.mp4')}}" type="video/mp4">
     </video>
 </div>
-@include('layouts.partials.footer') 
+<div class="">
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+<div class="row-md-12">
+ <h1>Content<h1>
+</div>
+</div>
 @endsection
