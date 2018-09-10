@@ -24,7 +24,7 @@ class PagesController extends Controller
     }
 
     public function admin(){
-        return view('admin.adashboard');
+        return view('admin.dashboard');
     }
 
     public function profile(){
@@ -57,5 +57,28 @@ class PagesController extends Controller
 
     public function pagenotfound(){
         return view('errors.404');
+    }
+
+    //test use only will delete later
+    public function admindashboard(){
+        return view('admin.dashboard');
+    }
+
+    public function vehicles(){
+        return view('admin.vehicles');
+    }
+
+    public function users(){
+        return view('admin.users');
+    }
+
+    public function parkinglot(){
+        return view('admin.parkinglot');
+    }
+    public function notification(){
+        return view('admin.notification');
+    }
+    public function adminprofile(){
+        return view('admin.adminprofile');
     }
 }

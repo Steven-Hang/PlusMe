@@ -60,3 +60,10 @@ Route::resource('vehicles','VehiclesController');
 //pagenotfound route
 Route::get('pagenotfound',['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']);
 
+//test use only will delete later
+Route::get('admindashboard','PagesController@admindashboard')->name('admindashboard');
+Route::get('avehicles','PagesController@vehicles')->name('avehicles');
+Route::get('ausers','PagesController@users')->name('ausers');
+Route::get('aparkinglot','PagesController@parkinglot')->name('aparkinglot');
+Route::get('anotifications','PagesController@notification')->name('anotifications');
+Route::get('adminprofile','PagesController@adminprofile')->name('adminprofile');
