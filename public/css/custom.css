@@ -1,7 +1,7 @@
 
 body {
-    background-image: url("images/bgpic.jpg");
     height: 100%;
+    background-color: white;
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -71,23 +71,61 @@ body {
 
 
 #myVideo {
-    position: relative;
-    right: 0;
-    bottom: 0;
-    height: 600px;
     width: 100%;
+    height:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     object-fit: fill;
 }
 
 /* Add some content at the bottom of the video/page */
 .content {
-    position: fixed;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.151);
-    color: #f1f1f1;
     width: 100%;
-    padding: 20px;
+    position: absolute;
+    top: 25%;
+    left: 0;
+    padding:0.4em;
+    margin:0;
+
 }
+
+.showcase .showcase-text {
+    padding: 3rem;
+  }
+
+  .showcase .showcase-img {
+    min-height: 30rem;
+    background-size: cover;
+  }
+
+  @media (min-width: 768px) {
+    .showcase .showcase-text {
+      padding: 7rem;
+    }
+  }
+
+  .call-to-action {
+    position: relative;
+    background-color: #343a40;
+    background: url("./images/parkinglot.jpg") no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    padding-top: 7rem;
+    padding-bottom: 7rem;
+  }
+
+  .call-to-action .overlay {
+    position: absolute;
+    background-color: #212529;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0.3;
+  }
 
 /* ---------------------------------------------------
     footer.blade.php custom style
