@@ -29,7 +29,7 @@ footer {
 <div class='main-container'>
 <h1>PlusMe CarShare FAQ</h1>
 <h2>Account</h2>
-			<p>How can I change my password? <p>
+			<p>How do I change my password? <p>
 			<p>There is a button under user's profile page, when users press it, user should be able to change their password in their profile page. Please feel free to contact us if this can't help you.</p>
 
 			How do I sign up?
@@ -48,7 +48,6 @@ footer {
 					<li>Driver License</li>
 					<li>Phone Number </li>
 				</ul>
-
 
 				<h2>Payments</h2>
 

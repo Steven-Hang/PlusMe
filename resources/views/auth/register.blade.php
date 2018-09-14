@@ -1,12 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+<br><br>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card" style="opacity:0.96">
-                <div class="card-header">{{ __('Register') }}</div>
+
+                <div class=""></div>
                     <div class="card-body">
+                        <h1>Sign Up </h1>
                     <!-- Begin Register form -->
                     <form method="POST" action="{{ route('register') }}" aria-label="{{ __('Register') }}">
                         @csrf
@@ -118,12 +121,13 @@
                                 @endif
                             </div>
                         </div>
-        
+
                         <!-- Terms and Condition Checkbox -->
                         <div class="form-group row">
+                        <div class="col-md-12">
                         <label for="terms"> I agree to the <a href="#" data-toggle="modal" data-target="#TermsModalLong"> terms of service</a> </label>
 
-                            <div class="col-md-2">
+                            <div class="col-md-12">
                                 <input type="checkbox" class="" name="terms" value="1" class="form-control{{ $errors->has('terms') ? ' has-error' : '' }}" value="{{ old('terms') }}" />
 
                                  @if ($errors->has('terms'))
@@ -133,16 +137,16 @@
                                  @endif
                              </div>
                         </div>
-                        
+                    </div>
+
                         <!-- register button -->
-                        <div class="form-group row">
-                            <div class="col-md-2"></div>
-                            <div class="col-md-8">
-                                <button type="submit" class="btn-register">
-                                    {{ __('Register') }}
-                                </button>
+                        <div class="form-group row" id="">
+                            <div id="app" class="col-md-12">
+                                    <!-- vuesax file found assets/js/partials/Loading -->
+                                    <loading-component></loading-component>
+                                </div>
                             </div>
-                            <div class="col-md-2"></div>
+
                         </div>
                     </form>
                     <!-- end form -->
@@ -162,7 +166,7 @@
                 </div>
                     <div class="modal-body">
                        @include('general.terms')
-                    
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">I Understand</button>
                     </div>

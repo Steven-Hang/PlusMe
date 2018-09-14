@@ -2,10 +2,8 @@
 <body>
         @include('layouts.partials.nav')
         <main>
-            <div class="app">
-            @yield('content') 
-            </div>
+                @yield('content')
         </main>
-       
+
 </body>
 </html>

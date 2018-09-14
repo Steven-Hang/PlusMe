@@ -53,9 +53,14 @@ class Handler extends ExceptionHandler
                     return redirect()->route('notfound');
                     break;
 
+                case 403:
+                    return redirect()->route('forbidden');
+                    break;
+
                 default:
                     return $this->renderHttpException($e);
                     break;
+
             }
         }
         else{

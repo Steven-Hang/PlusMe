@@ -7,22 +7,26 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Braintree-Demo</title>
+  <title>PlusMe - Payment </title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
   <script src="https://js.braintreegateway.com/web/dropin/1.8.1/js/dropin.min.js"></script>
 
 </head>
 <body>
   <div class="container">
-     <div class="row">
-       <div class="col-md-8 col-md-offset-2">
+     <div class="row-md-12">
+      <div class="col-md-6">
+         
+         <h1>Payment Summary</h1>
+
+       </div>
+       <div class="col-md-6">
          <div id="dropin-container"></div>
          <button id="submit-button">Request payment method</button>
        </div>
      </div>
      <div class="row">
-        @include('layouts.partials.footer')
+        
         </div>  
   </div>
   

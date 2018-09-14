@@ -13,7 +13,7 @@
     </style>
   </head>
     <div id="map"></div>
-  
+
     <script>
       // Note: This example requires that you consent to location sharing when
       // prompted by your browser. If you see the error "The Geolocation service
@@ -21,10 +21,37 @@
       // locate you.
       var map, infoWindow;
       function initMap() {
+
+        var myLatLng = {lat: -37.809277, lng: 144.960712};
+
         map = new google.maps.Map(document.getElementById('map'), {
-          center: {lat: -34.397, lng: 150.644},
-          zoom: 6
+        zoom: 15
         });
+
+        var contentString = '<div id="content">'+
+            '<h1 id="firstHeading" class="firstHeading">Select Car Type</h1>'+
+            '<p><b>Select Car Type</b>'+ '<br>'+
+            '<a href="Car Type 1">CAR TYPE ONE</a>'+'<br>'+
+            '<a href="Car Type 2">CAR TYPE TWO</a>'+'<br>'+
+            '</p>';
+
+
+
+
+        var infowindow = new google.maps.InfoWindow({
+          content: contentString
+        });
+        var marker = new google.maps.Marker({
+          position: myLatLng,
+          map: map,
+          title: 'Location Here!'
+        });
+
+
+        marker.addListener('click', function() {
+        infowindow.open(map, marker);
+        });
+
         infoWindow = new google.maps.InfoWindow;
 
         // Try HTML5 geolocation.
@@ -55,6 +82,10 @@
                               'Error: Your browser doesn\'t support geolocation.');
         infoWindow.open(map);
       }
+
+
+// To add the marker to the map, call setMap();
+
     </script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQMzhiINq0pfDHofIycq6m_V2dRFULbPc&callback=initMap">
