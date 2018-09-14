@@ -59,6 +59,10 @@ class PagesController extends Controller
         return view('errors.404');
     }
 
+    public function forbidden(){
+        return view('errors.403');
+    }
+
     //test use only will delete later
     public function admindashboard(){
         return view('admin.dashboard');

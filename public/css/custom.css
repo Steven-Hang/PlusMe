@@ -71,12 +71,6 @@ body {
 
 
 #myVideo {
-<<<<<<< HEAD
-=======
-    position: relative;
-    right: 0;
-    height: 500px;
->>>>>>> 06557874df7bcf8d637c5dd983999a457bce5e80
     width: 100%;
     height:100%;
     display: flex;
@@ -694,7 +688,6 @@ a, a:hover, a:focus {
     line-height: 1.5;
   }
 
-
-
+  
 
 
