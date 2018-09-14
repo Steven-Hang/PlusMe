@@ -4,7 +4,7 @@
     <!-- Masthead -->
     <header class="masthead text-white text-center" style="position:relative;background-color:#343a40;background:url(../img/bg-masthead.jpg) no-repeat center center;-webkit-background-size:cover;-moz-background-size:cover;-o-background-size:cover;background-size:cover;">
             <div class="overlay" style="position:absolute;background-color:#212529;height:100%;width:100%;top:0;left:0;opacity:.3"></div>
-              <div class="row" style="width: 100%; height: 100%; position: relative;">
+              <div class="row" style="width: 100%; height: 520px; position: relative;">
                 <!-- The background video -->
                 <video autoplay muted loop id="myVideo">
                     <source src="./css/images/plusme.mp4" type="video/mp4">
