@@ -1,6 +1,6 @@
 @extends('layouts.app')
 <style>
-    
+
  .main-container {
  min-height: 100vh; /* will cover the 100% of viewport */
  overflow: hidden;
@@ -26,7 +26,5 @@ footer {
             <!-- display the google map -->
             @include('layouts.partials.map')
         </div>
-</div>
-@include('layouts.partials.footer') 
 </div>
 @endsection
