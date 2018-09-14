@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 13);
+/******/ 	return __webpack_require__(__webpack_require__.s = 15);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -70,8 +70,8 @@
 "use strict";
 
 
-var bind = __webpack_require__(7);
-var isBuffer = __webpack_require__(21);
+var bind = __webpack_require__(8);
+var isBuffer = __webpack_require__(23);
 
 /*global toString:true*/
 
@@ -402,13 +402,122 @@ module.exports = g;
 
 /***/ }),
 /* 2 */
+/***/ (function(module, exports) {
+
+/* globals __VUE_SSR_CONTEXT__ */
+
+// IMPORTANT: Do NOT use ES2015 features in this file.
+// This module is a runtime utility for cleaner component module output and will
+// be included in the final webpack user bundle.
+
+module.exports = function normalizeComponent (
+  rawScriptExports,
+  compiledTemplate,
+  functionalTemplate,
+  injectStyles,
+  scopeId,
+  moduleIdentifier /* server only */
+) {
+  var esModule
+  var scriptExports = rawScriptExports = rawScriptExports || {}
+
+  // ES6 modules interop
+  var type = typeof rawScriptExports.default
+  if (type === 'object' || type === 'function') {
+    esModule = rawScriptExports
+    scriptExports = rawScriptExports.default
+  }
+
+  // Vue.extend constructor export interop
+  var options = typeof scriptExports === 'function'
+    ? scriptExports.options
+    : scriptExports
+
+  // render functions
+  if (compiledTemplate) {
+    options.render = compiledTemplate.render
+    options.staticRenderFns = compiledTemplate.staticRenderFns
+    options._compiled = true
+  }
+
+  // functional template
+  if (functionalTemplate) {
+    options.functional = true
+  }
+
+  // scopedId
+  if (scopeId) {
+    options._scopeId = scopeId
+  }
+
+  var hook
+  if (moduleIdentifier) { // server build
+    hook = function (context) {
+      // 2.3 injection
+      context =
+        context || // cached call
+        (this.$vnode && this.$vnode.ssrContext) || // stateful
+        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
+      // 2.2 with runInNewContext: true
+      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
+        context = __VUE_SSR_CONTEXT__
+      }
+      // inject component styles
+      if (injectStyles) {
+        injectStyles.call(this, context)
+      }
+      // register component module identifier for async chunk inferrence
+      if (context && context._registeredComponents) {
+        context._registeredComponents.add(moduleIdentifier)
+      }
+    }
+    // used by ssr in case component is cached and beforeCreate
+    // never gets called
+    options._ssrRegister = hook
+  } else if (injectStyles) {
+    hook = injectStyles
+  }
+
+  if (hook) {
+    var functional = options.functional
+    var existing = functional
+      ? options.render
+      : options.beforeCreate
+
+    if (!functional) {
+      // inject component registration as beforeCreate hook
+      options.beforeCreate = existing
+        ? [].concat(existing, hook)
+        : [hook]
+    } else {
+      // for template-only hot-reload because in that case the render fn doesn't
+      // go through the normalizer
+      options._injectStyles = hook
+      // register for functioal component in vue file
+      options.render = function renderWithStyleInjection (h, context) {
+        hook.call(context)
+        return existing(h, context)
+      }
+    }
+  }
+
+  return {
+    esModule: esModule,
+    exports: scriptExports,
+    options: options
+  }
+}
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(process) {
 
 var utils = __webpack_require__(0);
-var normalizeHeaderName = __webpack_require__(23);
+var normalizeHeaderName = __webpack_require__(25);
 
 var DEFAULT_CONTENT_TYPE = {
   'Content-Type': 'application/x-www-form-urlencoded'
@@ -424,10 +533,10 @@ function getDefaultAdapter() {
   var adapter;
   if (typeof XMLHttpRequest !== 'undefined') {
     // For browsers use XHR adapter
-    adapter = __webpack_require__(9);
+    adapter = __webpack_require__(10);
   } else if (typeof process !== 'undefined') {
     // For node use HTTP adapter
-    adapter = __webpack_require__(9);
+    adapter = __webpack_require__(10);
   }
   return adapter;
 }
@@ -502,10 +611,10 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = defaults;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11468,119 +11577,92 @@ Vue.compile = compileToFunctions;
 
 module.exports = Vue;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(38).setImmediate))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(40).setImmediate))
 
 /***/ }),
-/* 4 */
+/* 5 */
 /***/ (function(module, exports) {
 
-/* globals __VUE_SSR_CONTEXT__ */
+/*
+	MIT License http://www.opensource.org/licenses/mit-license.php
+	Author Tobias Koppers @sokra
+*/
+// css base code, injected by the css-loader
+module.exports = function(useSourceMap) {
+	var list = [];
 
-// IMPORTANT: Do NOT use ES2015 features in this file.
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
+	// return the list of modules as css string
+	list.toString = function toString() {
+		return this.map(function (item) {
+			var content = cssWithMappingToString(item, useSourceMap);
+			if(item[2]) {
+				return "@media " + item[2] + "{" + content + "}";
+			} else {
+				return content;
+			}
+		}).join("");
+	};
 
-module.exports = function normalizeComponent (
-  rawScriptExports,
-  compiledTemplate,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier /* server only */
-) {
-  var esModule
-  var scriptExports = rawScriptExports = rawScriptExports || {}
+	// import a list of modules into the list
+	list.i = function(modules, mediaQuery) {
+		if(typeof modules === "string")
+			modules = [[null, modules, ""]];
+		var alreadyImportedModules = {};
+		for(var i = 0; i < this.length; i++) {
+			var id = this[i][0];
+			if(typeof id === "number")
+				alreadyImportedModules[id] = true;
+		}
+		for(i = 0; i < modules.length; i++) {
+			var item = modules[i];
+			// skip already imported module
+			// this implementation is not 100% perfect for weird media query combinations
+			//  when a module is imported multiple times with different media queries.
+			//  I hope this will never occur (Hey this way we have smaller bundles)
+			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
+				if(mediaQuery && !item[2]) {
+					item[2] = mediaQuery;
+				} else if(mediaQuery) {
+					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
+				}
+				list.push(item);
+			}
+		}
+	};
+	return list;
+};
 
-  // ES6 modules interop
-  var type = typeof rawScriptExports.default
-  if (type === 'object' || type === 'function') {
-    esModule = rawScriptExports
-    scriptExports = rawScriptExports.default
-  }
+function cssWithMappingToString(item, useSourceMap) {
+	var content = item[1] || '';
+	var cssMapping = item[3];
+	if (!cssMapping) {
+		return content;
+	}
 
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
+	if (useSourceMap && typeof btoa === 'function') {
+		var sourceMapping = toComment(cssMapping);
+		var sourceURLs = cssMapping.sources.map(function (source) {
+			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
+		});
 
-  // render functions
-  if (compiledTemplate) {
-    options.render = compiledTemplate.render
-    options.staticRenderFns = compiledTemplate.staticRenderFns
-    options._compiled = true
-  }
+		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
+	}
 
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
+	return [content].join('\n');
+}
 
-  // scopedId
-  if (scopeId) {
-    options._scopeId = scopeId
-  }
+// Adapted from convert-source-map (MIT)
+function toComment(sourceMap) {
+	// eslint-disable-next-line no-undef
+	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
+	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
 
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = injectStyles
-  }
-
-  if (hook) {
-    var functional = options.functional
-    var existing = functional
-      ? options.render
-      : options.beforeCreate
-
-    if (!functional) {
-      // inject component registration as beforeCreate hook
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    } else {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functioal component in vue file
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return existing(h, context)
-      }
-    }
-  }
-
-  return {
-    esModule: esModule,
-    exports: scriptExports,
-    options: options
-  }
+	return '/*# ' + data + ' */';
 }
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -14121,7 +14203,7 @@ Popper.Defaults = Defaults;
 /* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(1)))
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -24492,7 +24574,7 @@ return jQuery;
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24510,7 +24592,7 @@ module.exports = function bind(fn, thisArg) {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -24700,19 +24782,19 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var settle = __webpack_require__(24);
-var buildURL = __webpack_require__(26);
-var parseHeaders = __webpack_require__(27);
-var isURLSameOrigin = __webpack_require__(28);
-var createError = __webpack_require__(10);
-var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(29);
+var settle = __webpack_require__(26);
+var buildURL = __webpack_require__(28);
+var parseHeaders = __webpack_require__(29);
+var isURLSameOrigin = __webpack_require__(30);
+var createError = __webpack_require__(11);
+var btoa = (typeof window !== 'undefined' && window.btoa && window.btoa.bind(window)) || __webpack_require__(31);
 
 module.exports = function xhrAdapter(config) {
   return new Promise(function dispatchXhrRequest(resolve, reject) {
@@ -24809,7 +24891,7 @@ module.exports = function xhrAdapter(config) {
     // This is only done if running in a standard browser environment.
     // Specifically not if we're in a web worker, or react-native.
     if (utils.isStandardBrowserEnv()) {
-      var cookies = __webpack_require__(30);
+      var cookies = __webpack_require__(32);
 
       // Add xsrf header
       var xsrfValue = (config.withCredentials || isURLSameOrigin(config.url)) && config.xsrfCookieName ?
@@ -24887,13 +24969,13 @@ module.exports = function xhrAdapter(config) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var enhanceError = __webpack_require__(25);
+var enhanceError = __webpack_require__(27);
 
 /**
  * Create an Error with the specified message, config, error code, request and response.
@@ -24912,7 +24994,7 @@ module.exports = function createError(message, config, code, request, response) 
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24924,7 +25006,7 @@ module.exports = function isCancel(value) {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -24950,27 +25032,253 @@ module.exports = Cancel;
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(14);
-module.exports = __webpack_require__(55);
+/*
+  MIT License http://www.opensource.org/licenses/mit-license.php
+  Author Tobias Koppers @sokra
+  Modified by Evan You @yyx990803
+*/
+
+var hasDocument = typeof document !== 'undefined'
+
+if (typeof DEBUG !== 'undefined' && DEBUG) {
+  if (!hasDocument) {
+    throw new Error(
+    'vue-style-loader cannot be used in a non-browser environment. ' +
+    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
+  ) }
+}
+
+var listToStyles = __webpack_require__(56)
+
+/*
+type StyleObject = {
+  id: number;
+  parts: Array<StyleObjectPart>
+}
+
+type StyleObjectPart = {
+  css: string;
+  media: string;
+  sourceMap: ?string
+}
+*/
+
+var stylesInDom = {/*
+  [id: number]: {
+    id: number,
+    refs: number,
+    parts: Array<(obj?: StyleObjectPart) => void>
+  }
+*/}
+
+var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
+var singletonElement = null
+var singletonCounter = 0
+var isProduction = false
+var noop = function () {}
+var options = null
+var ssrIdKey = 'data-vue-ssr-id'
+
+// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
+// tags it will allow on a page
+var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
+
+module.exports = function (parentId, list, _isProduction, _options) {
+  isProduction = _isProduction
+
+  options = _options || {}
+
+  var styles = listToStyles(parentId, list)
+  addStylesToDom(styles)
+
+  return function update (newList) {
+    var mayRemove = []
+    for (var i = 0; i < styles.length; i++) {
+      var item = styles[i]
+      var domStyle = stylesInDom[item.id]
+      domStyle.refs--
+      mayRemove.push(domStyle)
+    }
+    if (newList) {
+      styles = listToStyles(parentId, newList)
+      addStylesToDom(styles)
+    } else {
+      styles = []
+    }
+    for (var i = 0; i < mayRemove.length; i++) {
+      var domStyle = mayRemove[i]
+      if (domStyle.refs === 0) {
+        for (var j = 0; j < domStyle.parts.length; j++) {
+          domStyle.parts[j]()
+        }
+        delete stylesInDom[domStyle.id]
+      }
+    }
+  }
+}
+
+function addStylesToDom (styles /* Array<StyleObject> */) {
+  for (var i = 0; i < styles.length; i++) {
+    var item = styles[i]
+    var domStyle = stylesInDom[item.id]
+    if (domStyle) {
+      domStyle.refs++
+      for (var j = 0; j < domStyle.parts.length; j++) {
+        domStyle.parts[j](item.parts[j])
+      }
+      for (; j < item.parts.length; j++) {
+        domStyle.parts.push(addStyle(item.parts[j]))
+      }
+      if (domStyle.parts.length > item.parts.length) {
+        domStyle.parts.length = item.parts.length
+      }
+    } else {
+      var parts = []
+      for (var j = 0; j < item.parts.length; j++) {
+        parts.push(addStyle(item.parts[j]))
+      }
+      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
+    }
+  }
+}
+
+function createStyleElement () {
+  var styleElement = document.createElement('style')
+  styleElement.type = 'text/css'
+  head.appendChild(styleElement)
+  return styleElement
+}
+
+function addStyle (obj /* StyleObjectPart */) {
+  var update, remove
+  var styleElement = document.querySelector('style[' + ssrIdKey + '~="' + obj.id + '"]')
+
+  if (styleElement) {
+    if (isProduction) {
+      // has SSR styles and in production mode.
+      // simply do nothing.
+      return noop
+    } else {
+      // has SSR styles but in dev mode.
+      // for some reason Chrome can't handle source map in server-rendered
+      // style tags - source maps in <style> only works if the style tag is
+      // created and inserted dynamically. So we remove the server rendered
+      // styles and inject new ones.
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  if (isOldIE) {
+    // use singleton mode for IE9.
+    var styleIndex = singletonCounter++
+    styleElement = singletonElement || (singletonElement = createStyleElement())
+    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
+    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
+  } else {
+    // use multi-style-tag mode in all other cases
+    styleElement = createStyleElement()
+    update = applyToTag.bind(null, styleElement)
+    remove = function () {
+      styleElement.parentNode.removeChild(styleElement)
+    }
+  }
+
+  update(obj)
+
+  return function updateStyle (newObj /* StyleObjectPart */) {
+    if (newObj) {
+      if (newObj.css === obj.css &&
+          newObj.media === obj.media &&
+          newObj.sourceMap === obj.sourceMap) {
+        return
+      }
+      update(obj = newObj)
+    } else {
+      remove()
+    }
+  }
+}
+
+var replaceText = (function () {
+  var textStore = []
+
+  return function (index, replacement) {
+    textStore[index] = replacement
+    return textStore.filter(Boolean).join('\n')
+  }
+})()
+
+function applyToSingletonTag (styleElement, index, remove, obj) {
+  var css = remove ? '' : obj.css
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = replaceText(index, css)
+  } else {
+    var cssNode = document.createTextNode(css)
+    var childNodes = styleElement.childNodes
+    if (childNodes[index]) styleElement.removeChild(childNodes[index])
+    if (childNodes.length) {
+      styleElement.insertBefore(cssNode, childNodes[index])
+    } else {
+      styleElement.appendChild(cssNode)
+    }
+  }
+}
+
+function applyToTag (styleElement, obj) {
+  var css = obj.css
+  var media = obj.media
+  var sourceMap = obj.sourceMap
+
+  if (media) {
+    styleElement.setAttribute('media', media)
+  }
+  if (options.ssrId) {
+    styleElement.setAttribute(ssrIdKey, obj.id)
+  }
+
+  if (sourceMap) {
+    // https://developer.chrome.com/devtools/docs/javascript-debugging
+    // this makes source maps inside style tags work properly in Chrome
+    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
+    // http://stackoverflow.com/a/26603875
+    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
+  }
+
+  if (styleElement.styleSheet) {
+    styleElement.styleSheet.cssText = css
+  } else {
+    while (styleElement.firstChild) {
+      styleElement.removeChild(styleElement.firstChild)
+    }
+    styleElement.appendChild(document.createTextNode(css))
+  }
+}
 
 
 /***/ }),
-/* 14 */
+/* 15 */
+/***/ (function(module, exports, __webpack_require__) {
+
+__webpack_require__(16);
+module.exports = __webpack_require__(67);
+
+
+/***/ }),
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vue__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuesax__ = __webpack_require__(40);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuesax___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuesax__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vuesax_dist_vuesax_css__ = __webpack_require__(59);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vuesax_dist_vuesax_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_vuesax_dist_vuesax_css__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue2_google_maps__ = __webpack_require__(70);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_vue2_google_maps___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_vue2_google_maps__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuesax__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vuesax___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_vuesax__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuesax_dist_vuesax_css__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_vuesax_dist_vuesax_css___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_vuesax_dist_vuesax_css__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_vue___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_vue__);
 
 /**
  * First we will load all of this project's JavaScript dependencies which
@@ -24978,42 +25286,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  * building robust, powerful web applications using Vue and Laravel.
  */
 
-__webpack_require__(15);
+__webpack_require__(17);
 
-window.Vue = __webpack_require__(3);
-
-
+window.Vue = __webpack_require__(4);
 
 
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_1_vuesax___default.a);
+ //Vuesax styles
+__WEBPACK_IMPORTED_MODULE_2_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_0_vuesax___default.a);
 
-
-
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_3_vue2_google_maps__, {
-  load: {
-    key: 'AIzaSyDQMzhiINq0pfDHofIycq6m_V2dRFULbPc',
-    libraries: 'places' // This is required if you use the Autocomplete plugin
-    // OR: libraries: 'places,drawing'
-    // OR: libraries: 'places,drawing,visualization'
-    // (as you require)
-
-    //// If you want to set the version, you can do so:
-    // v: '3.26',
-  }
-
-  //// If you intend to programmatically custom event listener code
-  //// (e.g. `this.$refs.gmap.$on('zoom_changed', someFunc)`)
-  //// instead of going through Vue templates (e.g. `<GmapMap @zoom_changed="someFunc">`)
-  //// you might need to turn this on.
-  // autobindAllEvents: false,
-
-  //// If you want to manually install components, e.g.
-  //// import {GmapMarker} from 'vue2-google-maps/src/components/marker'
-  //// Vue.component('GmapMarker', GmapMarker)
-  //// then disable the following:
-  // installComponents: true,
-});
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -25021,12 +25302,12 @@ __WEBPACK_IMPORTED_MODULE_0_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_3_vue2
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('example-component', __webpack_require__(41));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('loading-component', __webpack_require__(44));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('sidebar-component', __webpack_require__(47));
-__WEBPACK_IMPORTED_MODULE_0_vue___default.a.component('map-component', __webpack_require__(61).default);
+__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('example-component', __webpack_require__(47));
+__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('loading-component', __webpack_require__(50));
+__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('sidebar-component', __webpack_require__(53));
+__WEBPACK_IMPORTED_MODULE_2_vue___default.a.component('map-component', __webpack_require__(59).default);
 
-var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
+var app = new __WEBPACK_IMPORTED_MODULE_2_vue___default.a({
   el: '#app',
   data: {
     place: ''
@@ -25036,12 +25317,12 @@ var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
 var route = [{ path: '/inbox', component: PrivateMessageInbox, name: 'inbox', meta: { requiresAuth: true } }];
 
 /***/ }),
-/* 15 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-window._ = __webpack_require__(16);
-window.Popper = __webpack_require__(5).default;
+window._ = __webpack_require__(18);
+window.Popper = __webpack_require__(6).default;
 
 /**
  * We'll load jQuery and the Bootstrap jQuery plugin which provides support
@@ -25050,9 +25331,9 @@ window.Popper = __webpack_require__(5).default;
  */
 
 try {
-  window.$ = window.jQuery = __webpack_require__(6);
+  window.$ = window.jQuery = __webpack_require__(7);
 
-  __webpack_require__(18);
+  __webpack_require__(20);
 } catch (e) {}
 
 /**
@@ -25061,7 +25342,7 @@ try {
  * CSRF token as a header based on the value of the "XSRF" token cookie.
  */
 
-window.axios = __webpack_require__(19);
+window.axios = __webpack_require__(21);
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
@@ -25097,7 +25378,7 @@ if (token) {
 // });
 
 /***/ }),
-/* 16 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -25114,7 +25395,7 @@ if (token) {
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.17.10';
+  var VERSION = '4.17.11';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -25378,7 +25659,7 @@ if (token) {
   var reHasUnicode = RegExp('[' + rsZWJ + rsAstralRange  + rsComboRange + rsVarRange + ']');
 
   /** Used to detect strings that need a more robust regexp to match words. */
-  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
+  var reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/;
 
   /** Used to assign default `context` object properties. */
   var contextProps = [
@@ -26324,20 +26605,6 @@ if (token) {
       }
     }
     return result;
-  }
-
-  /**
-   * Gets the value at `key`, unless `key` is "__proto__".
-   *
-   * @private
-   * @param {Object} object The object to query.
-   * @param {string} key The key of the property to get.
-   * @returns {*} Returns the property value.
-   */
-  function safeGet(object, key) {
-    return key == '__proto__'
-      ? undefined
-      : object[key];
   }
 
   /**
@@ -28797,7 +29064,7 @@ if (token) {
           if (isArguments(objValue)) {
             newValue = toPlainObject(objValue);
           }
-          else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
+          else if (!isObject(objValue) || isFunction(objValue)) {
             newValue = initCloneObject(srcValue);
           }
         }
@@ -31718,6 +31985,22 @@ if (token) {
         array[length] = isIndex(index, arrLength) ? oldArray[index] : undefined;
       }
       return array;
+    }
+
+    /**
+     * Gets the value at `key`, unless `key` is "__proto__".
+     *
+     * @private
+     * @param {Object} object The object to query.
+     * @param {string} key The key of the property to get.
+     * @returns {*} Returns the property value.
+     */
+    function safeGet(object, key) {
+      if (key == '__proto__') {
+        return;
+      }
+
+      return object[key];
     }
 
     /**
@@ -42207,10 +42490,10 @@ if (token) {
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(17)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(19)(module)))
 
 /***/ }),
-/* 17 */
+/* 19 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -42238,7 +42521,7 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 18 */
+/* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*!
@@ -42247,7 +42530,7 @@ module.exports = function(module) {
   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
   */
 (function (global, factory) {
-   true ? factory(exports, __webpack_require__(6), __webpack_require__(5)) :
+   true ? factory(exports, __webpack_require__(7), __webpack_require__(6)) :
   typeof define === 'function' && define.amd ? define(['exports', 'jquery', 'popper.js'], factory) :
   (factory((global.bootstrap = {}),global.jQuery,global.Popper));
 }(this, (function (exports,$,Popper) { 'use strict';
@@ -46188,22 +46471,22 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 19 */
+/* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(20);
+module.exports = __webpack_require__(22);
 
 /***/ }),
-/* 20 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var bind = __webpack_require__(7);
-var Axios = __webpack_require__(22);
-var defaults = __webpack_require__(2);
+var bind = __webpack_require__(8);
+var Axios = __webpack_require__(24);
+var defaults = __webpack_require__(3);
 
 /**
  * Create an instance of Axios
@@ -46236,15 +46519,15 @@ axios.create = function create(instanceConfig) {
 };
 
 // Expose Cancel & CancelToken
-axios.Cancel = __webpack_require__(12);
-axios.CancelToken = __webpack_require__(36);
-axios.isCancel = __webpack_require__(11);
+axios.Cancel = __webpack_require__(13);
+axios.CancelToken = __webpack_require__(38);
+axios.isCancel = __webpack_require__(12);
 
 // Expose all/spread
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
-axios.spread = __webpack_require__(37);
+axios.spread = __webpack_require__(39);
 
 module.exports = axios;
 
@@ -46253,7 +46536,7 @@ module.exports.default = axios;
 
 
 /***/ }),
-/* 21 */
+/* 23 */
 /***/ (function(module, exports) {
 
 /*!
@@ -46280,16 +46563,16 @@ function isSlowBuffer (obj) {
 
 
 /***/ }),
-/* 22 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var defaults = __webpack_require__(2);
+var defaults = __webpack_require__(3);
 var utils = __webpack_require__(0);
-var InterceptorManager = __webpack_require__(31);
-var dispatchRequest = __webpack_require__(32);
+var InterceptorManager = __webpack_require__(33);
+var dispatchRequest = __webpack_require__(34);
 
 /**
  * Create a new instance of Axios
@@ -46366,7 +46649,7 @@ module.exports = Axios;
 
 
 /***/ }),
-/* 23 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46385,13 +46668,13 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
 
 
 /***/ }),
-/* 24 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var createError = __webpack_require__(10);
+var createError = __webpack_require__(11);
 
 /**
  * Resolve or reject a Promise based on response status.
@@ -46418,7 +46701,7 @@ module.exports = function settle(resolve, reject, response) {
 
 
 /***/ }),
-/* 25 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46446,7 +46729,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
 
 
 /***/ }),
-/* 26 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46519,7 +46802,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
 
 
 /***/ }),
-/* 27 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46579,7 +46862,7 @@ module.exports = function parseHeaders(headers) {
 
 
 /***/ }),
-/* 28 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46654,7 +46937,7 @@ module.exports = (
 
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46697,7 +46980,7 @@ module.exports = btoa;
 
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46757,7 +47040,7 @@ module.exports = (
 
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46816,18 +47099,18 @@ module.exports = InterceptorManager;
 
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
 var utils = __webpack_require__(0);
-var transformData = __webpack_require__(33);
-var isCancel = __webpack_require__(11);
-var defaults = __webpack_require__(2);
-var isAbsoluteURL = __webpack_require__(34);
-var combineURLs = __webpack_require__(35);
+var transformData = __webpack_require__(35);
+var isCancel = __webpack_require__(12);
+var defaults = __webpack_require__(3);
+var isAbsoluteURL = __webpack_require__(36);
+var combineURLs = __webpack_require__(37);
 
 /**
  * Throws a `Cancel` if cancellation has been requested.
@@ -46909,7 +47192,7 @@ module.exports = function dispatchRequest(config) {
 
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46936,7 +47219,7 @@ module.exports = function transformData(data, headers, fns) {
 
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46957,7 +47240,7 @@ module.exports = function isAbsoluteURL(url) {
 
 
 /***/ }),
-/* 35 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -46978,13 +47261,13 @@ module.exports = function combineURLs(baseURL, relativeURL) {
 
 
 /***/ }),
-/* 36 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-var Cancel = __webpack_require__(12);
+var Cancel = __webpack_require__(13);
 
 /**
  * A `CancelToken` is an object that can be used to request cancellation of an operation.
@@ -47042,7 +47325,7 @@ module.exports = CancelToken;
 
 
 /***/ }),
-/* 37 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -47076,7 +47359,7 @@ module.exports = function spread(callback) {
 
 
 /***/ }),
-/* 38 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {var scope = (typeof global !== "undefined" && global) ||
@@ -47132,7 +47415,7 @@ exports._unrefActive = exports.active = function(item) {
 };
 
 // setimmediate attaches itself to the global object
-__webpack_require__(39);
+__webpack_require__(41);
 // On some exotic environments, it's not clear which object `setimmediate` was
 // able to install onto.  Search each possibility in the same order as the
 // `setimmediate` library.
@@ -47146,7 +47429,7 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1)))
 
 /***/ }),
-/* 39 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, process) {(function (global, undefined) {
@@ -47336,10 +47619,10 @@ exports.clearImmediate = (typeof self !== "undefined" && self.clearImmediate) ||
     attachTo.clearImmediate = clearImmediate;
 }(typeof self === "undefined" ? typeof global === "undefined" ? this : global : self));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(8)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(1), __webpack_require__(9)))
 
 /***/ }),
-/* 40 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports =
@@ -49757,7 +50040,7 @@ module.exports = function (key) {
 /***/ "i7/w":
 /***/ (function(module, exports) {
 
-module.exports = __webpack_require__(3);
+module.exports = __webpack_require__(4);
 
 /***/ }),
 
@@ -49961,21 +50244,6 @@ module.exports = {};
 
 /***/ }),
 
-/***/ "lBHY":
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__("vSL8");
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var add = __webpack_require__("SZ7m").default
-var update = add("615d4d3c", content, true, {});
-
-/***/ }),
-
 /***/ "lSNA":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -50036,15 +50304,16 @@ __webpack_require__.d(components_namespaceObject, "vsAlert", function() { return
 __webpack_require__.d(components_namespaceObject, "vsChip", function() { return components_vsChip; });
 __webpack_require__.d(components_namespaceObject, "vsProgress", function() { return components_vsProgress; });
 __webpack_require__.d(components_namespaceObject, "vsCard", function() { return components_vsCard; });
-__webpack_require__.d(components_namespaceObject, "vsTopbar", function() { return components_vsTopbar; });
 __webpack_require__.d(components_namespaceObject, "vsList", function() { return components_vsList; });
 __webpack_require__.d(components_namespaceObject, "vsAvatar", function() { return components_vsAvatar; });
 __webpack_require__.d(components_namespaceObject, "vsPagination", function() { return components_vsPagination; });
 __webpack_require__.d(components_namespaceObject, "vsBreadcrumb", function() { return components_vsBreadcrumb; });
-__webpack_require__.d(components_namespaceObject, "vsSideBar", function() { return components_vsSideBar; });
 __webpack_require__.d(components_namespaceObject, "vsPrompt", function() { return vsPrompt; });
-__webpack_require__.d(components_namespaceObject, "vsDropDown", function() { return components_vsDropDown; });
 __webpack_require__.d(components_namespaceObject, "vsDivider", function() { return components_vsDivider; });
+__webpack_require__.d(components_namespaceObject, "vsSpacer", function() { return components_vsSpacer; });
+__webpack_require__.d(components_namespaceObject, "vsNavbar", function() { return components_vsNavbar; });
+__webpack_require__.d(components_namespaceObject, "vsSideBar", function() { return components_vsSideBar; });
+__webpack_require__.d(components_namespaceObject, "vsDropDown", function() { return components_vsDropDown; });
 __webpack_require__.d(components_namespaceObject, "vsCollapse", function() { return components_vsCollapse; });
 __webpack_require__.d(components_namespaceObject, "vsRow", function() { return layout_vsRow; });
 __webpack_require__.d(components_namespaceObject, "vsCol", function() { return layout_vsCol; });
@@ -52946,7 +53215,7 @@ var es6_math_sign = __webpack_require__("aW3o");
     }
   }
 });
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-358daa32","hasScoped":false,"optionsId":"0","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsSlider/vsSlider.vue
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-358daa32","hasScoped":false,"optionsId":"2","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsSlider/vsSlider.vue
 var vsSlider_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"con-vs-slider",class:[
     ("vs-slider-" + _vm.color),
     {'disabledx':_vm.disabled}
@@ -54646,85 +54915,6 @@ var vsCard_Component = normalizeComponent(
 /* harmony default export */ var components_vsCard = (function (Vue) {
   Vue.component(vsCard_vsCard.name, vsCard_vsCard);
 });
-// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsTopbar/vsTopbar.vue
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ var vsTopbar = ({
-  name: 'VsTopbar',
-  props: {
-    vsColor: {
-      type: String,
-      default: null
-    }
-  },
-  computed: {
-    colorx: function colorx() {
-      if (this.vsColor) {
-        if (utils_color.contrastColor(this.vsColor)) {
-          return 'rgba(0, 0, 0,.7)';
-        } else {
-          return 'rgba(255, 255, 255,.8)';
-        }
-      } else {
-        return 'rgba(0, 0, 0,.7)';
-      }
-    }
-  }
-});
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-65b7a84f","hasScoped":true,"optionsId":"2","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsTopbar/vsTopbar.vue
-var vsTopbar_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"vs-topbar",style:({
-    'background':_vm.vsColor?/[#()]/.test(_vm.vsColor)?_vm.vsColor:("rgba(var(--" + _vm.vsColor + "),1)"):'rgb(244,244,244)',
-    'color':_vm.colorx
-  })},[_vm._t("default")],2)}
-var vsTopbar_staticRenderFns = []
-
-// CONCATENATED MODULE: ./src/components/vsTopbar/vsTopbar.vue
-function vsTopbar_injectStyle (context) {
-  __webpack_require__("lBHY")
-}
-/* script */
-
-
-/* template */
-
-/* template functional */
-var vsTopbar_vue_template_functional_ = false
-/* styles */
-var vsTopbar_vue_styles_ = vsTopbar_injectStyle
-/* scopeId */
-var vsTopbar_vue_scopeId_ = "data-v-65b7a84f"
-/* moduleIdentifier (server only) */
-var vsTopbar_vue_module_identifier_ = null
-
-var vsTopbar_Component = normalizeComponent(
-  vsTopbar,
-  vsTopbar_render,
-  vsTopbar_staticRenderFns,
-  vsTopbar_vue_template_functional_,
-  vsTopbar_vue_styles_,
-  vsTopbar_vue_scopeId_,
-  vsTopbar_vue_module_identifier_
-)
-
-/* harmony default export */ var vsTopbar_vsTopbar = (vsTopbar_Component.exports);
-
-// CONCATENATED MODULE: ./src/components/vsTopbar/index.js
-
-
-
-/* harmony default export */ var components_vsTopbar = (function (Vue) {
-  Vue.component(vsTopbar_vsTopbar.name, vsTopbar_vsTopbar);
-});
 // CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsList/vsList.vue
 //
 //
@@ -55495,6 +55685,780 @@ var vsBreadcrumb_Component = normalizeComponent(
 /* harmony default export */ var components_vsBreadcrumb = (function (Vue) {
   Vue.component(vsBreadcrumb_vsBreadcrumb.name, vsBreadcrumb_vsBreadcrumb);
 });
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/functions/vsDialog/index.vue
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ var vsDialog = ({
+  name: 'VsPrompt',
+  props: {
+    vsColor: {
+      default: 'primary',
+      type: String
+    },
+    vsActive: {
+      default: false,
+      type: Boolean
+    },
+    vsTitle: {
+      default: 'Dialog',
+      type: String
+    },
+    vsButtonAccept: {
+      default: 'filled',
+      type: String
+    },
+    vsButtonCancel: {
+      default: 'flat',
+      type: String
+    },
+    vsIsValid: {
+      default: 'none',
+      type: [Boolean, String]
+    },
+    vsButtonsHidden: {
+      default: false,
+      type: Boolean
+    },
+    vsAcceptText: {
+      default: 'Accept',
+      type: String
+    },
+    vsCancelText: {
+      default: 'Cancel',
+      type: String
+    }
+  },
+  data: function data() {
+    return {
+      isPrompt: true,
+      active: false,
+      type: 'alert',
+      color: 'primary',
+      text: null,
+      title: null,
+      buttonAccept: 'filled',
+      buttonCancel: 'flat',
+      acceptText: 'Accept',
+      cancelText: 'Cancel'
+    };
+  },
+  computed: {
+    styleHeader: function styleHeader() {
+      return {
+        color: utils_color.getColor(this.color, 1)
+      };
+    },
+    styleAfter: function styleAfter() {
+      return {
+        background: utils_color.getColor(this.color, 1)
+      };
+    }
+  },
+  mounted: function mounted() {
+    if (this.active) {
+      this.insertBody();
+    }
+  },
+  methods: {
+    giveColor: function giveColor(color) {
+      return utils_color.rColor(color);
+    },
+    acceptDialog: function acceptDialog() {
+      if (!this.isPrompt) {
+        this.accept ? this.accept() : null;
+        this.active = false;
+        this.$emit('update:vsActive', false);
+        this.$emit('vs-accept');
+      } else {
+        if (this.vsIsValid || this.vsIsValid == 'none') {
+          this.accept ? this.accept() : null;
+          this.active = false;
+          this.$emit('update:vsActive', false);
+          this.$emit('vs-accept');
+        } else {
+          this.rebound();
+        }
+      }
+    },
+    rebound: function rebound() {
+      var _this = this;
+
+      this.$refs.dialogx.classList.add('locked');
+      setTimeout(function () {
+        _this.$refs.dialogx.classList.remove('locked');
+      }, 200);
+    },
+    close: function close(event, con) {
+      if (con) {
+        if (event.target.className.indexOf('vs-dialog-dark') != -1 && this.type == 'alert') {
+          this.active = false;
+          this.$emit('update:vsActive', false);
+        } else if (event.target.className.indexOf('vs-dialog-dark') != -1) {
+          this.rebound();
+        }
+      } else {
+        if (event ? event.target.className.indexOf('vs-dialog-cancel') != -1 : false) {
+          this.active = false;
+          this.$emit('update:vsActive', false);
+        }
+      }
+    },
+    cancelClose: function cancelClose() {
+      this.active = false;
+      this.$emit('update:vsActive', false);
+      this.$emit('vs-cancel');
+      this.cancel ? this.cancel() : null;
+    },
+    insertBody: function insertBody() {
+      var elx = this.$refs.con;
+      document.body.insertBefore(elx, document.body.firstChild);
+    }
+  }
+});
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-00a69eea","hasScoped":false,"optionsId":"2","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/functions/vsDialog/index.vue
+var vsDialog_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('transition',{attrs:{"name":"dialog-t"}},[(_vm.active || _vm.vsActive)?_c('div',{ref:"con",staticClass:"vs-component con-vs-dialog",class:[("vs-dialog-" + (_vm.isPrompt?_vm.vsColor:_vm.color))],on:{"click":function($event){_vm.close($event,true)}}},[_c('div',{staticClass:"vs-dialog-dark"}),_vm._v(" "),_c('div',{ref:"dialogx",staticClass:"vs-dialog"},[_c('header',{style:(_vm.styleHeader)},[_c('div',{staticClass:"con-title-after"},[_c('span',{staticClass:"after",style:(_vm.styleAfter)}),_vm._v(" "),_c('h3',[_vm._v(_vm._s(_vm.title || _vm.vsTitle))])]),_vm._v(" "),(_vm.type=='alert')?_c('span',{staticClass:"vs-dialog-cancel material-icons notranslate",attrs:{"translate":"no"},on:{"click":_vm.close}},[_vm._v("close")]):_vm._e()]),_vm._v(" "),_c('div',{staticClass:"vs-dialog-text"},[_vm._t("default"),_vm._v("\n        "+_vm._s(_vm.text)+"\n      ")],2),_vm._v(" "),(_vm.vsButtonsHidden?false:_vm.isPrompt||_vm.type=='confirm')?_c('footer',[_c('vs-button',{attrs:{"disabled":_vm.vsIsValid=='none'?false:!_vm.vsIsValid,"vs-color":_vm.isPrompt?_vm.vsColor:_vm.color,"vs-type":_vm.isPrompt?_vm.vsButtonAccept:_vm.buttonAccept},on:{"click":_vm.acceptDialog}},[_vm._v(_vm._s(_vm.isPrompt?_vm.vsAcceptText:_vm.acceptText))]),_vm._v(" "),_c('vs-button',{attrs:{"vs-color":'rgb(0,0,0,.5)',"vs-type":_vm.isPrompt?_vm.vsButtonCancel:_vm.buttonCancel},on:{"click":_vm.cancelClose}},[_vm._v(_vm._s(_vm.isPrompt?_vm.vsCancelText:_vm.cancelText))])],1):_vm._e(),_vm._v(" "),(_vm.type=='alert'&&!_vm.isPrompt)?_c('footer',[_c('vs-button',{attrs:{"vs-color":_vm.isPrompt?_vm.vsColor:_vm.color,"vs-type":_vm.buttonAccept},on:{"click":_vm.acceptDialog}},[_vm._v(_vm._s(_vm.isPrompt?_vm.vsAcceptText:_vm.acceptText))])],1):_vm._e()])]):_vm._e()])}
+var vsDialog_staticRenderFns = []
+
+// CONCATENATED MODULE: ./src/functions/vsDialog/index.vue
+/* script */
+
+
+/* template */
+
+/* template functional */
+var vsDialog_vue_template_functional_ = false
+/* styles */
+var vsDialog_vue_styles_ = null
+/* scopeId */
+var vsDialog_vue_scopeId_ = null
+/* moduleIdentifier (server only) */
+var vsDialog_vue_module_identifier_ = null
+
+var vsDialog_Component = normalizeComponent(
+  vsDialog,
+  vsDialog_render,
+  vsDialog_staticRenderFns,
+  vsDialog_vue_template_functional_,
+  vsDialog_vue_styles_,
+  vsDialog_vue_scopeId_,
+  vsDialog_vue_module_identifier_
+)
+
+/* harmony default export */ var functions_vsDialog = (vsDialog_Component.exports);
+
+// CONCATENATED MODULE: ./src/components/vsPrompt/index.js
+
+
+
+/* harmony default export */ var vsPrompt = (function (Vue) {
+  Vue.component(functions_vsDialog.name, functions_vsDialog);
+});
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsDivider/vsDivider.vue
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ var vsDivider = ({
+  name: "VsDivider",
+  props: {
+    color: {
+      type: String,
+      default: 'rgba(0, 0, 0,.1)'
+    },
+    icon: {
+      default: null,
+      type: String
+    },
+    borderStyle: {
+      default: 'solid',
+      type: String
+    },
+    borderHeight: {
+      default: '1px',
+      type: String
+    },
+    position: {
+      default: 'center',
+      type: String
+    }
+  },
+  computed: {
+    getWidthAfter: function getWidthAfter() {
+      var widthx = '100%';
+
+      if (this.position == 'left') {
+        widthx = '0%';
+      } else if (this.position == 'left-center') {
+        widthx = '25%';
+      } else if (this.position == 'right-center') {
+        widthx = '75%';
+      } else if (this.position == 'right') {
+        widthx = '100%';
+      }
+
+      return widthx;
+    },
+    getWidthBefore: function getWidthBefore() {
+      var widthx = '100%';
+
+      if (this.position == 'left') {
+        widthx = '100%';
+      } else if (this.position == 'left-center') {
+        widthx = '75%';
+      } else if (this.position == 'right-center') {
+        widthx = '25%';
+      } else if (this.position == 'right') {
+        widthx = '0%';
+      }
+
+      return widthx;
+    },
+    borderColor: function borderColor() {
+      if (!utils_color.isColor(this.color)) {
+        return utils_color.getColor(this.color);
+      }
+    },
+    afterStyle: function afterStyle() {
+      var classes = {
+        width: this.getWidthAfter,
+        'border-top-width': this.borderHeight,
+        'border-top-style': this.borderStyle
+      };
+
+      if (!utils_color.isColor(this.color)) {
+        classes['border-top-color'] = this.borderColor;
+      }
+
+      return classes;
+    },
+    beforeStyle: function beforeStyle() {
+      var classes = {
+        width: this.getWidthBefore,
+        'border-top-width': this.borderHeight,
+        'border-top-style': this.borderStyle
+      };
+
+      if (!utils_color.isColor(this.color)) {
+        classes['border-top-color'] = this.borderColor;
+      }
+
+      return classes;
+    },
+    borderClass: function borderClass() {
+      var classes = {};
+
+      if (utils_color.isColor(this.color)) {
+        classes["vs-divider-border-".concat(this.color)] = true;
+      }
+
+      return classes;
+    },
+    textColor: function textColor() {
+      if (!utils_color.isColor(this.color)) {
+        return utils_color.getColor(this.color === 'rgba(0, 0, 0,.1)' ? 'rgba(0,0,0,0.8)' : this.color);
+      }
+    },
+    textClass: function textClass() {
+      var classes = {};
+
+      if (utils_color.isColor(this.color)) {
+        classes["vs-divider-text-".concat(this.color)] = true;
+      }
+
+      return classes;
+    }
+  }
+});
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-0866d5f2","hasScoped":false,"optionsId":"2","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsDivider/vsDivider.vue
+var vsDivider_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"vs-component vs-divider"},[_c('span',{staticClass:"vs-divider-border after",class:_vm.borderClass,style:(_vm.afterStyle)}),_vm._v(" "),( _vm.icon || _vm.$slots.default)?_c('span',{staticClass:"vs-divider-text",style:({
+      'color': _vm.textColor
+    })},[(!_vm.icon)?[_vm._t("default")]:_c('i',{staticClass:"material-icons icon-divider notranslate",attrs:{"translate":"no"}},[_vm._v("\n      "+_vm._s(_vm.icon)+"\n    ")])],2):_vm._e(),_vm._v(" "),_c('span',{staticClass:"vs-divider-border before",class:_vm.borderClass,style:(_vm.beforeStyle)})])}
+var vsDivider_staticRenderFns = []
+
+// CONCATENATED MODULE: ./src/components/vsDivider/vsDivider.vue
+/* script */
+
+
+/* template */
+
+/* template functional */
+var vsDivider_vue_template_functional_ = false
+/* styles */
+var vsDivider_vue_styles_ = null
+/* scopeId */
+var vsDivider_vue_scopeId_ = null
+/* moduleIdentifier (server only) */
+var vsDivider_vue_module_identifier_ = null
+
+var vsDivider_Component = normalizeComponent(
+  vsDivider,
+  vsDivider_render,
+  vsDivider_staticRenderFns,
+  vsDivider_vue_template_functional_,
+  vsDivider_vue_styles_,
+  vsDivider_vue_scopeId_,
+  vsDivider_vue_module_identifier_
+)
+
+/* harmony default export */ var vsDivider_vsDivider = (vsDivider_Component.exports);
+
+// CONCATENATED MODULE: ./src/components/vsDivider/index.js
+
+
+
+/* harmony default export */ var components_vsDivider = (function (Vue) {
+  Vue.component(vsDivider_vsDivider.name, vsDivider_vsDivider);
+});
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsSpacer/vsSpacer.vue
+//
+//
+//
+/* harmony default export */ var vsSpacer = ({
+  name: 'VsSpacer'
+});
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-07d6b393","hasScoped":false,"optionsId":"1","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsSpacer/vsSpacer.vue
+var vsSpacer_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"vs-spacer"})}
+var vsSpacer_staticRenderFns = []
+
+// CONCATENATED MODULE: ./src/components/vsSpacer/vsSpacer.vue
+/* script */
+
+
+/* template */
+
+/* template functional */
+var vsSpacer_vue_template_functional_ = false
+/* styles */
+var vsSpacer_vue_styles_ = null
+/* scopeId */
+var vsSpacer_vue_scopeId_ = null
+/* moduleIdentifier (server only) */
+var vsSpacer_vue_module_identifier_ = null
+
+var vsSpacer_Component = normalizeComponent(
+  vsSpacer,
+  vsSpacer_render,
+  vsSpacer_staticRenderFns,
+  vsSpacer_vue_template_functional_,
+  vsSpacer_vue_styles_,
+  vsSpacer_vue_scopeId_,
+  vsSpacer_vue_module_identifier_
+)
+
+/* harmony default export */ var vsSpacer_vsSpacer = (vsSpacer_Component.exports);
+
+// CONCATENATED MODULE: ./src/components/vsSpacer/index.js
+
+
+
+/* harmony default export */ var components_vsSpacer = (function (Vue) {
+  Vue.component(vsSpacer_vsSpacer.name, vsSpacer_vsSpacer);
+});
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsNavbar/vsNavbar.vue
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ var vsNavbar = ({
+  name: 'VsNavbar',
+  props: {
+    value: {},
+    type: {
+      default: null,
+      type: String
+    },
+    color: {
+      type: String,
+      default: 'transparent'
+    },
+    activeTextColor: {
+      type: String,
+      default: 'primary'
+    },
+    textColor: {
+      type: String,
+      default: 'rgb(40,40,40)'
+    }
+  },
+  computed: {
+    styleNavbar: function styleNavbar() {
+      return {
+        background: utils_color.getColor(this.color)
+      };
+    }
+  },
+  methods: {
+    changeIndex: function changeIndex(index) {
+      this.$emit('input', index);
+    }
+  }
+});
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-4d02de56","hasScoped":false,"optionsId":"1","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsNavbar/vsNavbar.vue
+var vsNavbar_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('header',{staticClass:"vs-navbar",class:[("vs-navbar-" + _vm.type)],style:([_vm.styleNavbar])},[_vm._t("default")],2)}
+var vsNavbar_staticRenderFns = []
+
+// CONCATENATED MODULE: ./src/components/vsNavbar/vsNavbar.vue
+/* script */
+
+
+/* template */
+
+/* template functional */
+var vsNavbar_vue_template_functional_ = false
+/* styles */
+var vsNavbar_vue_styles_ = null
+/* scopeId */
+var vsNavbar_vue_scopeId_ = null
+/* moduleIdentifier (server only) */
+var vsNavbar_vue_module_identifier_ = null
+
+var vsNavbar_Component = normalizeComponent(
+  vsNavbar,
+  vsNavbar_render,
+  vsNavbar_staticRenderFns,
+  vsNavbar_vue_template_functional_,
+  vsNavbar_vue_styles_,
+  vsNavbar_vue_scopeId_,
+  vsNavbar_vue_module_identifier_
+)
+
+/* harmony default export */ var vsNavbar_vsNavbar = (vsNavbar_Component.exports);
+
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsNavbar/vsNavItem.vue
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ var vsNavItem = ({
+  name: 'VsNavbarItem',
+  props: {
+    index: {
+      type: [Number, String],
+      default: null
+    }
+  },
+  data: function data() {
+    return {
+      hover: false
+    };
+  },
+  computed: {
+    getActiveTextColor: function getActiveTextColor() {
+      return this.$parent.$props.activeTextColor;
+    },
+    isActiveItem: function isActiveItem() {
+      return this.$parent.value == this.index;
+    },
+    styleAfter: function styleAfter() {
+      return {
+        background: utils_color.getColor(this.getActiveTextColor)
+      };
+    },
+    styleHover: function styleHover() {
+      if (this.isActiveItem) {
+        return {
+          color: utils_color.getColor(this.getActiveTextColor)
+        };
+      } else {
+        return {
+          color: this.hover ? utils_color.getColor(this.getActiveTextColor) : utils_color.getColor(this.$parent.$props.textColor)
+        };
+      }
+    }
+  },
+  methods: {
+    clickItem: function clickItem() {
+      this.$parent.changeIndex(this.index);
+    },
+    mouseout: function mouseout() {
+      this.hover = false;
+    },
+    mouseover: function mouseover() {
+      this.hover = true;
+    }
+  }
+});
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-2a0cce74","hasScoped":false,"optionsId":"1","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsNavbar/vsNavItem.vue
+var vsNavItem_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{staticClass:"vs-navbar-item",class:[{'is-active-item': _vm.isActiveItem}, ("vs-navbar-item-" + _vm.getActiveTextColor)],style:([_vm.styleHover]),on:{"click":function($event){_vm.clickItem()},"mouseout":_vm.mouseout,"mouseover":_vm.mouseover}},[_vm._t("default"),_vm._v(" "),_c('span',{staticClass:"vs-navbar-after",style:([_vm.styleAfter])})],2)}
+var vsNavItem_staticRenderFns = []
+
+// CONCATENATED MODULE: ./src/components/vsNavbar/vsNavItem.vue
+/* script */
+
+
+/* template */
+
+/* template functional */
+var vsNavItem_vue_template_functional_ = false
+/* styles */
+var vsNavItem_vue_styles_ = null
+/* scopeId */
+var vsNavItem_vue_scopeId_ = null
+/* moduleIdentifier (server only) */
+var vsNavItem_vue_module_identifier_ = null
+
+var vsNavItem_Component = normalizeComponent(
+  vsNavItem,
+  vsNavItem_render,
+  vsNavItem_staticRenderFns,
+  vsNavItem_vue_template_functional_,
+  vsNavItem_vue_styles_,
+  vsNavItem_vue_scopeId_,
+  vsNavItem_vue_module_identifier_
+)
+
+/* harmony default export */ var vsNavbar_vsNavItem = (vsNavItem_Component.exports);
+
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsNavbar/vsNavGroup.vue
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ var vsNavGroup = ({
+  name: 'VsNavbarGroup'
+});
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-6b94b5ca","hasScoped":false,"optionsId":"1","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsNavbar/vsNavGroup.vue
+var vsNavGroup_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{staticClass:"vs-nav-item"},[_c('div',{staticClass:"vs-nav-item-slot"},[_vm._t("default")],2),_vm._v(" "),_c('ul',{staticClass:"vs-nav-submenu"},[_vm._t("submenu")],2)])}
+var vsNavGroup_staticRenderFns = []
+
+// CONCATENATED MODULE: ./src/components/vsNavbar/vsNavGroup.vue
+/* script */
+
+
+/* template */
+
+/* template functional */
+var vsNavGroup_vue_template_functional_ = false
+/* styles */
+var vsNavGroup_vue_styles_ = null
+/* scopeId */
+var vsNavGroup_vue_scopeId_ = null
+/* moduleIdentifier (server only) */
+var vsNavGroup_vue_module_identifier_ = null
+
+var vsNavGroup_Component = normalizeComponent(
+  vsNavGroup,
+  vsNavGroup_render,
+  vsNavGroup_staticRenderFns,
+  vsNavGroup_vue_template_functional_,
+  vsNavGroup_vue_styles_,
+  vsNavGroup_vue_scopeId_,
+  vsNavGroup_vue_module_identifier_
+)
+
+/* harmony default export */ var vsNavbar_vsNavGroup = (vsNavGroup_Component.exports);
+
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsNavbar/vsNavbarTitle.vue
+//
+//
+//
+//
+//
+/* harmony default export */ var vsNavbarTitle = ({
+  name: 'VsNavbarTitle'
+});
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-8664f752","hasScoped":false,"optionsId":"1","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsNavbar/vsNavbarTitle.vue
+var vsNavbarTitle_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('h3',{staticClass:"vs-navbar-title"},[_vm._t("default")],2)}
+var vsNavbarTitle_staticRenderFns = []
+
+// CONCATENATED MODULE: ./src/components/vsNavbar/vsNavbarTitle.vue
+/* script */
+
+
+/* template */
+
+/* template functional */
+var vsNavbarTitle_vue_template_functional_ = false
+/* styles */
+var vsNavbarTitle_vue_styles_ = null
+/* scopeId */
+var vsNavbarTitle_vue_scopeId_ = null
+/* moduleIdentifier (server only) */
+var vsNavbarTitle_vue_module_identifier_ = null
+
+var vsNavbarTitle_Component = normalizeComponent(
+  vsNavbarTitle,
+  vsNavbarTitle_render,
+  vsNavbarTitle_staticRenderFns,
+  vsNavbarTitle_vue_template_functional_,
+  vsNavbarTitle_vue_styles_,
+  vsNavbarTitle_vue_scopeId_,
+  vsNavbarTitle_vue_module_identifier_
+)
+
+/* harmony default export */ var vsNavbar_vsNavbarTitle = (vsNavbarTitle_Component.exports);
+
+// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsNavbar/vsNavbarItems.vue
+//
+//
+//
+//
+//
+/* harmony default export */ var vsNavbarItems = ({
+  name: 'VsNavbarItems'
+});
+// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-097a7807","hasScoped":false,"optionsId":"1","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsNavbar/vsNavbarItems.vue
+var vsNavbarItems_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"vs-navbar-items"},[_vm._t("default")],2)}
+var vsNavbarItems_staticRenderFns = []
+
+// CONCATENATED MODULE: ./src/components/vsNavbar/vsNavbarItems.vue
+/* script */
+
+
+/* template */
+
+/* template functional */
+var vsNavbarItems_vue_template_functional_ = false
+/* styles */
+var vsNavbarItems_vue_styles_ = null
+/* scopeId */
+var vsNavbarItems_vue_scopeId_ = null
+/* moduleIdentifier (server only) */
+var vsNavbarItems_vue_module_identifier_ = null
+
+var vsNavbarItems_Component = normalizeComponent(
+  vsNavbarItems,
+  vsNavbarItems_render,
+  vsNavbarItems_staticRenderFns,
+  vsNavbarItems_vue_template_functional_,
+  vsNavbarItems_vue_styles_,
+  vsNavbarItems_vue_scopeId_,
+  vsNavbarItems_vue_module_identifier_
+)
+
+/* harmony default export */ var vsNavbar_vsNavbarItems = (vsNavbarItems_Component.exports);
+
+// CONCATENATED MODULE: ./src/components/vsNavbar/index.js
+
+
+
+
+
+
+
+/* harmony default export */ var components_vsNavbar = (function (Vue) {
+  Vue.component(vsNavbar_vsNavbar.name, vsNavbar_vsNavbar);
+  Vue.component(vsNavbar_vsNavItem.name, vsNavbar_vsNavItem);
+  Vue.component(vsNavbar_vsNavGroup.name, vsNavbar_vsNavGroup);
+  Vue.component(vsNavbar_vsNavbarTitle.name, vsNavbar_vsNavbarTitle);
+  Vue.component(vsNavbar_vsNavbarItems.name, vsNavbar_vsNavbarItems);
+});
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/defineProperty.js
 var defineProperty = __webpack_require__("lSNA");
 var defineProperty_default = /*#__PURE__*/__webpack_require__.n(defineProperty);
@@ -56017,230 +56981,6 @@ var vsSidebarGroup_Component = normalizeComponent(
   Vue.component(vsSideBar_vsSideBar.name, vsSideBar_vsSideBar);
   Vue.component(vsSideBar_vsSidebarItem.name, vsSideBar_vsSidebarItem);
   Vue.component(vsSideBar_vsSidebarGroup.name, vsSideBar_vsSidebarGroup);
-});
-// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/functions/vsDialog/index.vue
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ var vsDialog = ({
-  name: 'VsPrompt',
-  props: {
-    vsColor: {
-      default: 'primary',
-      type: String
-    },
-    vsActive: {
-      default: false,
-      type: Boolean
-    },
-    vsTitle: {
-      default: 'Dialog',
-      type: String
-    },
-    vsButtonAccept: {
-      default: 'filled',
-      type: String
-    },
-    vsButtonCancel: {
-      default: 'flat',
-      type: String
-    },
-    vsIsValid: {
-      default: 'none',
-      type: [Boolean, String]
-    },
-    vsButtonsHidden: {
-      default: false,
-      type: Boolean
-    },
-    vsAcceptText: {
-      default: 'Accept',
-      type: String
-    },
-    vsCancelText: {
-      default: 'Cancel',
-      type: String
-    }
-  },
-  data: function data() {
-    return {
-      isPrompt: true,
-      active: false,
-      type: 'alert',
-      color: 'primary',
-      text: null,
-      title: null,
-      buttonAccept: 'filled',
-      buttonCancel: 'flat',
-      acceptText: 'Accept',
-      cancelText: 'Cancel'
-    };
-  },
-  computed: {
-    styleHeader: function styleHeader() {
-      return {
-        color: utils_color.getColor(this.color, 1)
-      };
-    },
-    styleAfter: function styleAfter() {
-      return {
-        background: utils_color.getColor(this.color, 1)
-      };
-    }
-  },
-  mounted: function mounted() {
-    if (this.active) {
-      this.insertBody();
-    }
-  },
-  methods: {
-    giveColor: function giveColor(color) {
-      return utils_color.rColor(color);
-    },
-    acceptDialog: function acceptDialog() {
-      if (!this.isPrompt) {
-        this.accept ? this.accept() : null;
-        this.active = false;
-        this.$emit('update:vsActive', false);
-        this.$emit('vs-accept');
-      } else {
-        if (this.vsIsValid || this.vsIsValid == 'none') {
-          this.accept ? this.accept() : null;
-          this.active = false;
-          this.$emit('update:vsActive', false);
-          this.$emit('vs-accept');
-        } else {
-          this.rebound();
-        }
-      }
-    },
-    rebound: function rebound() {
-      var _this = this;
-
-      this.$refs.dialogx.classList.add('locked');
-      setTimeout(function () {
-        _this.$refs.dialogx.classList.remove('locked');
-      }, 200);
-    },
-    close: function close(event, con) {
-      if (con) {
-        if (event.target.className.indexOf('vs-dialog-dark') != -1 && this.type == 'alert') {
-          this.active = false;
-          this.$emit('update:vsActive', false);
-        } else if (event.target.className.indexOf('vs-dialog-dark') != -1) {
-          this.rebound();
-        }
-      } else {
-        if (event ? event.target.className.indexOf('vs-dialog-cancel') != -1 : false) {
-          this.active = false;
-          this.$emit('update:vsActive', false);
-        }
-      }
-    },
-    cancelClose: function cancelClose() {
-      this.active = false;
-      this.$emit('update:vsActive', false);
-      this.$emit('vs-cancel');
-      this.cancel ? this.cancel() : null;
-    },
-    insertBody: function insertBody() {
-      var elx = this.$refs.con;
-      document.body.insertBefore(elx, document.body.firstChild);
-    }
-  }
-});
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-00a69eea","hasScoped":false,"optionsId":"2","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/functions/vsDialog/index.vue
-var vsDialog_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('transition',{attrs:{"name":"dialog-t"}},[(_vm.active || _vm.vsActive)?_c('div',{ref:"con",staticClass:"vs-component con-vs-dialog",class:[("vs-dialog-" + (_vm.isPrompt?_vm.vsColor:_vm.color))],on:{"click":function($event){_vm.close($event,true)}}},[_c('div',{staticClass:"vs-dialog-dark"}),_vm._v(" "),_c('div',{ref:"dialogx",staticClass:"vs-dialog"},[_c('header',{style:(_vm.styleHeader)},[_c('div',{staticClass:"con-title-after"},[_c('span',{staticClass:"after",style:(_vm.styleAfter)}),_vm._v(" "),_c('h3',[_vm._v(_vm._s(_vm.title || _vm.vsTitle))])]),_vm._v(" "),(_vm.type=='alert')?_c('span',{staticClass:"vs-dialog-cancel material-icons notranslate",attrs:{"translate":"no"},on:{"click":_vm.close}},[_vm._v("close")]):_vm._e()]),_vm._v(" "),_c('div',{staticClass:"vs-dialog-text"},[_vm._t("default"),_vm._v("\n        "+_vm._s(_vm.text)+"\n      ")],2),_vm._v(" "),(_vm.vsButtonsHidden?false:_vm.isPrompt||_vm.type=='confirm')?_c('footer',[_c('vs-button',{attrs:{"disabled":_vm.vsIsValid=='none'?false:!_vm.vsIsValid,"vs-color":_vm.isPrompt?_vm.vsColor:_vm.color,"vs-type":_vm.isPrompt?_vm.vsButtonAccept:_vm.buttonAccept},on:{"click":_vm.acceptDialog}},[_vm._v(_vm._s(_vm.isPrompt?_vm.vsAcceptText:_vm.acceptText))]),_vm._v(" "),_c('vs-button',{attrs:{"vs-color":'rgb(0,0,0,.5)',"vs-type":_vm.isPrompt?_vm.vsButtonCancel:_vm.buttonCancel},on:{"click":_vm.cancelClose}},[_vm._v(_vm._s(_vm.isPrompt?_vm.vsCancelText:_vm.cancelText))])],1):_vm._e(),_vm._v(" "),(_vm.type=='alert'&&!_vm.isPrompt)?_c('footer',[_c('vs-button',{attrs:{"vs-color":_vm.isPrompt?_vm.vsColor:_vm.color,"vs-type":_vm.buttonAccept},on:{"click":_vm.acceptDialog}},[_vm._v(_vm._s(_vm.isPrompt?_vm.vsAcceptText:_vm.acceptText))])],1):_vm._e()])]):_vm._e()])}
-var vsDialog_staticRenderFns = []
-
-// CONCATENATED MODULE: ./src/functions/vsDialog/index.vue
-/* script */
-
-
-/* template */
-
-/* template functional */
-var vsDialog_vue_template_functional_ = false
-/* styles */
-var vsDialog_vue_styles_ = null
-/* scopeId */
-var vsDialog_vue_scopeId_ = null
-/* moduleIdentifier (server only) */
-var vsDialog_vue_module_identifier_ = null
-
-var vsDialog_Component = normalizeComponent(
-  vsDialog,
-  vsDialog_render,
-  vsDialog_staticRenderFns,
-  vsDialog_vue_template_functional_,
-  vsDialog_vue_styles_,
-  vsDialog_vue_scopeId_,
-  vsDialog_vue_module_identifier_
-)
-
-/* harmony default export */ var functions_vsDialog = (vsDialog_Component.exports);
-
-// CONCATENATED MODULE: ./src/components/vsPrompt/index.js
-
-
-
-/* harmony default export */ var vsPrompt = (function (Vue) {
-  Vue.component(functions_vsDialog.name, functions_vsDialog);
 });
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/slicedToArray.js
 var slicedToArray = __webpack_require__("J4zp");
@@ -56853,192 +57593,6 @@ var vsDropDownGroup_Component = normalizeComponent(
   Vue.component(vsDropDown_vsDropDownItem.name, vsDropDown_vsDropDownItem);
   Vue.component(vsDropDown_vsDropDownGroup.name, vsDropDown_vsDropDownGroup);
 });
-// CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsDivider/vsDivider.vue
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ var vsDivider = ({
-  name: "VsDivider",
-  props: {
-    color: {
-      type: String,
-      default: 'rgba(0, 0, 0,.1)'
-    },
-    icon: {
-      default: null,
-      type: String
-    },
-    borderStyle: {
-      default: 'solid',
-      type: String
-    },
-    borderHeight: {
-      default: '1px',
-      type: String
-    },
-    position: {
-      default: 'center',
-      type: String
-    }
-  },
-  computed: {
-    getWidthAfter: function getWidthAfter() {
-      var widthx = '100%';
-
-      if (this.position == 'left') {
-        widthx = '0%';
-      } else if (this.position == 'left-center') {
-        widthx = '25%';
-      } else if (this.position == 'right-center') {
-        widthx = '75%';
-      } else if (this.position == 'right') {
-        widthx = '100%';
-      }
-
-      return widthx;
-    },
-    getWidthBefore: function getWidthBefore() {
-      var widthx = '100%';
-
-      if (this.position == 'left') {
-        widthx = '100%';
-      } else if (this.position == 'left-center') {
-        widthx = '75%';
-      } else if (this.position == 'right-center') {
-        widthx = '25%';
-      } else if (this.position == 'right') {
-        widthx = '0%';
-      }
-
-      return widthx;
-    },
-    borderColor: function borderColor() {
-      if (!utils_color.isColor(this.color)) {
-        return utils_color.getColor(this.color);
-      }
-    },
-    afterStyle: function afterStyle() {
-      var classes = {
-        width: this.getWidthAfter,
-        'border-top-width': this.borderHeight,
-        'border-top-style': this.borderStyle
-      };
-
-      if (!utils_color.isColor(this.color)) {
-        classes['border-top-color'] = this.borderColor;
-      }
-
-      return classes;
-    },
-    beforeStyle: function beforeStyle() {
-      var classes = {
-        width: this.getWidthBefore,
-        'border-top-width': this.borderHeight,
-        'border-top-style': this.borderStyle
-      };
-
-      if (!utils_color.isColor(this.color)) {
-        classes['border-top-color'] = this.borderColor;
-      }
-
-      return classes;
-    },
-    borderClass: function borderClass() {
-      var classes = {};
-
-      if (utils_color.isColor(this.color)) {
-        classes["vs-divider-border-".concat(this.color)] = true;
-      }
-
-      return classes;
-    },
-    textColor: function textColor() {
-      if (!utils_color.isColor(this.color)) {
-        return utils_color.getColor(this.color === 'rgba(0, 0, 0,.1)' ? 'rgba(0,0,0,0.8)' : this.color);
-      }
-    },
-    textClass: function textClass() {
-      var classes = {};
-
-      if (utils_color.isColor(this.color)) {
-        classes["vs-divider-text-".concat(this.color)] = true;
-      }
-
-      return classes;
-    }
-  }
-});
-// CONCATENATED MODULE: ./node_modules/vue-loader/lib/template-compiler?{"id":"data-v-0866d5f2","hasScoped":false,"optionsId":"2","buble":{"transforms":{}}}!./node_modules/vue-loader/lib/selector.js?type=template&index=0!./src/components/vsDivider/vsDivider.vue
-var vsDivider_render = function () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{staticClass:"vs-component vs-divider"},[_c('span',{staticClass:"vs-divider-border after",class:_vm.borderClass,style:(_vm.afterStyle)}),_vm._v(" "),( _vm.icon || _vm.$slots.default)?_c('span',{staticClass:"vs-divider-text",style:({
-      'color': _vm.textColor
-    })},[(!_vm.icon)?[_vm._t("default")]:_c('i',{staticClass:"material-icons icon-divider notranslate",attrs:{"translate":"no"}},[_vm._v("\n      "+_vm._s(_vm.icon)+"\n    ")])],2):_vm._e(),_vm._v(" "),_c('span',{staticClass:"vs-divider-border before",class:_vm.borderClass,style:(_vm.beforeStyle)})])}
-var vsDivider_staticRenderFns = []
-
-// CONCATENATED MODULE: ./src/components/vsDivider/vsDivider.vue
-/* script */
-
-
-/* template */
-
-/* template functional */
-var vsDivider_vue_template_functional_ = false
-/* styles */
-var vsDivider_vue_styles_ = null
-/* scopeId */
-var vsDivider_vue_scopeId_ = null
-/* moduleIdentifier (server only) */
-var vsDivider_vue_module_identifier_ = null
-
-var vsDivider_Component = normalizeComponent(
-  vsDivider,
-  vsDivider_render,
-  vsDivider_staticRenderFns,
-  vsDivider_vue_template_functional_,
-  vsDivider_vue_styles_,
-  vsDivider_vue_scopeId_,
-  vsDivider_vue_module_identifier_
-)
-
-/* harmony default export */ var vsDivider_vsDivider = (vsDivider_Component.exports);
-
-// CONCATENATED MODULE: ./src/components/vsDivider/index.js
-
-
-
-/* harmony default export */ var components_vsDivider = (function (Vue) {
-  Vue.component(vsDivider_vsDivider.name, vsDivider_vsDivider);
-});
 // CONCATENATED MODULE: ./node_modules/babel-loader/lib!./node_modules/vue-loader/lib/selector.js?type=script&index=0!./src/components/vsCollapse/vsCollapse.vue
 //
 //
@@ -57327,20 +57881,20 @@ var vsCol_Component = normalizeComponent(
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
  // component not soport SSR
-
-
-
-
- // export { default as vsChips } from './vsChips'
-
-
-
-
-
-
-
-
 
 
 
@@ -59202,21 +59756,6 @@ exports.push([module.i, ".dropdown-group-enter-active,.dropdown-group-leave-acti
 
 /***/ }),
 
-/***/ "vSL8":
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__("I1BE")(false);
-// imports
-
-
-// module
-exports.push([module.i, ".vs-topbar[data-v-65b7a84f]{width:100%;height:auto;display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-pack:distribute;justify-content:space-around;-webkit-box-align:center;-ms-flex-align:center;align-items:center;border-bottom-left-radius:8px;border-bottom-right-radius:8px;-webkit-box-shadow:0 20px 40px -8px rgba(0,0,0,.1);box-shadow:0 20px 40px -8px rgba(0,0,0,.1)}", ""]);
-
-// exports
-
-
-/***/ }),
-
 /***/ "vSd1":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -59424,846 +59963,52 @@ exports.f = Object.getOwnPropertyNames || function getOwnPropertyNames(O) {
 //# sourceMappingURL=vuesax.common.js.map
 
 /***/ }),
-/* 41 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(42)
-/* template */
-var __vue_template__ = __webpack_require__(43)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/ExampleComponent.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-7168fb6a", Component.options)
-  } else {
-    hotAPI.reload("data-v-7168fb6a", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 42 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-    mounted: function mounted() {
-        console.log('Component mounted.');
-    }
-});
-
-/***/ }),
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card card-default" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Example Component")
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              )
-            ])
-          ])
-        ])
-      ])
-    ])
-  }
-]
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-7168fb6a", module.exports)
-  }
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(44);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(45)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../css-loader/index.js!./vuesax.css", function() {
+			var newContent = require("!!../../css-loader/index.js!./vuesax.css");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
 }
 
 /***/ }),
 /* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var disposed = false
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(45)
-/* template */
-var __vue_template__ = __webpack_require__(46)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/partials/LoadingComponent.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-4832d8d2", Component.options)
-  } else {
-    hotAPI.reload("data-v-4832d8d2", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 45 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  data: function data() {
-    return {
-      colorLoading: '#FFA500'
-    };
-  },
-
-  methods: {
-    openLoading: function openLoading() {
-      var _this = this;
-
-      this.$vs.loading({ color: this.colorLoading });
-
-      setTimeout(function () {
-        _this.$vs.loading.close();
-      }, 5000);
-    }
-  }
-});
-
-/***/ }),
-/* 46 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "centerx" },
-    [
-      _c(
-        "vs-button",
-        {
-          attrs: { "vs-type": "line", "vs-color": "warning" },
-          on: { click: _vm.openLoading }
-        },
-        [_vm._v("Register")]
-      )
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-4832d8d2", module.exports)
-  }
-}
-
-/***/ }),
-/* 47 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(48)
-}
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(53)
-/* template */
-var __vue_template__ = __webpack_require__(54)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "resources/assets/js/components/partials/SidebarComponent.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-11ca4512", Component.options)
-  } else {
-    hotAPI.reload("data-v-11ca4512", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 48 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(49);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(51)("2b9d75a3", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-11ca4512\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/stylus-loader/index.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SidebarComponent.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-11ca4512\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/stylus-loader/index.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SidebarComponent.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 49 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(50)(false);
+exports = module.exports = __webpack_require__(5)(false);
 // imports
 
 
 // module
-exports.push([module.i, "\n.con-example-sidebar {\n  height: 100%;\n}\n", ""]);
+exports.push([module.i, "*{margin:0;padding:0;-webkit-box-sizing:border-box;box-sizing:border-box;outline:none;text-transform:none;text-decoration:none}:root{--default:150,150,150;--primary:31,116,255;--danger:255,71,87;--success:70,201,58;--dark:30,30,30;--warning:255,186,0}.vs-component button{border:1px solid hsla(0,0%,100%,0);border-radius:5px;border:0;cursor:pointer;outline:none;-webkit-transition:all .2s ease;transition:all .2s ease;overflow:hidden;position:relative;margin:5px}.material-icons{font-size:1rem}.mt1{margin-top:1px}.mb1{margin-bottom:1px}.ml1{margin-left:1px}.mr1{margin-right:1px}.mt2{margin-top:2px}.mb2{margin-bottom:2px}.ml2{margin-left:2px}.mr2{margin-right:2px}.mt3{margin-top:3px}.mb3{margin-bottom:3px}.ml3{margin-left:3px}.mr3{margin-right:3px}.mt4{margin-top:4px}.mb4{margin-bottom:4px}.ml4{margin-left:4px}.mr4{margin-right:4px}.mt5{margin-top:5px}.mb5{margin-bottom:5px}.ml5{margin-left:5px}.mr5{margin-right:5px}.mt10{margin-top:10px}.mb10{margin-bottom:10px}.ml10{margin-left:10px}.mr10{margin-right:10px}.mt15{margin-top:15px}.mb15{margin-bottom:15px}.ml15{margin-left:15px}.mr15{margin-right:15px}.mt20{margin-top:20px}.mb20{margin-bottom:20px}.ml20{margin-left:20px}.mr20{margin-right:20px}.mt25{margin-top:25px}.mb25{margin-bottom:25px}.ml25{margin-left:25px}.mr25{margin-right:25px}.mt30{margin-top:30px}.mb30{margin-bottom:30px}.ml30{margin-left:30px}.mr30{margin-right:30px}.mt35{margin-top:35px}.mb35{margin-bottom:35px}.ml35{margin-left:35px}.mr35{margin-right:35px}.mt40{margin-top:40px}.mb40{margin-bottom:40px}.ml40{margin-left:40px}.mr40{margin-right:40px}.mt45{margin-top:45px}.mb45{margin-bottom:45px}.ml45{margin-left:45px}.mr45{margin-right:45px}.mt50{margin-top:50px}.mb50{margin-bottom:50px}.ml50{margin-left:50px}.mr50{margin-right:50px}.mt55{margin-top:55px}.mb55{margin-bottom:55px}.ml55{margin-left:55px}.mr55{margin-right:55px}.mt60{margin-top:60px}.mb60{margin-bottom:60px}.ml60{margin-left:60px}.mr60{margin-right:60px}.mt65{margin-top:65px}.mb65{margin-bottom:65px}.ml65{margin-left:65px}.mr65{margin-right:65px}.mt70{margin-top:70px}.mb70{margin-bottom:70px}.ml70{margin-left:70px}.mr70{margin-right:70px}.mt75{margin-top:75px}.mb75{margin-bottom:75px}.ml75{margin-left:75px}.mr75{margin-right:75px}.mt80{margin-top:80px}.mb80{margin-bottom:80px}.ml80{margin-left:80px}.mr80{margin-right:80px}.mt85{margin-top:85px}.mb85{margin-bottom:85px}.ml85{margin-left:85px}.mr85{margin-right:85px}.mt90{margin-top:90px}.mb90{margin-bottom:90px}.ml90{margin-left:90px}.mr90{margin-right:90px}.mt95{margin-top:95px}.mb95{margin-bottom:95px}.ml95{margin-left:95px}.mr95{margin-right:95px}.mt100{margin-top:100px}.mb100{margin-bottom:100px}.ml100{margin-left:100px}.mr100{margin-right:100px}.pt1{padding-top:1px}.pb1{padding-bottom:1px}.pl1{padding-left:1px}.pr1{padding-right:1px}.pt2{padding-top:2px}.pb2{padding-bottom:2px}.pl2{padding-left:2px}.pr2{padding-right:2px}.pt3{padding-top:3px}.pb3{padding-bottom:3px}.pl3{padding-left:3px}.pr3{padding-right:3px}.pt4{padding-top:4px}.pb4{padding-bottom:4px}.pl4{padding-left:4px}.pr4{padding-right:4px}.pt5{padding-top:5px}.pb5{padding-bottom:5px}.pl5{padding-left:5px}.pr5{padding-right:5px}.pt10{padding-top:10px}.pb10{padding-bottom:10px}.pl10{padding-left:10px}.pr10{padding-right:10px}.pt15{padding-top:15px}.pb15{padding-bottom:15px}.pl15{padding-left:15px}.pr15{padding-right:15px}.pt20{padding-top:20px}.pb20{padding-bottom:20px}.pl20{padding-left:20px}.pr20{padding-right:20px}.pt25{padding-top:25px}.pb25{padding-bottom:25px}.pl25{padding-left:25px}.pr25{padding-right:25px}.pt30{padding-top:30px}.pb30{padding-bottom:30px}.pl30{padding-left:30px}.pr30{padding-right:30px}.pt35{padding-top:35px}.pb35{padding-bottom:35px}.pl35{padding-left:35px}.pr35{padding-right:35px}.pt40{padding-top:40px}.pb40{padding-bottom:40px}.pl40{padding-left:40px}.pr40{padding-right:40px}.pt45{padding-top:45px}.pb45{padding-bottom:45px}.pl45{padding-left:45px}.pr45{padding-right:45px}.pt50{padding-top:50px}.pb50{padding-bottom:50px}.pl50{padding-left:50px}.pr50{padding-right:50px}.pt55{padding-top:55px}.pb55{padding-bottom:55px}.pl55{padding-left:55px}.pr55{padding-right:55px}.pt60{padding-top:60px}.pb60{padding-bottom:60px}.pl60{padding-left:60px}.pr60{padding-right:60px}.pt65{padding-top:65px}.pb65{padding-bottom:65px}.pl65{padding-left:65px}.pr65{padding-right:65px}.pt70{padding-top:70px}.pb70{padding-bottom:70px}.pl70{padding-left:70px}.pr70{padding-right:70px}.pt75{padding-top:75px}.pb75{padding-bottom:75px}.pl75{padding-left:75px}.pr75{padding-right:75px}.pt80{padding-top:80px}.pb80{padding-bottom:80px}.pl80{padding-left:80px}.pr80{padding-right:80px}.pt85{padding-top:85px}.pb85{padding-bottom:85px}.pl85{padding-left:85px}.pr85{padding-right:85px}.pt90{padding-top:90px}.pb90{padding-bottom:90px}.pl90{padding-left:90px}.pr90{padding-right:90px}.pt95{padding-top:95px}.pb95{padding-bottom:95px}.pl95{padding-left:95px}.pr95{padding-right:95px}.pt100{padding-top:100px}.pb100{padding-bottom:100px}.pl100{padding-left:100px}.pr100{padding-right:100px}.ft5{font-size:5px}.ft10{font-size:10px}.ft15{font-size:15px}.ft20{font-size:20px}.ft25{font-size:25px}.ft30{font-size:30px}.ft35{font-size:35px}.ft40{font-size:40px}.ft45{font-size:45px}.ft50{font-size:50px}.ft55{font-size:55px}.ft60{font-size:60px}.ft65{font-size:65px}.ft70{font-size:70px}.ft75{font-size:75px}.ft80{font-size:80px}.ft85{font-size:85px}.ft90{font-size:90px}.ft95{font-size:95px}.ft100{font-size:100px}.con-vs-avatar{width:32px;height:32px;border-radius:50%;position:relative;cursor:pointer;display:inline-block;margin:5px}.con-vs-avatar.large{width:50px;height:50px}.con-vs-avatar.small{width:24px;height:24px}.con-vs-avatar.small .vs-avatar-text{font-size:.9375em}.con-vs-avatar .dot-count{position:absolute;top:1px;right:1px;width:7px;height:7px;border-radius:50%;z-index:100}.con-vs-avatar .dot-count.badgeNumber{width:auto;height:auto;top:-3px;right:0;border-radius:4px;padding-left:3px;padding-right:3px;font-size:.625em;color:#fff}.con-vs-avatar .vs-avatar-text{position:absolute;left:50%;top:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.con-vs-avatar .con-img{position:absolute;width:100%;height:100%;overflow:hidden;border-radius:50%}.con-vs-avatar-primary,.dot-count-primary{background:#1f74ff}.vs-avatar-text-primary{color:#1f74ff}.con-vs-avatar-secondary,.dot-count-secondary{background:#7931b1}.vs-avatar-text-secondary{color:#7931b1}.con-vs-avatar-danger,.dot-count-danger{background:#ff4757}.vs-avatar-text-danger{color:#ff4757}.con-vs-avatar-success,.dot-count-success{background:#46c93a}.vs-avatar-text-success{color:#46c93a}.con-vs-avatar-warning,.dot-count-warning{background:#ffba00}.vs-avatar-text-warning{color:#ffba00}.con-vs-avatar-dark,.dot-count-dark{background:#1e1e1e}.vs-avatar-text-dark{color:#1e1e1e}.con-vs-avatar-light,.dot-count-light{background:#f5f5f5}.vs-avatar-text-light{color:#f5f5f5}.vs-breadcrumb{display:-webkit-box;display:-ms-flexbox;display:flex}.vs-breadcrumb .disabled-link{opacity:.5;pointer-events:none}.vs-breadcrumb ol{display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;padding:.75rem 1rem}.vs-breadcrumb a{-webkit-transition:all .2s ease;transition:all .2s ease;color:rgba(0,0,0,.4)}.vs-breadcrumb a:focus,.vs-breadcrumb a:hover{color:rgba(0,0,0,.7);text-decoration:none!important}.vs-breadcrumb li.vs-active{cursor:default}.vs-breadcrumb .separator{color:rgba(0,0,0,.4);padding:0 .5rem}.vs-breadcrumb.material-icons{vertical-align:middle;font-size:inherit}.vs-breadcrumb.vs-align-left{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}.vs-breadcrumb.vs-align-center{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-breadcrumb.vs-align-right{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-primary{color:#1f74ff}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-secondary{color:#7931b1}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-danger{color:#ff4757}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-success{color:#46c93a}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-warning{color:#ffba00}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-dark{color:#1e1e1e}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-light{color:#f5f5f5}.vs-button{-webkit-transition:all .2s ease;transition:all .2s ease;padding:10px;border:0;border-radius:5px;cursor:pointer;position:relative;overflow:hidden;color:#fff;-webkit-box-sizing:border-box;box-sizing:border-box;background:transparent}.vs-button.large{padding:12px;font-size:1em}.vs-button.small{padding:7px;font-size:.7em}.vs-button:disabled{opacity:.5;cursor:default;pointer-events:none}.vs-button .vs-button-icon{z-index:100;display:block;position:relative;font-size:1.125em;-webkit-transition:all .2s ease;transition:all .2s ease}.vs-button .vs-button-backgroundx{border-radius:50%;width:10px;position:absolute;height:10px;z-index:0;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);-moz-transform:translate(-50%,-50%);-webkit-box-shadow:inset 0 0 60px 0 hsla(0,0%,100%,.5);box-shadow:inset 0 0 60px 0 hsla(0,0%,100%,.5)}.vs-button .vs-button-text{position:relative;color:inherit;display:inline-block;-webkit-transition:all .2s ease;transition:all .2s ease}.vs-button-border{padding:9px}.vs-button-border.isActive .vs-button-icon,.vs-button-border.isActive .vs-button-text,.vs-button-flat.isActive .vs-button-icon,.vs-button-flat.isActive .vs-button-text{color:#fff!important}.vs-button-filled:hover{-webkit-box-shadow:0 9px 28px -9px;box-shadow:0 9px 28px -9px}.vs-button-line{padding:9px 10px;border-radius:0;overflow:visible;border-style:solid}.vs-button-line .vs-button-linex{-webkit-transition:all .2s ease;transition:all .2s ease;width:0;position:absolute;left:0;bottom:-2px;height:2px}.vs-button-line:hover .vs-button-icon,.vs-button-line:hover .vs-button-text{-webkit-transform:translateY(2px);transform:translateY(2px)}.vs-button-line:hover .vs-button-linex{width:100%!important}.vs-button-gradient:hover{-webkit-transform:translateY(-2px);transform:translateY(-2px);-webkit-box-shadow:0 8px 25px -8px #aaa;box-shadow:0 8px 25px -8px #aaa}.vs-button-gradient:active{-webkit-transform:translate(0);transform:translate(0);-webkit-box-shadow:0 8px 0 -8px #aaa;box-shadow:0 8px 0 -8px #aaa}.vs-button-relief{padding:10px}.vs-button-relief:active{-webkit-transform:translateY(3px);transform:translateY(3px);-webkit-box-shadow:none!important;box-shadow:none!important}.includeIcon{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;float:left;padding-top:9px;padding-bottom:8px}.vs-button-primary.vs-button-filled{background:#1f74ff}.vs-button-primary.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #1f74ff;box-shadow:0 8px 25px -8px #1f74ff}.vs-button-primary.vs-button-border,.vs-button-primary.vs-button-flat{border:1px solid #1f74ff;background:transparent!important;color:#1f74ff}.vs-button-primary.vs-button-border .vs-button-text.isActive,.vs-button-primary.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-primary.vs-button-border:hover,.vs-button-primary.vs-button-flat:hover{background:rgba(31,116,255,.08)!important}.vs-button-primary.vs-button-border .vs-button-backgroundx,.vs-button-primary.vs-button-flat .vs-button-backgroundx{background:#1f74ff;-webkit-box-shadow:inset 0 0 60px 0 #1f74ff;box-shadow:inset 0 0 60px 0 #1f74ff}.vs-button-primary.vs-button-flat{border:none!important}.vs-button-primary.vs-button-line{color:#1f74ff;border-color:rgba(31,116,255,.2)}.vs-button-primary.vs-button-line .vs-button-linex{background:#1f74ff}.vs-button-primary.vs-button-gradient{background:linear-gradient(30deg,#1f74ff,#3a1fff)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-primary.vs-button-relief{background:#1f74ff;-webkit-box-shadow:0 3px 0 0 #004cc8;box-shadow:0 3px 0 0 #004cc8}.vs-button-secondary.vs-button-filled{background:#7931b1}.vs-button-secondary.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #7931b1;box-shadow:0 8px 25px -8px #7931b1}.vs-button-secondary.vs-button-border,.vs-button-secondary.vs-button-flat{border:1px solid #7931b1;background:transparent!important;color:#7931b1}.vs-button-secondary.vs-button-border .vs-button-text.isActive,.vs-button-secondary.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-secondary.vs-button-border:hover,.vs-button-secondary.vs-button-flat:hover{background:rgba(121,49,177,.08)!important}.vs-button-secondary.vs-button-border .vs-button-backgroundx,.vs-button-secondary.vs-button-flat .vs-button-backgroundx{background:#7931b1;-webkit-box-shadow:inset 0 0 60px 0 #7931b1;box-shadow:inset 0 0 60px 0 #7931b1}.vs-button-secondary.vs-button-flat{border:none!important}.vs-button-secondary.vs-button-line{color:#7931b1;border-color:rgba(121,49,177,.2)}.vs-button-secondary.vs-button-line .vs-button-linex{background:#7931b1}.vs-button-secondary.vs-button-gradient{background:linear-gradient(30deg,#7931b1,#b131a9)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-secondary.vs-button-relief{background:#7931b1;-webkit-box-shadow:0 3px 0 0 #55227c;box-shadow:0 3px 0 0 #55227c}.vs-button-danger.vs-button-filled{background:#ff4757}.vs-button-danger.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #ff4757;box-shadow:0 8px 25px -8px #ff4757}.vs-button-danger.vs-button-border,.vs-button-danger.vs-button-flat{border:1px solid #ff4757;background:transparent!important;color:#ff4757}.vs-button-danger.vs-button-border .vs-button-text.isActive,.vs-button-danger.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-danger.vs-button-border:hover,.vs-button-danger.vs-button-flat:hover{background:rgba(255,71,87,.08)!important}.vs-button-danger.vs-button-border .vs-button-backgroundx,.vs-button-danger.vs-button-flat .vs-button-backgroundx{background:#ff4757;-webkit-box-shadow:inset 0 0 60px 0 #ff4757;box-shadow:inset 0 0 60px 0 #ff4757}.vs-button-danger.vs-button-flat{border:none!important}.vs-button-danger.vs-button-line{color:#ff4757;border-color:rgba(255,71,87,.2)}.vs-button-danger.vs-button-line .vs-button-linex{background:#ff4757}.vs-button-danger.vs-button-gradient{background:linear-gradient(30deg,#ff4757,#c40052)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-danger.vs-button-relief{background:#ff4757;-webkit-box-shadow:0 3px 0 0 #e40014;box-shadow:0 3px 0 0 #e40014}.vs-button-success.vs-button-filled{background:#46c93a}.vs-button-success.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #46c93a;box-shadow:0 8px 25px -8px #46c93a}.vs-button-success.vs-button-border,.vs-button-success.vs-button-flat{border:1px solid #46c93a;background:transparent!important;color:#46c93a}.vs-button-success.vs-button-border .vs-button-text.isActive,.vs-button-success.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-success.vs-button-border:hover,.vs-button-success.vs-button-flat:hover{background:rgba(70,201,58,.08)!important}.vs-button-success.vs-button-border .vs-button-backgroundx,.vs-button-success.vs-button-flat .vs-button-backgroundx{background:#46c93a;-webkit-box-shadow:inset 0 0 60px 0 #46c93a;box-shadow:inset 0 0 60px 0 #46c93a}.vs-button-success.vs-button-flat{border:none!important}.vs-button-success.vs-button-line{color:#46c93a;border-color:rgba(70,201,58,.2)}.vs-button-success.vs-button-line .vs-button-linex{background:#46c93a}.vs-button-success.vs-button-gradient{background:linear-gradient(30deg,#46c93a,#3ac976)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-success.vs-button-relief{background:#46c93a;-webkit-box-shadow:0 3px 0 0 #308e27;box-shadow:0 3px 0 0 #308e27}.vs-button-warning.vs-button-filled{background:#ffba00}.vs-button-warning.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #ffba00;box-shadow:0 8px 25px -8px #ffba00}.vs-button-warning.vs-button-border,.vs-button-warning.vs-button-flat{border:1px solid #ffba00;background:transparent!important;color:#ffba00}.vs-button-warning.vs-button-border .vs-button-text.isActive,.vs-button-warning.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-warning.vs-button-border:hover,.vs-button-warning.vs-button-flat:hover{background:rgba(255,186,0,.08)!important}.vs-button-warning.vs-button-border .vs-button-backgroundx,.vs-button-warning.vs-button-flat .vs-button-backgroundx{background:#ffba00;-webkit-box-shadow:inset 0 0 60px 0 #ffba00;box-shadow:inset 0 0 60px 0 #ffba00}.vs-button-warning.vs-button-flat{border:none!important}.vs-button-warning.vs-button-line{color:#ffba00;border-color:rgba(255,186,0,.2)}.vs-button-warning.vs-button-line .vs-button-linex{background:#ffba00}.vs-button-warning.vs-button-gradient{background:linear-gradient(30deg,#ffba00,#c4ff00)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-warning.vs-button-relief{background:#ffba00;-webkit-box-shadow:0 3px 0 0 #b38200;box-shadow:0 3px 0 0 #b38200}.vs-button-dark.vs-button-filled{background:#1e1e1e}.vs-button-dark.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #1e1e1e;box-shadow:0 8px 25px -8px #1e1e1e}.vs-button-dark.vs-button-border,.vs-button-dark.vs-button-flat{border:1px solid #1e1e1e;background:transparent!important;color:#1e1e1e}.vs-button-dark.vs-button-border .vs-button-text.isActive,.vs-button-dark.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-dark.vs-button-border:hover,.vs-button-dark.vs-button-flat:hover{background:rgba(30,30,30,.08)!important}.vs-button-dark.vs-button-border .vs-button-backgroundx,.vs-button-dark.vs-button-flat .vs-button-backgroundx{background:#1e1e1e;-webkit-box-shadow:inset 0 0 60px 0 #1e1e1e;box-shadow:inset 0 0 60px 0 #1e1e1e}.vs-button-dark.vs-button-flat{border:none!important}.vs-button-dark.vs-button-line{color:#1e1e1e;border-color:rgba(30,30,30,.2)}.vs-button-dark.vs-button-line .vs-button-linex{background:#1e1e1e}.vs-button-dark.vs-button-gradient{background:linear-gradient(30deg,#1e1e1e,#626262)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-dark.vs-button-relief{background:#1e1e1e;background:#4b4b4b;-webkit-box-shadow:0 3px 0 0 #151515;box-shadow:0 3px 0 0 #151515}.vs-button-light.vs-button-filled{background:#f5f5f5}.vs-button-light.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #f5f5f5;box-shadow:0 8px 25px -8px #f5f5f5}.vs-button-light.vs-button-border,.vs-button-light.vs-button-flat{border:1px solid #f5f5f5;background:transparent!important;color:#f5f5f5}.vs-button-light.vs-button-border .vs-button-text.isActive,.vs-button-light.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-light.vs-button-border:hover,.vs-button-light.vs-button-flat:hover{background:hsla(0,0%,96%,.08)!important}.vs-button-light.vs-button-border .vs-button-backgroundx,.vs-button-light.vs-button-flat .vs-button-backgroundx{background:#f5f5f5;-webkit-box-shadow:inset 0 0 60px 0 #f5f5f5;box-shadow:inset 0 0 60px 0 #f5f5f5}.vs-button-light.vs-button-flat{border:none!important}.vs-button-light.vs-button-line{color:#f5f5f5;border-color:hsla(0,0%,96%,.2)}.vs-button-light.vs-button-line .vs-button-linex{background:#f5f5f5}.vs-button-light.vs-button-gradient{background:linear-gradient(30deg,#f5f5f5,#f5f5f5)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-light.vs-button-relief{background:#f5f5f5;-webkit-box-shadow:0 3px 0 0 #ababab;box-shadow:0 3px 0 0 #ababab}.vs-divider{width:100%;position:relative;display:block;margin:15px 0;clear:both;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-divider .after,.vs-divider .before{position:relative;display:block;width:100%}.vs-divider .vs-divider-text{cursor:default;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;position:relative;white-space:nowrap;background:#fff;padding-left:12px;padding-right:12px;font-size:.9375em}.vs-divider i.icon-divider{font-size:1.25em}.vs-divider-border-primary{border-top-color:#1f74ff}.vs-divider-text-primary{color:#1f74ff}.vs-divider-border-secondary{border-top-color:#7931b1}.vs-divider-text-secondary{color:#7931b1}.vs-divider-border-danger{border-top-color:#ff4757}.vs-divider-text-danger{color:#ff4757}.vs-divider-border-success{border-top-color:#46c93a}.vs-divider-text-success{color:#46c93a}.vs-divider-border-warning{border-top-color:#ffba00}.vs-divider-text-warning{color:#ffba00}.vs-divider-border-dark{border-top-color:#1e1e1e}.vs-divider-text-dark{color:#1e1e1e}.vs-divider-border-light{border-top-color:#f5f5f5}.vs-divider-text-light{color:#f5f5f5}.fade-select-enter-active{-webkit-transition:opacity .2s,-webkit-transform .2s;transition:opacity .2s,-webkit-transform .2s;transition:transform .2s,opacity .2s;transition:transform .2s,opacity .2s,-webkit-transform .2s}.fade-select-leave-active{-webkit-transition:opacity .15s,-webkit-transform .15s;transition:opacity .15s,-webkit-transform .15s;transition:transform .15s,opacity .15s;transition:transform .15s,opacity .15s,-webkit-transform .15s}.fade-select-enter,.fade-select-leave-to{opacity:0;-webkit-transform:translate(0) scale(.95)!important;transform:translate(0) scale(.95)!important;-webkit-box-shadow:0 10px 0 -5px transparent;box-shadow:0 10px 0 -5px transparent}.con-select{position:relative;width:200px;clear:both}.con-select .icon-select{position:absolute;right:5px;font-size:1.0625em;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);-webkit-transition:all .2s ease;transition:all .2s ease}.con-select.activeOptions:not(.autocompletex) .input-select{opacity:0;-webkit-transform:scale(1.1);transform:scale(1.1)}.con-select.activeOptions .icon-select{-webkit-transform:translateY(-50%) rotate(-180deg)!important;transform:translateY(-50%) rotate(-180deg)!important}.input-select{width:100%;padding:7px;border-radius:5px;border:1px solid rgba(0,0,0,.1);-webkit-transition:all .2s ease;transition:all .2s ease;padding-right:20px;cursor:pointer;overflow:hidden;text-overflow:ellipsis}.input-select,.input-select-con{position:relative}.input-select-label{padding-left:5px;font-size:.85rem;color:rgba(0,0,0,.7)}.con-text-validation{position:relative;font-size:.65rem;overflow:hidden;-webkit-transition:all .2s ease;transition:all .2s ease}.con-text-validation .span-text-validation{padding:2px 4px;padding-bottom:4px;display:block}.scrollx ul{padding-right:4px}.vs-select-options{padding:4px;padding-top:6px;padding-left:5px;padding-bottom:6px;-webkit-box-shadow:0 5px 20px -5px rgba(0,0,0,.1);box-shadow:0 5px 20px -5px rgba(0,0,0,.1);border-radius:5px;position:absolute;z-index:40000;background:#fff}.vs-select-options ul{max-height:260px;overflow:auto;padding-left:0!important;padding:0}.vs-select-options ul li{margin:0}.vs-select-options ul .vs-select-item-btn{text-align:left;color:rgba(0,0,0,.8);padding:7px;border:0;position:relative;border-top:1px solid #fff;border-bottom:1px solid #fff;-webkit-transition:all .3s ease;transition:all .3s ease;margin:0!important}.vs-select-options ul .vs-select-item-btn .icon-item{position:absolute;font-size:1em;left:5px;-webkit-transform:translate(-100%,-50%);transform:translate(-100%,-50%);opacity:0;-webkit-transition:all .2s ease;transition:all .2s ease;top:50%}.vs-select-options ul .vs-select-item-btn:focus,.vs-select-options ul .vs-select-item-btn:hover{background:#f5f5f5}.vs-select-options ul .vs-select-item-btn.con-icon.activex{padding-left:25px}.vs-select-options ul .vs-select-item-btn.con-icon.activex .icon-item{opacity:1;-webkit-transform:translateY(-50%);transform:translateY(-50%)}.vs-select-primary .vs-select-item-btn.activex{background:rgba(31,116,255,.1)!important;color:#1f74ff;font-weight:700}.input-select-label-primary--active,.input-select-validate-primary .input-select-label{color:#1f74ff}.input-select-validate-primary .input-select-con .input-select{border-color:#1f74ff}.input-select-validate-primary .input-select-con .icon-select{color:#1f74ff}.vs-select-secondary .vs-select-item-btn.activex{background:rgba(121,49,177,.1)!important;color:#7931b1;font-weight:700}.input-select-label-secondary--active,.input-select-validate-secondary .input-select-label{color:#7931b1}.input-select-validate-secondary .input-select-con .input-select{border-color:#7931b1}.input-select-validate-secondary .input-select-con .icon-select{color:#7931b1}.vs-select-danger .vs-select-item-btn.activex{background:rgba(255,71,87,.1)!important;color:#ff4757;font-weight:700}.input-select-label-danger--active,.input-select-validate-danger .input-select-label{color:#ff4757}.input-select-validate-danger .input-select-con .input-select{border-color:#ff4757}.input-select-validate-danger .input-select-con .icon-select{color:#ff4757}.vs-select-success .vs-select-item-btn.activex{background:rgba(70,201,58,.1)!important;color:#46c93a;font-weight:700}.input-select-label-success--active,.input-select-validate-success .input-select-label{color:#46c93a}.input-select-validate-success .input-select-con .input-select{border-color:#46c93a}.input-select-validate-success .input-select-con .icon-select{color:#46c93a}.vs-select-warning .vs-select-item-btn.activex{background:rgba(255,186,0,.1)!important;color:#ffba00;font-weight:700}.input-select-label-warning--active,.input-select-validate-warning .input-select-label{color:#ffba00}.input-select-validate-warning .input-select-con .input-select{border-color:#ffba00}.input-select-validate-warning .input-select-con .icon-select{color:#ffba00}.vs-select-dark .vs-select-item-btn.activex{background:rgba(30,30,30,.1)!important;color:#1e1e1e;font-weight:700}.input-select-label-dark--active,.input-select-validate-dark .input-select-label{color:#1e1e1e}.input-select-validate-dark .input-select-con .input-select{border-color:#1e1e1e}.input-select-validate-dark .input-select-con .icon-select{color:#1e1e1e}.vs-select-light .vs-select-item-btn.activex{background:hsla(0,0%,96%,.1)!important;color:#f5f5f5;font-weight:700}.input-select-label-light--active,.input-select-validate-light .input-select-label{color:#f5f5f5}.input-select-validate-light .input-select-con .input-select{border-color:#f5f5f5}.input-select-validate-light .input-select-con .icon-select{color:#f5f5f5}.vs-select-item-btn{background:transparent;padding:5px;width:100%;margin:0!important;text-transform:capitalize}.vs-select-item-btn.disabledx{opacity:.4}.vs-select-item-btn span.searchx{background:rgba(0,0,0,.07);border-bottom:1px solid rgba(0,0,0,.3);font-weight:700;color:inherit}.vs-switch{border-radius:12px;border:0;min-width:42px;height:22px;position:relative;cursor:pointer;-webkit-transition:all .2s ease;transition:all .2s ease;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-switch .input-switch{position:absolute;width:100%;height:100%;z-index:200;opacity:0;cursor:pointer}.vs-switch .text-switch{position:absolute;display:block;font-size:.625em;opacity:0;-webkit-transition:all .2s ease;transition:all .2s ease;display:-webkit-box;display:-ms-flexbox;display:flex;white-space:nowrap}.vs-switch .text-switch,.vs-switch .text-switch .icons-switch{-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;overflow:hidden}.vs-switch .text-switch .icons-switch{font-size:.8rem;display:-webkit-box;display:-ms-flexbox;display:flex;max-width:16px;padding:0 2px}.vs-switch .text-switch.text-on{padding-left:6px;left:0;color:#fff;-webkit-transform:translate(10px);transform:translate(10px)}.vs-switch .text-switch.text-off{right:0;padding-right:5px;color:#a0a0a0;-webkit-transform:translate(-10px);transform:translate(-10px)}.vs-switch .text-switch.active-text{opacity:1;-webkit-transform:translate(0);transform:translate(0)}.vs-switch:disabled{opacity:.5}.vs-switch .vs-circle-switch{display:block;width:18px;height:18px;position:absolute;background:#fff;left:2px;top:2px;border-radius:50%;-webkit-transition:all .25s ease;transition:all .25s ease;-webkit-box-shadow:0 0 4px 0 rgba(0,0,0,.1);box-shadow:0 0 4px 0 rgba(0,0,0,.1)}.vs-switch:active:not(.vs-circle-switch) .vs-circle-switch{width:24px;border-radius:15px}.vs-switch.vs-switch-active:active .vs-circle-switch{width:24px;margin-left:calc(100% - 29px)}.vs-switch.vs-switch-active .vs-circle-switch{margin-left:calc(100% - 22px)}.vs-switch-primary{background:#e2e2e2}.vs-switch-primary.vs-switch-active{background:#1f74ff}.vs-switch-secondary{background:#e2e2e2}.vs-switch-secondary.vs-switch-active{background:#7931b1}.vs-switch-danger{background:#e2e2e2}.vs-switch-danger.vs-switch-active{background:#ff4757}.vs-switch-success{background:#e2e2e2}.vs-switch-success.vs-switch-active{background:#46c93a}.vs-switch-warning{background:#e2e2e2}.vs-switch-warning.vs-switch-active{background:#ffba00}.vs-switch-dark{background:#e2e2e2}.vs-switch-dark.vs-switch-active{background:#1e1e1e}.vs-switch-light{background:#e2e2e2}.vs-switch-light.vs-switch-active{background:#f5f5f5}.con-vs-checkbox{position:relative;display:block;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-left:5px;margin-right:5px}.con-vs-checkbox input[type=checkbox]{position:absolute;width:100%;height:100%;opacity:0;z-index:200;cursor:pointer;background:#55d775}.con-vs-checkbox input[type=checkbox]:active:checked+span.checkbox_x span._check{-webkit-transform:translate(3px)!important;transform:translate(3px)!important}.con-vs-checkbox input[type=checkbox]:active:checked+span.checkbox_x i{-webkit-transform:translate(6px)!important;transform:translate(6px)!important}.con-vs-checkbox input[type=checkbox]:checked+span.checkbox_x{-webkit-transform:rotate(0deg)!important;transform:rotate(0deg)!important}.con-vs-checkbox input[type=checkbox]:checked+span.checkbox_x span._check{-webkit-transform:translate(0);transform:translate(0)}.con-vs-checkbox input[type=checkbox]:checked+span.checkbox_x i{opacity:1;-webkit-transform:translate(0)!important;transform:translate(0)!important;color:#fff!important}.con-vs-checkbox span.checkbox_x{-webkit-transition:all .2s ease;transition:all .2s ease;cursor:pointer;position:relative;display:block;width:20px;height:20px;border-radius:2px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-transform:rotate(-90deg);transform:rotate(-90deg);overflow:hidden;-webkit-box-sizing:border-box;box-sizing:border-box;margin-right:5px}.con-vs-checkbox span.checkbox_x span._check{width:100%;height:100%;position:absolute;left:0;-webkit-transform:translate(100%);transform:translate(100%);-webkit-transform-origin:right;transform-origin:right;-webkit-transition:all .2s ease;transition:all .2s ease;z-index:10}.con-vs-checkbox span.checkbox_x i{-webkit-backface-visibility:visible;backface-visibility:visible;-webkit-transition:all .2s ease-out;transition:all .2s ease-out;z-index:100;font-size:1.125em;opacity:0;-webkit-transform:translate(30px);transform:translate(30px);-webkit-transform-origin:center;transform-origin:center}.vs-checkbox-primary ._check{background:#1f74ff}.vs-checkbox-primary .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-primary input:checked+span.checkbox_x{border:2px solid #1f74ff!important}.vs-checkbox-secondary ._check{background:#7931b1}.vs-checkbox-secondary .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-secondary input:checked+span.checkbox_x{border:2px solid #7931b1!important}.vs-checkbox-danger ._check{background:#ff4757}.vs-checkbox-danger .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-danger input:checked+span.checkbox_x{border:2px solid #ff4757!important}.vs-checkbox-success ._check{background:#46c93a}.vs-checkbox-success .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-success input:checked+span.checkbox_x{border:2px solid #46c93a!important}.vs-checkbox-warning ._check{background:#ffba00}.vs-checkbox-warning .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-warning input:checked+span.checkbox_x{border:2px solid #ffba00!important}.vs-checkbox-dark ._check{background:#1e1e1e}.vs-checkbox-dark .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-dark input:checked+span.checkbox_x{border:2px solid #1e1e1e!important}.vs-checkbox-light ._check{background:#f5f5f5}.vs-checkbox-light .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-light input:checked+span.checkbox_x{border:2px solid #f5f5f5!important}.con-vs-radio{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-radio:hover .vs-radiox-borde{border:2px solid #a0a0a0!important}.con-vs-radio .vs-radiox-labelx{margin-left:5px}.con-vs-radio input[type=radio]{position:absolute;left:0;opacity:0;width:20px}.con-vs-radio input[type=radio]:checked+.vs-radiox{cursor:default}.con-vs-radio input[type=radio]:checked+.vs-radiox .vs-radiox-circle{-webkit-transform:scale(1)!important;transform:scale(1)!important;opacity:1!important}.con-vs-radio input[type=radio]:checked+.vs-radiox .vs-radiox-borde{opacity:0;-webkit-transform:scale(.3)!important;transform:scale(.3)!important}.con-vs-radio input[type=radio]:active+.vs-radiox .vs-radiox-borde{-webkit-transform:scale(1.1)!important;transform:scale(1.1)!important}.con-vs-radio input[type=radio]:disabled+.vs-radiox{opacity:.4!important}.con-vs-radio input[type=radio]:disabled+.vs-radiox .vs-radiox-circle{pointer-events:none}.con-vs-radio input[type=radio]:disabled+.vs-radiox .vs-radiox-borde{border:2px solid #b4b4b4!important;background:#d2d2d2;pointer-events:none}.con-vs-radio .vs-radiox{width:18px;height:18px;position:relative;display:block;border-radius:50%;cursor:pointer}.con-vs-radio .vs-radiox .vs-radiox-borde{background:transparent}.con-vs-radio .vs-radiox .vs-radiox-borde,.con-vs-radio .vs-radiox .vs-radiox-circle{border-radius:50%;width:100%;height:100%;position:absolute;left:0;-webkit-transition:all .25s ease;transition:all .25s ease;top:0}.con-vs-radio .vs-radiox .vs-radiox-circle{-webkit-transform:scale(.1);transform:scale(.1);opacity:0}.vs-radio-primary .vs-radiox-circle{background:#1f74ff;-webkit-box-shadow:0 3px 12px 0 rgba(31,116,255,.4);box-shadow:0 3px 12px 0 rgba(31,116,255,.4)}.vs-radio-secondary .vs-radiox-circle{background:#7931b1;-webkit-box-shadow:0 3px 12px 0 rgba(121,49,177,.4);box-shadow:0 3px 12px 0 rgba(121,49,177,.4)}.vs-radio-danger .vs-radiox-circle{background:#ff4757;-webkit-box-shadow:0 3px 12px 0 rgba(255,71,87,.4);box-shadow:0 3px 12px 0 rgba(255,71,87,.4)}.vs-radio-success .vs-radiox-circle{background:#46c93a;-webkit-box-shadow:0 3px 12px 0 rgba(70,201,58,.4);box-shadow:0 3px 12px 0 rgba(70,201,58,.4)}.vs-radio-warning .vs-radiox-circle{background:#ffba00;-webkit-box-shadow:0 3px 12px 0 rgba(255,186,0,.4);box-shadow:0 3px 12px 0 rgba(255,186,0,.4)}.vs-radio-dark .vs-radiox-circle{background:#1e1e1e;-webkit-box-shadow:0 3px 12px 0 rgba(30,30,30,.4);box-shadow:0 3px 12px 0 rgba(30,30,30,.4)}.vs-radio-light .vs-radiox-circle{background:#f5f5f5;-webkit-box-shadow:0 3px 12px 0 hsla(0,0%,96%,.4);box-shadow:0 3px 12px 0 hsla(0,0%,96%,.4)}.placeholderx-enter,.placeholderx-leave-to{opacity:0;-webkit-transform:translate(15px)!important;transform:translate(15px)!important}.icon-validate-enter,.icon-validate-leave-to{opacity:0;-webkit-transform:scale(.5)!important;transform:scale(.5)!important}.vs-con-input-label{position:relative;-webkit-transition:all .3s ease;transition:all .3s ease;width:200px}.vs-con-input-label.is-label-palcehoder{margin-top:17px}.vs-con-input-label .vs-con-input{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;position:relative;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-con-input-label .vs-con-input .vs-inputx{color:inherit;position:relative;padding:.4rem;border-radius:5px;border:1px solid rgba(0,0,0,.2);-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.15);box-shadow:0 0 0 0 rgba(0,0,0,.15);-webkit-transition:all .3s ease;transition:all .3s ease;width:100%}.vs-con-input-label .vs-con-input .vs-inputx:focus{-webkit-box-shadow:0 3px 10px 0 rgba(0,0,0,.15);box-shadow:0 3px 10px 0 rgba(0,0,0,.15)}.vs-con-input-label .vs-con-input .vs-inputx.hasValue+.vs-placeholder-label,.vs-con-input-label .vs-con-input .vs-inputx:focus+.vs-placeholder-label{-webkit-transform:translate(-3px,-90%)!important;transform:translate(-3px,-90%)!important;font-size:.7rem;padding-left:.5rem!important}.vs-con-input-label .vs-con-input .vs-inputx:focus+.input-span-placeholder{-webkit-transform:translate(5px);transform:translate(5px)}.vs-con-input-label .vs-con-input .vs-inputx.hasIcon,.vs-con-input-label .vs-con-input .vs-inputx.hasIcon+.input-span-placeholder{padding-left:32px}.vs-con-input-label .vs-con-input .vs-inputx.icon-after-input{padding-left:.4rem!important;padding-right:28px}.vs-con-input-label .vs-con-input .vs-inputx.icon-after-input+.input-span-placeholder{padding-left:.4rem;padding-right:28px}.vs-con-input-label .vs-con-input .input-span-placeholder{-webkit-transition:all .2s ease;transition:all .2s ease;border-radius:5px;left:0;padding:.4rem;padding-left:.55rem;width:100%;-webkit-box-sizing:border-box;box-sizing:border-box;overflow:hidden;font-size:.85rem;white-space:nowrap;cursor:text;top:2px}.vs-con-input-label .vs-con-input .icon-inputx,.vs-con-input-label .vs-con-input .input-span-placeholder{position:absolute;color:rgba(0,0,0,.4);-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.vs-con-input-label .vs-con-input .icon-inputx{left:5px;z-index:100;font-size:1.1rem;border-right:1px solid rgba(0,0,0,.1);padding-right:3px;cursor:default;top:8px}.vs-con-input-label .vs-con-input .icon-inputx.icon-after{left:auto;right:5px;border-left:1px solid rgba(0,0,0,.1);border-right:0;padding-left:3px;padding-right:0}.vs-con-input-label .vs-input-label{padding-left:5px;font-size:.85rem;color:rgba(0,0,0,.7)}.vs-con-input-label .con-text-validation{position:relative;font-size:.65rem;overflow:hidden;-webkit-transition:all .2s ease;transition:all .2s ease}.vs-con-input-label .con-text-validation .span-text-validation{padding:2px 4px;padding-bottom:4px;display:block}.vs-con-input-label .input-icon-validate{position:absolute;top:0;right:0;font-size:1.1rem;height:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;padding:0 4px;border-radius:0 5px 5px 0;-webkit-transition:all .2s ease;transition:all .2s ease}.vs-input-primary .vs-inputx:focus{border:1px solid #1f74ff!important}.vs-input-primary.isFocus .vs-input-label,.vs-input-primary .vs-inputx:focus~.icon-inputx,.vs-input-primary .vs-inputx:focus~.vs-placeholder-label{color:#1f74ff}.span-text-validation-primary{color:#1f74ff!important}.input-icon-validate-primary .vs-inputx,.input-icon-validate-primary .vs-inputx:focus{border:1px solid #1f74ff!important}.input-icon-validate-primary .input-icon-validate{background:rgba(31,116,255,.2);color:#1f74ff}.vs-input-secondary .vs-inputx:focus{border:1px solid #7931b1!important}.vs-input-secondary.isFocus .vs-input-label,.vs-input-secondary .vs-inputx:focus~.icon-inputx,.vs-input-secondary .vs-inputx:focus~.vs-placeholder-label{color:#7931b1}.span-text-validation-secondary{color:#7931b1!important}.input-icon-validate-secondary .vs-inputx,.input-icon-validate-secondary .vs-inputx:focus{border:1px solid #7931b1!important}.input-icon-validate-secondary .input-icon-validate{background:rgba(121,49,177,.2);color:#7931b1}.vs-input-danger .vs-inputx:focus{border:1px solid #ff4757!important}.vs-input-danger.isFocus .vs-input-label,.vs-input-danger .vs-inputx:focus~.icon-inputx,.vs-input-danger .vs-inputx:focus~.vs-placeholder-label{color:#ff4757}.span-text-validation-danger{color:#ff4757!important}.input-icon-validate-danger .vs-inputx,.input-icon-validate-danger .vs-inputx:focus{border:1px solid #ff4757!important}.input-icon-validate-danger .input-icon-validate{background:rgba(255,71,87,.2);color:#ff4757}.vs-input-success .vs-inputx:focus{border:1px solid #46c93a!important}.vs-input-success.isFocus .vs-input-label,.vs-input-success .vs-inputx:focus~.icon-inputx,.vs-input-success .vs-inputx:focus~.vs-placeholder-label{color:#46c93a}.span-text-validation-success{color:#46c93a!important}.input-icon-validate-success .vs-inputx,.input-icon-validate-success .vs-inputx:focus{border:1px solid #46c93a!important}.input-icon-validate-success .input-icon-validate{background:rgba(70,201,58,.2);color:#46c93a}.vs-input-warning .vs-inputx:focus{border:1px solid #ffba00!important}.vs-input-warning.isFocus .vs-input-label,.vs-input-warning .vs-inputx:focus~.icon-inputx,.vs-input-warning .vs-inputx:focus~.vs-placeholder-label{color:#ffba00}.span-text-validation-warning{color:#ffba00!important}.input-icon-validate-warning .vs-inputx,.input-icon-validate-warning .vs-inputx:focus{border:1px solid #ffba00!important}.input-icon-validate-warning .input-icon-validate{background:rgba(255,186,0,.2);color:#ffba00}.vs-input-dark .vs-inputx:focus{border:1px solid #1e1e1e!important}.vs-input-dark.isFocus .vs-input-label,.vs-input-dark .vs-inputx:focus~.icon-inputx,.vs-input-dark .vs-inputx:focus~.vs-placeholder-label{color:#1e1e1e}.span-text-validation-dark{color:#1e1e1e!important}.input-icon-validate-dark .vs-inputx,.input-icon-validate-dark .vs-inputx:focus{border:1px solid #1e1e1e!important}.input-icon-validate-dark .input-icon-validate{background:rgba(30,30,30,.2);color:#1e1e1e}.vs-input-light .vs-inputx:focus{border:1px solid #f5f5f5!important}.vs-input-light.isFocus .vs-input-label,.vs-input-light .vs-inputx:focus~.icon-inputx,.vs-input-light .vs-inputx:focus~.vs-placeholder-label{color:#f5f5f5}.span-text-validation-light{color:#f5f5f5!important}.input-icon-validate-light .vs-inputx,.input-icon-validate-light .vs-inputx:focus{border:1px solid #f5f5f5!important}.input-icon-validate-light .input-icon-validate{background:hsla(0,0%,96%,.2);color:#f5f5f5}.fade-tab-enter-active,.fade-tab-leave-active{-webkit-transition:all .3s;transition:all .3s}.fade-tab-enter,.fade-tab-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0)}.fade-tab-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(100%,0,0);transform:translate3d(100%,0,0)}.fade-tab-invert-enter-active,.fade-tab-invert-leave-active{-webkit-transition:all .3s;transition:all .3s}.fade-tab-invert-enter,.fade-tab-invert-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(100%,0,0);transform:translate3d(100%,0,0)}.fade-tab-invert-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0)}.fade-tab-vertical-enter-active,.fade-tab-vertical-leave-active{-webkit-transition:all .3s;transition:all .3s}.fade-tab-vertical-enter{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0)}.fade-tab-vertical-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(0,-100%,0);transform:translate3d(0,-100%,0)}.fade-tab-vertical-invert-enter-active,.fade-tab-vertical-invert-leave-active{-webkit-transition:all .3s;transition:all .3s}.fade-tab-vertical-invert-enter{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(0,-100%,0);transform:translate3d(0,-100%,0)}.fade-tab-vertical-invert-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(0,100%,0)!important;transform:translate3d(0,100%,0)!important}.con-vs-tabs{width:100%;overflow:hidden;position:relative}.con-vs-tabs .con-slot-tabs{position:relative;display:block;overflow:hidden}.con-vs-tabs .con-ul-tabs{position:relative}.con-vs-tabs .con-ul-tabs .ul-tabs{width:100%;padding-left:0;position:relative;-webkit-box-shadow:0 0 25px 0 rgba(0,0,0,.04);box-shadow:0 0 25px 0 rgba(0,0,0,.04)}.con-vs-tabs .con-ul-tabs .ul-tabs.ul-tabs-center{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-tabs .con-ul-tabs .ul-tabs.ul-tabs-right{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end}.con-vs-tabs .con-ul-tabs .ul-tabs.ul-tabs-fixed{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.con-vs-tabs .con-ul-tabs .ul-tabs.ul-tabs-fixed li{width:100%}.con-vs-tabs .con-ul-tabs .ul-tabs li{display:block}.con-vs-tabs .con-ul-tabs .ul-tabs li button{-webkit-box-sizing:border-box;box-sizing:border-box;display:block;position:relative;width:100%;background:transparent;margin:0;padding:10px;border:0;cursor:pointer;-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-tabs .con-ul-tabs .ul-tabs .activeChild button:not(:disabled),.con-vs-tabs .con-ul-tabs .ul-tabs li button:hover:not(:disabled){color:inherit}.con-vs-tabs .con-ul-tabs .ul-tabs .activeChild button{padding-top:8px;padding-bottom:12px}.con-vs-tabs .con-ul-tabs .line-vs-tabs{width:100px;height:2px;display:block;position:absolute;-webkit-transition:all .2s ease;transition:all .2s ease;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:left,right}.vs-tabs-position-bottom,.vs-tabs-position-top .ul-tabs{display:-webkit-box;display:-ms-flexbox;display:flex}.vs-tabs-position-bottom{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column}.vs-tabs-position-bottom .ul-tabs{border-top:1px solid rgba(0,0,0,.05);border-bottom:0!important}.vs-tabs-position-bottom .con-ul-tabs{-webkit-box-ordinal-group:3;-ms-flex-order:2;order:2}.vs-tabs-position-bottom .line-vs-tabs{top:0}.vs-tabs-position-left{display:-webkit-box;display:-ms-flexbox;display:flex}.vs-tabs-position-left .line-vs-tabs{left:auto!important;right:0}.vs-tabs-position-left .con-ul-tabs{float:left;height:100%;display:block}.vs-tabs-position-left .ul-tabs{display:block;width:auto;border-bottom:0!important;border-right:1px solid rgba(0,0,0,.05)}.vs-tabs-position-left .activeChild button{padding:10px 8px 10px 12px!important}.vs-tabs-position-right{display:-webkit-box;display:-ms-flexbox;display:flex}.vs-tabs-position-right .con-slot-tabs{width:100%}.vs-tabs-position-right .con-ul-tabs{float:left;height:100%;display:block;-webkit-box-ordinal-group:3;-ms-flex-order:2;order:2}.vs-tabs-position-right .ul-tabs{display:block;width:auto;border-bottom:0!important;border-left:1px solid rgba(0,0,0,.05)}.vs-tabs-position-right .activeChild button{padding:10px 12px 10px 8px!important}.vs-tabs-primary button:disabled{opacity:.5;cursor:default!important}.vs-tabs-primary .activeChild button,.vs-tabs-primary button:not(:disabled):hover{color:#1f74ff!important}.vs-tabs-primary .activeChild button:active{background:#000}.vs-tabs-primary .line-vs-tabs{background:linear-gradient(30deg,#1f74ff,rgba(31,116,255,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(31,116,255,.4)!important;box-shadow:0 0 8px 0 rgba(31,116,255,.4)!important}.vs-tabs-secondary button:disabled{opacity:.5;cursor:default!important}.vs-tabs-secondary .activeChild button,.vs-tabs-secondary button:not(:disabled):hover{color:#7931b1!important}.vs-tabs-secondary .activeChild button:active{background:#000}.vs-tabs-secondary .line-vs-tabs{background:linear-gradient(30deg,#7931b1,rgba(121,49,177,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(121,49,177,.4)!important;box-shadow:0 0 8px 0 rgba(121,49,177,.4)!important}.vs-tabs-danger button:disabled{opacity:.5;cursor:default!important}.vs-tabs-danger .activeChild button,.vs-tabs-danger button:not(:disabled):hover{color:#ff4757!important}.vs-tabs-danger .activeChild button:active{background:#000}.vs-tabs-danger .line-vs-tabs{background:linear-gradient(30deg,#ff4757,rgba(255,71,87,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(255,71,87,.4)!important;box-shadow:0 0 8px 0 rgba(255,71,87,.4)!important}.vs-tabs-success button:disabled{opacity:.5;cursor:default!important}.vs-tabs-success .activeChild button,.vs-tabs-success button:not(:disabled):hover{color:#46c93a!important}.vs-tabs-success .activeChild button:active{background:#000}.vs-tabs-success .line-vs-tabs{background:linear-gradient(30deg,#46c93a,rgba(70,201,58,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(70,201,58,.4)!important;box-shadow:0 0 8px 0 rgba(70,201,58,.4)!important}.vs-tabs-warning button:disabled{opacity:.5;cursor:default!important}.vs-tabs-warning .activeChild button,.vs-tabs-warning button:not(:disabled):hover{color:#ffba00!important}.vs-tabs-warning .activeChild button:active{background:#000}.vs-tabs-warning .line-vs-tabs{background:linear-gradient(30deg,#ffba00,rgba(255,186,0,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(255,186,0,.4)!important;box-shadow:0 0 8px 0 rgba(255,186,0,.4)!important}.vs-tabs-dark button:disabled{opacity:.5;cursor:default!important}.vs-tabs-dark .activeChild button,.vs-tabs-dark button:not(:disabled):hover{color:#1e1e1e!important}.vs-tabs-dark .activeChild button:active{background:#000}.vs-tabs-dark .line-vs-tabs{background:linear-gradient(30deg,#1e1e1e,rgba(30,30,30,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(30,30,30,.4)!important;box-shadow:0 0 8px 0 rgba(30,30,30,.4)!important}.vs-tabs-light button:disabled{opacity:.5;cursor:default!important}.vs-tabs-light .activeChild button,.vs-tabs-light button:not(:disabled):hover{color:#f5f5f5!important}.vs-tabs-light .activeChild button:active{background:#000}.vs-tabs-light .line-vs-tabs{background:linear-gradient(30deg,#f5f5f5,hsla(0,0%,96%,.5))!important;-webkit-box-shadow:0 0 8px 0 hsla(0,0%,96%,.4)!important;box-shadow:0 0 8px 0 hsla(0,0%,96%,.4)!important}.con-tab{padding:10px}.con-tab,.con-vs-slider{position:relative;width:100%;display:block}.con-vs-slider{left:0;margin:16px 0;min-width:300px}.con-vs-slider.disabledx{opacity:.4;cursor:default}.con-vs-slider.disabledx button{cursor:default!important;pointer-events:none}.con-vs-slider .vs-slider{width:100%;height:4px;border-radius:4px;background:#f0f0f0;position:relative;cursor:pointer;border:0;margin:0;display:block;overflow:hidden}.con-vs-slider .vs-slider .vs-slider-ticks{position:absolute;left:100px;background:#d2d2d2;width:4px;height:100%;top:0}.con-vs-slider .vs-slider .vs-slider-ticks.isEnd{-webkit-transform:translate(-100%);transform:translate(-100%)}.con-vs-slider .vs-slider .vs-slider-line-one{width:20px;height:100%;top:0;position:absolute;left:0;z-index:1}.con-vs-slider .vs-slider .vs-slider-line-one.hasTransition{-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-slider .vs-slider .vs-slider-line-efect{width:0;height:100%;top:0;position:absolute;left:0;-webkit-transition:opacity .3s ease,width .3s ease;transition:opacity .3s ease,width .3s ease;-webkit-transform:translate(-50%);transform:translate(-50%)}.con-vs-slider .vs-slider .vs-slider-line-efect:not(.run-effect){opacity:0!important;width:0!important}.con-vs-slider .vs-slider .vs-slider-line-efect.run-effect{width:100%;-webkit-animation:example .3s ease;animation:example .3s ease;-webkit-animation-iteration-count:1;animation-iteration-count:1}.con-vs-slider .vs-circle-slider{width:16px;height:16px;position:absolute;top:-6px;border-radius:50%;cursor:pointer;border:0;margin:0;z-index:200}.con-vs-slider .vs-circle-slider.hasTransition{-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-slider .vs-circle-slider-two{z-index:100;width:16px;height:16px;position:absolute;top:-6px;border-radius:50%;cursor:pointer;border:0;margin:0;color:#fff}.con-vs-slider .vs-circle-slider-two.hasTransition{-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-slider .vs-circles-slider{-webkit-transform:translate(-50%);transform:translate(-50%);-webkit-transition:border .2s ease,border-radius .2s ease,-webkit-transform .2s ease;transition:border .2s ease,border-radius .2s ease,-webkit-transform .2s ease;transition:border .2s ease,transform .2s ease,border-radius .2s ease;transition:border .2s ease,transform .2s ease,border-radius .2s ease,-webkit-transform .2s ease;display:block;background:#fff}.con-vs-slider .vs-circles-slider:active{border-width:7px!important}.con-vs-slider .vs-circles-slider.isEquals.vs-circle-slider-two{border-radius:50% 50% 0 0;-webkit-transform:translate(-50%,-7px) scale(.9)!important;transform:translate(-50%,-7px) scale(.9)!important}.con-vs-slider .vs-circles-slider.isEquals.vs-circle-slider{border-radius:0 0 50% 50%;-webkit-transform:translate(-50%,6px) scale(.9)!important;transform:translate(-50%,6px) scale(.9)!important}.con-vs-slider .vs-circles-slider.changeValue:active{border-width:6px!important}.con-vs-slider .vs-circles-slider.changeValue:active .text-circle-slider{-webkit-transform:translate(-50%,calc(-100% + -19px))!important;transform:translate(-50%,calc(-100% + -19px))!important}.con-vs-slider .vs-circles-slider.isEndValue{border-radius:50% 0 0 50%!important}.con-vs-slider .vs-circles-slider .text-circle-slider{color:#fff;position:absolute;padding:2px 5px;display:block;border-radius:5px;-webkit-transform:translate(-50%,-20%) scale(.3);transform:translate(-50%,-20%) scale(.3);top:0;left:50%;font-size:.75rem;opacity:0;visibility:hidden;-webkit-transition:all .2s ease;transition:all .2s ease;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-slider .vs-circles-slider .text-circle-slider span{margin-left:2px}.con-vs-slider .vs-circles-slider .text-circle-slider i{font-size:.8rem;margin-left:2px}.con-vs-slider .vs-circles-slider .text-circle-slider:after{content:\"\";width:6px;height:6px;display:block;position:absolute;background:inherit;left:50%;bottom:-3px;-webkit-transform:translate(-50%) rotate(45deg);transform:translate(-50%) rotate(45deg)}.con-vs-slider .vs-circles-slider:hover:not(:active){-webkit-transform:scale(1.2) translate(-50%);transform:scale(1.2) translate(-50%)}.con-vs-slider .vs-circles-slider:active .text-circle-slider{opacity:1;-webkit-transform:translate(-50%,calc(-100% + -13px)) scale(1) rotate(0deg);transform:translate(-50%,calc(-100% + -13px)) scale(1) rotate(0deg);visibility:visible}.vs-slider-primary .vs-slider-line-one{background:#1f74ff}.vs-slider-primary .vs-circles-slider{border:2px solid #1f74ff}.vs-slider-primary .text-circle-slider,.vs-slider-primary .vs-slider-line-efect{background:#1f74ff}.vs-slider-secondary .vs-slider-line-one{background:#7931b1}.vs-slider-secondary .vs-circles-slider{border:2px solid #7931b1}.vs-slider-secondary .text-circle-slider,.vs-slider-secondary .vs-slider-line-efect{background:#7931b1}.vs-slider-danger .vs-slider-line-one{background:#ff4757}.vs-slider-danger .vs-circles-slider{border:2px solid #ff4757}.vs-slider-danger .text-circle-slider,.vs-slider-danger .vs-slider-line-efect{background:#ff4757}.vs-slider-success .vs-slider-line-one{background:#46c93a}.vs-slider-success .vs-circles-slider{border:2px solid #46c93a}.vs-slider-success .text-circle-slider,.vs-slider-success .vs-slider-line-efect{background:#46c93a}.vs-slider-warning .vs-slider-line-one{background:#ffba00}.vs-slider-warning .vs-circles-slider{border:2px solid #ffba00}.vs-slider-warning .text-circle-slider,.vs-slider-warning .vs-slider-line-efect{background:#ffba00}.vs-slider-dark .vs-slider-line-one{background:#1e1e1e}.vs-slider-dark .vs-circles-slider{border:2px solid #1e1e1e}.vs-slider-dark .text-circle-slider,.vs-slider-dark .vs-slider-line-efect{background:#1e1e1e}.vs-slider-light .vs-slider-line-one{background:#f5f5f5}.vs-slider-light .vs-circles-slider{border:2px solid #f5f5f5}.vs-slider-light .text-circle-slider,.vs-slider-light .vs-slider-line-efect{background:#f5f5f5}@-webkit-keyframes example{0%{opacity:1}to{opacity:0}}@keyframes example{0%{opacity:1}to{opacity:0}}.vs-input-number{position:relative;display:block;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin:5px 10px;background:#f5f5f5;padding:2px;border-radius:5px}.vs-input-number.isChangeValue input{-webkit-transform:translateY(-2px);transform:translateY(-2px);opacity:.5}.vs-input-number input{-webkit-transition:all .2s ease;transition:all .2s ease;width:40px;min-width:40px;border:0;text-align:center;background:transparent;padding:4px;-moz-appearance:textfield}.vs-input-number input[type=number]::-webkit-inner-spin-button,.vs-input-number input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.vs-input-number button{min-width:22px;min-height:22px;padding:0;margin:0;display:block;position:relative;border:0;border-radius:5px;cursor:pointer;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-transition:all .3s ease;transition:all .3s ease;color:#fff;-webkit-backface-visibility:hidden;backface-visibility:hidden}.vs-input-number button:disabled{opacity:.5!important}.vs-input-number button i{font-size:.9rem}.vs-input-number button.btn-plus{-webkit-transform:translate(10px);transform:translate(10px)}.vs-input-number button.btn-plus:active{-webkit-transform:scale(.9) translate(10px)!important;transform:scale(.9) translate(10px)!important}.vs-input-number button.btn-less{-webkit-transform:translate(-10px);transform:translate(-10px)}.vs-input-number button.btn-less:active{-webkit-transform:scale(.9) translate(-10px)!important;transform:scale(.9) translate(-10px)!important}.vs-input-number.vs-input-number-size-medium input{padding:3px;font-size:.8rem}.vs-input-number.vs-input-number-size-medium button{min-width:19px;min-height:19px}.vs-input-number.vs-input-number-size-medium button i{font-size:.8rem}.vs-input-number.vs-input-number-size-medium button.btn-plus{-webkit-transform:translate(8px);transform:translate(8px)}.vs-input-number.vs-input-number-size-medium button.btn-plus:active{-webkit-transform:scale(.9) translate(8px)!important;transform:scale(.9) translate(8px)!important}.vs-input-number.vs-input-number-size-medium button.btn-less{-webkit-transform:translate(-8px);transform:translate(-8px)}.vs-input-number.vs-input-number-size-medium button.btn-less:active{-webkit-transform:scale(.9) translate(-8px)!important;transform:scale(.9) translate(-8px)!important}.vs-input-number.vs-input-number-size-small input{padding:2px;font-size:.7rem}.vs-input-number.vs-input-number-size-small button{min-width:16px;min-height:16px}.vs-input-number.vs-input-number-size-small button i{font-size:.7rem}.vs-input-number.vs-input-number-size-small button.btn-plus{-webkit-transform:translate(7px);transform:translate(7px)}.vs-input-number.vs-input-number-size-small button.btn-plus:active{-webkit-transform:scale(.9) translate(7px)!important;transform:scale(.9) translate(7px)!important}.vs-input-number.vs-input-number-size-small button.btn-less{-webkit-transform:translate(-7px);transform:translate(-7px)}.vs-input-number.vs-input-number-size-small button.btn-less:active{-webkit-transform:scale(.9) translate(-7px)!important;transform:scale(.9) translate(-7px)!important}.vs-input-number.vs-input-number-size-mini input{padding:1px;font-size:.6rem}.vs-input-number.vs-input-number-size-mini button{min-width:14px;min-height:14px}.vs-input-number.vs-input-number-size-mini button i{font-size:.6rem}.vs-input-number.vs-input-number-size-mini button.btn-plus{-webkit-transform:translate(6px);transform:translate(6px)}.vs-input-number.vs-input-number-size-mini button.btn-plus:active{-webkit-transform:scale(.9) translate(6px)!important;transform:scale(.9) translate(6px)!important}.vs-input-number.vs-input-number-size-mini button.btn-less{-webkit-transform:translate(-6px);transform:translate(-6px)}.vs-input-number.vs-input-number-size-mini button.btn-less:active{-webkit-transform:scale(.9) translate(-6px)!important;transform:scale(.9) translate(-6px)!important}.vs-input-number-primary button{background:#1f74ff}.vs-input-number-primary button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(31,116,255,.4);box-shadow:0 3px 12px 0 rgba(31,116,255,.4)}.vs-input-number-secondary button{background:#7931b1}.vs-input-number-secondary button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(121,49,177,.4);box-shadow:0 3px 12px 0 rgba(121,49,177,.4)}.vs-input-number-danger button{background:#ff4757}.vs-input-number-danger button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(255,71,87,.4);box-shadow:0 3px 12px 0 rgba(255,71,87,.4)}.vs-input-number-success button{background:#46c93a}.vs-input-number-success button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(70,201,58,.4);box-shadow:0 3px 12px 0 rgba(70,201,58,.4)}.vs-input-number-warning button{background:#ffba00}.vs-input-number-warning button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(255,186,0,.4);box-shadow:0 3px 12px 0 rgba(255,186,0,.4)}.vs-input-number-dark button{background:#1e1e1e}.vs-input-number-dark button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(30,30,30,.4);box-shadow:0 3px 12px 0 rgba(30,30,30,.4)}.vs-input-number-light button{background:#f5f5f5}.vs-input-number-light button:hover{-webkit-box-shadow:0 3px 12px 0 hsla(0,0%,96%,.4);box-shadow:0 3px 12px 0 hsla(0,0%,96%,.4)}.vs-tooltip{display:block;height:auto;position:absolute;left:0;top:0;z-index:40000;background:#323232;padding:5px 7px;font-size:12px;border-radius:6px;max-width:220px;color:#fff}.vs-tooltip.after-none:after{display:none!important}.vs-tooltip h4{font-size:13px;width:100%;border-bottom:1px solid hsla(0,0%,100%,.1);padding-bottom:5px;margin-bottom:5px;text-align:center}.vs-tooltip:after{content:\"\";background:inherit;width:8px;height:8px;position:absolute;display:block}.vs-tooltip.vs-tooltip-top:after{bottom:-6px}.vs-tooltip.vs-tooltip-bottom:after,.vs-tooltip.vs-tooltip-top:after{-webkit-transform:rotate(45deg) translate(-50%);transform:rotate(45deg) translate(-50%);left:50%}.vs-tooltip.vs-tooltip-bottom:after{top:-1px}.vs-tooltip.vs-tooltip-left:after{right:-1px}.vs-tooltip.vs-tooltip-left:after,.vs-tooltip.vs-tooltip-right:after{-webkit-transform:rotate(45deg) translateY(-50%);transform:rotate(45deg) translateY(-50%);top:50%}.vs-tooltip.vs-tooltip-right:after{left:-6px}.tooltip-fade-enter-active,.tooltip-fade-leave-active{-webkit-transition:opacity .2s,-webkit-transform .2s;transition:opacity .2s,-webkit-transform .2s;transition:opacity .2s,transform .2s;transition:opacity .2s,transform .2s,-webkit-transform .2s}.tooltip-fade-enter,.tooltip-fade-leave-to{opacity:0}.tooltip-fade-enter.vs-tooltip-top,.tooltip-fade-leave-to.vs-tooltip-top{-webkit-transform:translateY(-10px);transform:translateY(-10px)}.tooltip-fade-enter.vs-tooltip-bottom,.tooltip-fade-leave-to.vs-tooltip-bottom{-webkit-transform:translateY(10px);transform:translateY(10px)}.tooltip-fade-enter.vs-tooltip-left,.tooltip-fade-leave-to.vs-tooltip-left{-webkit-transform:translate(-10px);transform:translate(-10px)}.tooltip-fade-enter.vs-tooltip-right,.tooltip-fade-leave-to.vs-tooltip-right{-webkit-transform:translate(10px);transform:translate(10px)}.vs-tooltip-primary{background:#1f74ff}.vs-tooltip-secondary{background:#7931b1}.vs-tooltip-danger{background:#ff4757}.vs-tooltip-success{background:#46c93a}.vs-tooltip-warning{background:#ffba00}.vs-tooltip-dark{background:#1e1e1e}.vs-tooltip-light{background:#f5f5f5}.con-input-upload,.con-upload{width:100%;position:relative}.con-input-upload{background:#f5f5f5;border-radius:8px;padding:5px;-webkit-transition:all .3s ease;transition:all .3s ease;border:1px dashed rgba(0,0,0,.1);display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-input-upload:hover{border:1px dashed rgba(31,116,255,.5)}.con-input-upload.disabled-upload{opacity:.5;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.con-input-upload input{position:absolute;width:100%;height:100%;opacity:0;left:0;top:0;cursor:pointer}.con-input-upload .text-input{min-width:200px;display:block;text-align:center;margin:0!important;padding:0!important;width:100%;font-weight:700}.con-input-upload .input-progress{height:100%;position:absolute;display:block;left:0;top:0;width:29%;background:#1f74ff;border-radius:10px}.con-input-upload .btn-upload-all{border:0;padding:4px;border-radius:5px;padding-left:6px;padding-right:6px;font-size:.8rem;z-index:500;cursor:pointer;margin:0;color:#1f74ff;-webkit-transition:all .2s ease;transition:all .2s ease;-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1);box-shadow:0 0 0 0 rgba(0,0,0,.1)}.con-input-upload .btn-upload-all:hover{-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1)}.con-input-upload.on-progress-all-upload{width:100%;height:4px;overflow:hidden;padding:0;border:0 solid transparent}.con-input-upload.on-progress-all-upload .btn-upload-all,.con-input-upload.on-progress-all-upload .text-input{opacity:0;-webkit-transform:translate(-40px);transform:translate(-40px)}.con-input-upload.is-ready-all-upload .input-progress{background:#46c93a!important}.con-img-upload{width:100%;background:#fff;position:relative;border-radius:10px;margin-top:5px;padding-right:5px;-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-column-gap:5px;column-gap:5px}.con-img-upload .img-upload{-webkit-backface-visibility:hidden;backface-visibility:hidden;float:left;overflow:hidden;border-radius:10px;background:rgba(0,80,0,.5);background:#fff;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);-webkit-transition:all .3s ease;transition:all .3s ease;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:200px;height:200px;margin:5px;position:relative;cursor:pointer}.con-img-upload .img-upload.fileError{border:1px solid rgba(255,71,87,.2);-webkit-box-shadow:0 5px 20px 0 rgba(255,71,87,.2);box-shadow:0 5px 20px 0 rgba(255,71,87,.2)}.con-img-upload .img-upload.fileError .btn-upload-file{background:rgba(255,71,87,.3)!important}.con-img-upload .img-upload.fileError .btn-upload-file i{background:#ff4757!important}.con-img-upload .img-upload.removeItem{-webkit-transition:all .3s ease,height .2s ease .2s;transition:all .3s ease,height .2s ease .2s;opacity:0!important;width:0!important;visibility:hidden;margin:0!important;height:0!important}.con-img-upload .img-upload img{-webkit-filter:grayscale(0);filter:grayscale(0);-webkit-transition:all .3s ease;transition:all .3s ease;border-radius:10px;max-width:none;position:absolute;left:50%;top:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.con-img-upload .img-upload:hover{-webkit-transform:scale(.99);transform:scale(.99);-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1);box-shadow:0 0 0 0 rgba(0,0,0,.1)}.con-img-upload .img-upload:hover .btn-x-file{opacity:1;-webkit-transform:translate(0);transform:translate(0)}.con-img-upload .img-upload:hover .btn-upload-file{opacity:1;-webkit-transform:translate(-50%,65%);transform:translate(-50%,65%)}.con-img-upload .img-upload .btn-x-file{display:block;position:absolute;top:5px;padding:0;right:5px;margin:0;-webkit-transform:translate(20%,-20%);transform:translate(20%,-20%);background:transparent;z-index:300;opacity:0;border:0;cursor:pointer;-webkit-transition:all .2s ease;transition:all .2s ease;border-radius:10px}.con-img-upload .img-upload .btn-x-file i{-webkit-transition:all .2s ease;transition:all .2s ease;position:relative;padding:4px;font-size:1.4rem;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;border-radius:5px;background:rgba(0,0,0,.1);color:#fff;text-shadow:0 3px 10px rgba(0,0,0,.5)}.con-img-upload .img-upload .btn-x-file:hover i{border-radius:50%;background:#ff4757}.con-img-upload .img-upload .btn-x-file:hover~.btn-upload-file:not(.on-progress){background:radial-gradient(ellipse at center,#ff4757 0,transparent 70%);height:300px}.con-img-upload .img-upload .btn-x-file:hover~.btn-upload-file:not(.on-progress):after{border:1px solid #ff4757}.con-img-upload .img-upload .btn-x-file:hover~.btn-upload-file:not(.on-progress) i{opacity:0}.con-img-upload .img-upload .btn-x-file:hover~.on-progress{background:rgba(255,71,87,.2)}.con-img-upload .img-upload .btn-x-file:hover~.on-progress i{opacity:0}.con-img-upload .img-upload .btn-x-file:hover~img{-webkit-filter:grayscale(80%);filter:grayscale(80%)}.con-img-upload .img-upload .text-archive{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;position:relative;text-align:center;padding:5px}.con-img-upload .img-upload .text-archive i{position:absolute;font-size:7rem;opacity:.05}.con-img-upload .img-upload .text-archive span{position:relative;padding:5px}.con-img-upload .img-upload .btn-upload-file{margin:0;opacity:0;position:absolute;bottom:0;left:50%;z-index:200;border-radius:50%;width:300px;height:200px;-webkit-transform:translate(-50%,80%);transform:translate(-50%,80%);border:0;background:radial-gradient(ellipse at center,#46c93a 0,transparent 70%);cursor:pointer;-webkit-transition:all .3s ease;transition:all .3s ease;-webkit-animation:imageRebound .7s ease!important;animation:imageRebound .7s ease!important}.con-img-upload .img-upload .btn-upload-file:after{content:\"\";width:200px;height:200px;position:absolute;z-index:100;display:block;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);top:50%;border-radius:50%;border:1px solid #46c93a;-webkit-animation:circle 1.5s ease infinite;animation:circle 1.5s ease infinite}.con-img-upload .img-upload .btn-upload-file:not(.on-progress):hover{width:200px;height:200px;-webkit-transform:translate(-50%,70%);transform:translate(-50%,70%)}.con-img-upload .img-upload .btn-upload-file:not(.on-progress):hover i{font-size:1.4rem;background:#46c93a;top:6%;padding:10px}.con-img-upload .img-upload .btn-upload-file i{z-index:50;border-radius:50%;-webkit-transition:all .2s ease;transition:all .2s ease;position:absolute;left:50%;top:12%;-webkit-transform:translate(-50%);transform:translate(-50%);color:#fff;text-shadow:0 3px 10px rgba(0,0,0,.5);padding:20px;-webkit-backface-visibility:visible;backface-visibility:visible}.con-img-upload .img-upload .btn-upload-file span{opacity:0;z-index:300}.con-img-upload .img-upload .btn-upload-file.on-progress{width:100%;height:20px;background:rgba(70,201,58,.3);border-top:1px solid #46c93a;bottom:0;-webkit-transform:translate(0);transform:translate(0);left:0;opacity:1!important;overflow:hidden;border-radius:0;pointer-events:none}.con-img-upload .img-upload .btn-upload-file.on-progress i{opacity:.2;background:#46c93a;-webkit-box-shadow:0 5px 17px 0 rgba(0,0,0,.15);box-shadow:0 5px 17px 0 rgba(0,0,0,.15);top:50%;-webkit-transform:translate(-50%,-50%) scale(1.2);transform:translate(-50%,-50%) scale(1.2);padding:20px}.con-img-upload .img-upload .btn-upload-file.on-progress span{-webkit-transition:all .5s ease;transition:all .5s ease;opacity:1;color:#fff;font-size:1rem;position:absolute;top:calc(50% + 40px);left:0;text-align:center;width:100%;text-shadow:0 3px 15px #46c93a;font-weight:700;z-index:300;display:block;-webkit-transform:translateY(-50%);transform:translateY(-50%)}.con-img-upload .img-upload .btn-upload-file.ready-progress{border-top:0 solid #46c93a;background:rgba(70,201,58,.5)}.con-img-upload .img-upload .btn-upload-file.ready-progress span{z-index:10;-webkit-transform:translateY(-50%) scale(.5);transform:translateY(-50%) scale(.5);top:calc(50% + 20px);opacity:0}.con-img-upload .img-upload .btn-upload-file.ready-progress:after{opacity:0}.con-img-upload .img-upload .btn-upload-file.ready-progress i{opacity:1;background:#46c93a;-webkit-box-shadow:0 5px 17px 0 rgba(0,0,0,.15);box-shadow:0 5px 17px 0 rgba(0,0,0,.15);top:50%;-webkit-transform:translate(-50%,-50%) scale(1);transform:translate(-50%,-50%) scale(1);padding:10px}.upload-enter-active{-webkit-transition:all .7s ease!important;transition:all .7s ease!important;-webkit-animation:imageRebound .7s ease!important;animation:imageRebound .7s ease!important}.view-upload-enter-active,.view-upload-leave-active{-webkit-transition:opacity .5s;transition:opacity .5s}.view-upload-enter,.view-upload-leave-to{opacity:0}.view-upload-enter img,.view-upload-leave-to img{-webkit-transform:scale(.4);transform:scale(.4)}.view-upload{position:fixed;left:0;z-index:15000;width:100%;height:100%;background:rgba(0,0,0,.3);top:0;padding:20px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.view-upload img{-webkit-transition:all .3s ease;transition:all .3s ease;border-radius:10px;position:relative;display:block;left:0;top:0;right:0;bottom:0;max-width:100%;max-height:100%;margin:auto;-webkit-animation:imageRebound .7s ease!important;animation:imageRebound .7s ease!important;-webkit-box-shadow:0 8px 30px 0 rgba(0,0,0,.25);box-shadow:0 8px 30px 0 rgba(0,0,0,.25);background:#fff}@-webkit-keyframes imageRebound{0%{-webkit-transform:scale(.4);transform:scale(.4);border-radius:30%;pointer-events:none}40%{-webkit-transform:scale(1.03);transform:scale(1.03);border-radius:14px;pointer-events:none}70%{-webkit-transform:scale(.98);transform:scale(.98);border-radius:18px;pointer-events:none}to{-webkit-transform:scale(1);transform:scale(1);border-radius:10px;pointer-events:none}}@keyframes imageRebound{0%{-webkit-transform:scale(.4);transform:scale(.4);border-radius:30%;pointer-events:none}40%{-webkit-transform:scale(1.03);transform:scale(1.03);border-radius:14px;pointer-events:none}70%{-webkit-transform:scale(.98);transform:scale(.98);border-radius:18px;pointer-events:none}to{-webkit-transform:scale(1);transform:scale(1);border-radius:10px;pointer-events:none}}@-webkit-keyframes circle{0%{width:0;height:0}to{width:230px;height:230px;opacity:0}}@keyframes circle{0%{width:0;height:0}to{width:230px;height:230px;opacity:0}}.popup-t-enter,.popup-t-leave-to{opacity:0!important}.popup-t-enter .vs-popup,.popup-t-leave-to .vs-popup{-webkit-transform:scale(.9)!important;transform:scale(.9)!important}.popup-t-enter .vs-popup-cancel,.popup-t-leave-to .vs-popup-cancel{border-radius:50%!important;-webkit-transform:translate(8px,-8px) scale(.5)!important;transform:translate(8px,-8px) scale(.5)!important}.popup-t-enter .vs-popup-text,.popup-t-leave-to .vs-popup-text{opacity:0;-webkit-transform:translate(-15px)!important;transform:translate(-15px)!important}.popup-t-enter header h3,.popup-t-leave-to header h3{-webkit-transform:translate(-50px);transform:translate(-50px);opacity:0}.con-vs-popup{-webkit-transition:all .2s;transition:all .2s;width:100%;height:100%;position:fixed;left:100px;top:100px;left:0;top:0;z-index:20000;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;opacity:1}.con-vs-popup .vs-popup-dark{width:100%;background:rgba(0,0,0,.4);position:absolute;left:0;top:0;height:100%;z-index:10;-webkit-transition:all .25s ease;transition:all .25s ease;opacity:1}.con-vs-popup .vs-popup{-webkit-transition:all .2s;transition:all .2s;z-index:100;width:600px;margin:10px;max-width:calc(100% - 30px);max-height:calc(100% - 30px);border-radius:6px;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);background:#fff;-webkit-animation:rebound .3s;animation:rebound .3s}.con-vs-popup .vs-popup .vs-popup-text{padding:13px;font-size:.9em;-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;overflow:auto;max-height:calc(100vh - 100px);margin-right:5px;margin-top:5px;margin-bottom:5px;width:calc(100% - 5px)}.con-vs-popup .vs-popup header{width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;background:rgba(0,0,0,.05);border-radius:5px 5px;position:relative}.con-vs-popup .vs-popup header .con-title-after{width:100%;position:relative;overflow:hidden;border-radius:5px 5px 0 0}.con-vs-popup .vs-popup header h3{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;padding:8px;padding-left:12px;font-size:1.2rem}.con-vs-popup .vs-popup header .vs-popup-cancel{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;position:relative;padding:8px;cursor:pointer;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);border-radius:5px;-webkit-transform:translate(8px,-8px);transform:translate(8px,-8px);background:#fff;font-size:1.25em;color:rgba(0,0,0,.6)}.con-vs-popup .vs-popup header .vs-popup-cancel:hover{-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1);box-shadow:0 0 0 0 rgba(0,0,0,.1);-webkit-transform:translate(5px,-5px);transform:translate(5px,-5px)}.con-vs-popup.fullscreen .vs-popup{width:100%;height:100%}.vs-popup-primary .after{background:#1f74ff}.vs-popup-secondary .after{background:#7931b1}.vs-popup-danger .after{background:#ff4757}.vs-popup-success .after{background:#46c93a}.vs-popup-warning .after{background:#ffba00}.vs-popup-dark .after{background:#1e1e1e}.vs-popup-light .after{background:#f5f5f5}.con-vs-alert{border-radius:6px;color:#fff;width:100%;position:relative;font-size:.8rem;cursor:default;-webkit-transition:all .25s ease;transition:all .25s ease;overflow:hidden}.con-vs-alert .icon-alert{height:100%;position:relative;float:left;padding:0 10px;padding-left:5px;font-size:1.1rem}.con-vs-alert .vs-alert{padding:10px;overflow:hidden;position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.con-vs-alert h4{font-size:.9rem;font-weight:700;padding:8px 10px}.con-vs-alert .con-x{position:relative;margin-top:4px;margin-right:4px;display:inline-block;float:right;padding:4px;border-radius:6px;padding-bottom:1px;cursor:pointer;-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-alert .con-x:hover{-webkit-box-shadow:0 5px 15px 0 rgba(0,0,0,.1);box-shadow:0 5px 15px 0 rgba(0,0,0,.1)}.con-vs-alert-primary{background:rgba(31,116,255,.15);-webkit-box-shadow:0 0 25px 0 rgba(31,116,255,.15);box-shadow:0 0 25px 0 rgba(31,116,255,.15);color:#1f74ff}.con-vs-alert-primary h4{-webkit-box-shadow:0 6px 15px -7px rgba(31,116,255,.4);box-shadow:0 6px 15px -7px rgba(31,116,255,.4)}.con-vs-alert-primary .con-x{background:#1f74ff;color:#fff}.con-vs-alert-secondary{background:rgba(121,49,177,.15);-webkit-box-shadow:0 0 25px 0 rgba(121,49,177,.15);box-shadow:0 0 25px 0 rgba(121,49,177,.15);color:#7931b1}.con-vs-alert-secondary h4{-webkit-box-shadow:0 6px 15px -7px rgba(121,49,177,.4);box-shadow:0 6px 15px -7px rgba(121,49,177,.4)}.con-vs-alert-secondary .con-x{background:#7931b1;color:#fff}.con-vs-alert-danger{background:rgba(255,71,87,.15);-webkit-box-shadow:0 0 25px 0 rgba(255,71,87,.15);box-shadow:0 0 25px 0 rgba(255,71,87,.15);color:#ff4757}.con-vs-alert-danger h4{-webkit-box-shadow:0 6px 15px -7px rgba(255,71,87,.4);box-shadow:0 6px 15px -7px rgba(255,71,87,.4)}.con-vs-alert-danger .con-x{background:#ff4757;color:#fff}.con-vs-alert-success{background:rgba(70,201,58,.15);-webkit-box-shadow:0 0 25px 0 rgba(70,201,58,.15);box-shadow:0 0 25px 0 rgba(70,201,58,.15);color:#46c93a}.con-vs-alert-success h4{-webkit-box-shadow:0 6px 15px -7px rgba(70,201,58,.4);box-shadow:0 6px 15px -7px rgba(70,201,58,.4)}.con-vs-alert-success .con-x{background:#46c93a;color:#fff}.con-vs-alert-warning{background:rgba(255,186,0,.15);-webkit-box-shadow:0 0 25px 0 rgba(255,186,0,.15);box-shadow:0 0 25px 0 rgba(255,186,0,.15);color:#ffba00}.con-vs-alert-warning h4{-webkit-box-shadow:0 6px 15px -7px rgba(255,186,0,.4);box-shadow:0 6px 15px -7px rgba(255,186,0,.4)}.con-vs-alert-warning .con-x{background:#ffba00;color:#fff}.con-vs-alert-dark{background:rgba(30,30,30,.15);-webkit-box-shadow:0 0 25px 0 rgba(30,30,30,.15);box-shadow:0 0 25px 0 rgba(30,30,30,.15);color:#1e1e1e}.con-vs-alert-dark h4{-webkit-box-shadow:0 6px 15px -7px rgba(30,30,30,.4);box-shadow:0 6px 15px -7px rgba(30,30,30,.4)}.con-vs-alert-dark .con-x{background:#1e1e1e;color:#fff}.con-vs-alert-light{background:hsla(0,0%,96%,.15);-webkit-box-shadow:0 0 25px 0 hsla(0,0%,96%,.15);box-shadow:0 0 25px 0 hsla(0,0%,96%,.15);color:#f5f5f5}.con-vs-alert-light h4{-webkit-box-shadow:0 6px 15px -7px hsla(0,0%,96%,.4);box-shadow:0 6px 15px -7px hsla(0,0%,96%,.4)}.con-vs-alert-light .con-x{background:#f5f5f5;color:#fff}.con-vs-chip{background:#f0f0f0;border-radius:20px;float:left;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;font-size:.7rem;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-right:2px;margin-bottom:3px;min-height:28px;padding-right:10px;color:rgba(0,0,0,.7);position:relative}.con-vs-chip.closable{padding-right:0!important}.con-vs-chip.con-color .con-vs-avatar{background:hsla(0,0%,100%,.2)!important}.con-vs-chip .btn-close{width:20px;height:20px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;border-radius:50%;border:0;margin:0 4px;cursor:pointer;background:rgba(0,0,0,.15)!important;color:#fff;-webkit-transition:all .3s ease;transition:all .3s ease}.con-vs-chip .btn-close:hover{background:#ff4757!important}.con-vs-chip .btn-close i{font-size:.9rem}.con-vs-chip .con-vs-avatar{width:24px;height:24px;position:relative;display:block;margin:2px 0!important;-webkit-transform:translate(-8px);transform:translate(-8px);display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;background:rgba(0,0,0,.15)!important}.con-vs-chip .con-vs-avatar .material-icons{margin-top:0!important;font-size:.8rem}.con-vs-chip .text-chip{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-left:10px}.vs-chip-primary{background:#1f74ff}.vs-chip-secondary{background:#7931b1}.vs-chip-danger{background:#ff4757}.vs-chip-success{background:#46c93a}.vs-chip-warning{background:#ffba00}.vs-chip-dark{background:#1e1e1e}.vs-chip-light{background:#f5f5f5}.indeterminate-bar{position:absolute;width:0;height:100%;left:-100%;top:0;border-radius:2px;-webkit-animation:indeterminate 1.2s ease infinite;animation:indeterminate 1.2s ease infinite;border-radius:20px}.vs-progress-background{width:100%;border-radius:18px;background-color:rgba(0,0,0,.06);z-index:50;position:relative;display:inline-block;overflow:hidden}.vs-progress-foreground{z-index:100;height:100%;border-radius:18px;-webkit-transition:all .5s ease;transition:all .5s ease}.vs-progress-primary{background:rgba(31,116,255,.1)}.vs-progress-primary .indeterminate-bar,.vs-progress-primary .vs-progress-foreground{background:#1f74ff}.vs-progress-secondary{background:rgba(121,49,177,.1)}.vs-progress-secondary .indeterminate-bar,.vs-progress-secondary .vs-progress-foreground{background:#7931b1}.vs-progress-danger{background:rgba(255,71,87,.1)}.vs-progress-danger .indeterminate-bar,.vs-progress-danger .vs-progress-foreground{background:#ff4757}.vs-progress-success{background:rgba(70,201,58,.1)}.vs-progress-success .indeterminate-bar,.vs-progress-success .vs-progress-foreground{background:#46c93a}.vs-progress-warning{background:rgba(255,186,0,.1)}.vs-progress-warning .indeterminate-bar,.vs-progress-warning .vs-progress-foreground{background:#ffba00}.vs-progress-dark{background:rgba(30,30,30,.1)}.vs-progress-dark .indeterminate-bar,.vs-progress-dark .vs-progress-foreground{background:#1e1e1e}.vs-progress-light{background:hsla(0,0%,96%,.1)}.vs-progress-light .indeterminate-bar,.vs-progress-light .vs-progress-foreground{background:#f5f5f5}@-webkit-keyframes indeterminate{0%{width:30%;left:-40%}60%{left:100%;width:100%}to{left:100%;width:0}}@keyframes indeterminate{0%{width:30%;left:-40%}60%{left:100%;width:100%}to{left:100%;width:0}}.con-vs-card{width:100%;height:auto;background:#fff;border-radius:8px;margin-bottom:10px;display:block;-webkit-box-shadow:0 4px 25px 0 rgba(0,0,0,.1);box-shadow:0 4px 25px 0 rgba(0,0,0,.1);-webkit-transition:all .3s ease;transition:all .3s ease}.con-vs-card.withHover{cursor:pointer}.con-vs-card.withHover:hover{-webkit-transform:translateY(4px);transform:translateY(4px);-webkit-box-shadow:0 0 5px 0 rgba(0,0,0,.1)!important;box-shadow:0 0 5px 0 rgba(0,0,0,.1)!important}.con-vs-card.withHover:hover img{-webkit-transform:scale(1.1);transform:scale(1.1)}.con-vs-card .vs-card-header{padding:10px;-webkit-box-shadow:0 10px 15px -10px rgba(0,0,0,.05);box-shadow:0 10px 15px -10px rgba(0,0,0,.05)}.con-vs-card .vs-card-header h3{padding:0!important}.con-vs-card .vs-card-footer{position:relative;padding:10px;-webkit-transform:translateY(40%);transform:translateY(40%);margin-top:-5%;padding-top:0;overflow:hidden}.con-vs-card .vs-card-content{padding:10px;font-size:.8rem}.con-vs-card .vs-card-media{width:100%;overflow:hidden}.con-vs-card .vs-card-media img{width:100%;-webkit-transition:all .25s ease;transition:all .25s ease;display:block}.vs-list{width:100%;position:relative;padding:5px}.vs-list .list-icon{padding:6px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-list .list-icon i{font-size:1.3rem!important}.vs-list .vs-list-header{padding:8px 0;font-weight:700;-webkit-box-shadow:0 7px 7px -5px rgba(0,0,0,.08);box-shadow:0 7px 7px -5px rgba(0,0,0,.08);margin-bottom:5px}.vs-list .vs-list-header,.vs-list .vs-list-item{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}.vs-list .vs-list-item{border-bottom:1px solid rgba(0,0,0,.08);padding:5px}.vs-list .vs-list-item .list-slot{margin-left:auto}.vs-list .vs-list-item .list-title{font-weight:700}.vs-list .vs-list-item .list-subtitle{font-size:.8rem}.vs-header-list-primary{color:#1f74ff}.vs-header-list-secondary{color:#7931b1}.vs-header-list-danger{color:#ff4757}.vs-header-list-success{color:#46c93a}.vs-header-list-warning{color:#ffba00}.vs-header-list-dark{color:#1e1e1e}.vs-header-list-light{color:#f5f5f5}.con-vs-pagination{--color-pagination:#f0f0f0;--color-pagination-alpha:#f0f0f0}.con-vs-pagination .input-goto{padding:8px;border-radius:5px;border:0 solid rgba(0,0,0,.2);background:#f0f0f0;margin-left:5px}.con-vs-pagination .nav-pagination,.con-vs-pagination .nav-pagination>ul{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-pagination .nav-pagination>ul{padding:0;background:#f0f0f0;border-radius:20px;padding-left:5px;padding-right:5px}.con-vs-pagination .nav-pagination>ul>li{cursor:pointer;width:35px;height:35px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;border-radius:8px;-webkit-transition:all .25s ease;transition:all .25s ease;position:relative;-webkit-backface-visibility:visible;backface-visibility:visible;margin:0 2px;font-weight:700;color:rgba(0,0,0,.5)}.con-vs-pagination .nav-pagination>ul>li span{z-index:100}.con-vs-pagination .nav-pagination>ul>li .effect{z-index:50;content:\"\";position:absolute;width:100%;height:100%;background:var(--color-pagination);left:0;top:0;display:block;border-radius:8px;-webkit-transform:scale(.5);transform:scale(.5);opacity:0;-webkit-transition:all .2s ease;transition:all .2s ease;-webkit-box-shadow:0 0 20px 0 transparent;box-shadow:0 0 20px 0 transparent}.con-vs-pagination .nav-pagination>ul>li.is-current{-webkit-transform:scale(1.05);transform:scale(1.05);color:#fff;font-weight:700}.con-vs-pagination .nav-pagination>ul>li.is-current .effect{opacity:1;-webkit-transform:scale(1)!important;transform:scale(1)!important;-webkit-box-shadow:0 0 20px 0 var(--color-pagination-alpha);box-shadow:0 0 20px 0 var(--color-pagination-alpha)}.con-vs-pagination .nav-pagination>ul>li:hover:not(.is-current){color:var(--color-pagination)}.con-vs-pagination .btn-pagination{width:35px;height:35px;border-radius:50%;border:0;cursor:pointer;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;color:rgba(0,0,0,.6);-webkit-transition:all .2s ease;transition:all .2s ease;background:#f0f0f0;margin:0;z-index:200}.con-vs-pagination .btn-pagination.btn-prev-pagination{margin-right:5px}.con-vs-pagination .btn-pagination.btn-next-pagination{margin-left:5px}.con-vs-pagination .btn-pagination i{font-size:1.2rem}.con-vs-pagination .btn-pagination:hover{background:var(--color-pagination);color:#fff}.vs-pagination-primary li:hover:not(.is-current){color:#1f74ff!important}.vs-pagination-primary .effect{background:#1f74ff!important;-webkit-box-shadow:0 0 20px 0 rgba(31,116,255,.5)!important;box-shadow:0 0 20px 0 rgba(31,116,255,.5)!important}.vs-pagination-primary .btn-pagination:hover{background:#1f74ff!important}.vs-pagination-secondary li:hover:not(.is-current){color:#7931b1!important}.vs-pagination-secondary .effect{background:#7931b1!important;-webkit-box-shadow:0 0 20px 0 rgba(121,49,177,.5)!important;box-shadow:0 0 20px 0 rgba(121,49,177,.5)!important}.vs-pagination-secondary .btn-pagination:hover{background:#7931b1!important}.vs-pagination-danger li:hover:not(.is-current){color:#ff4757!important}.vs-pagination-danger .effect{background:#ff4757!important;-webkit-box-shadow:0 0 20px 0 rgba(255,71,87,.5)!important;box-shadow:0 0 20px 0 rgba(255,71,87,.5)!important}.vs-pagination-danger .btn-pagination:hover{background:#ff4757!important}.vs-pagination-success li:hover:not(.is-current){color:#46c93a!important}.vs-pagination-success .effect{background:#46c93a!important;-webkit-box-shadow:0 0 20px 0 rgba(70,201,58,.5)!important;box-shadow:0 0 20px 0 rgba(70,201,58,.5)!important}.vs-pagination-success .btn-pagination:hover{background:#46c93a!important}.vs-pagination-warning li:hover:not(.is-current){color:#ffba00!important}.vs-pagination-warning .effect{background:#ffba00!important;-webkit-box-shadow:0 0 20px 0 rgba(255,186,0,.5)!important;box-shadow:0 0 20px 0 rgba(255,186,0,.5)!important}.vs-pagination-warning .btn-pagination:hover{background:#ffba00!important}.vs-pagination-dark li:hover:not(.is-current){color:#1e1e1e!important}.vs-pagination-dark .effect{-webkit-box-shadow:0 0 20px 0 rgba(30,30,30,.5)!important;box-shadow:0 0 20px 0 rgba(30,30,30,.5)!important}.vs-pagination-dark .btn-pagination:hover,.vs-pagination-dark .effect{background:#1e1e1e!important}.vs-pagination-light li:hover:not(.is-current){color:#f5f5f5!important}.vs-pagination-light .effect{background:#f5f5f5!important;-webkit-box-shadow:0 0 20px 0 hsla(0,0%,96%,.5)!important;box-shadow:0 0 20px 0 hsla(0,0%,96%,.5)!important}.vs-pagination-light .btn-pagination:hover{background:#f5f5f5!important}.vs-navbar{clear:both;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-shadow:0 4px 20px 0 rgba(0,0,0,.05);box-shadow:0 4px 20px 0 rgba(0,0,0,.05);width:100%;z-index:10000;position:relative}.vs-navbar button{margin:0}.vs-navbar .vs-navbar-item{display:block;position:relative;-webkit-transition:all .25s ease;transition:all .25s ease;z-index:1000}.vs-navbar .vs-navbar-item.is-active-item .vs-navbar-after{width:100%}.vs-navbar .vs-navbar-item:hover .vs-navbar-submenu{opacity:1;visibility:visible}.vs-navbar .vs-navbar-item a{font-size:.8rem;padding:10px 12px;display:block;color:inherit;text-decoration:none!important;position:relative;z-index:100}.vs-navbar .vs-navbar-item a:hover~.vs-navbar-after{width:100%}.vs-navbar .vs-navbar-item .vs-navbar-after{width:0;height:2px;left:50%;bottom:0;-webkit-transform:translate(-50%);transform:translate(-50%);background:#1f74ff;position:absolute;-webkit-transition:all .25s ease;transition:all .25s ease;z-index:10}.vs-navbar .vs-navbar-title{font-size:1.1rem;padding:0!important;padding-left:10px!important;padding-right:10px!important;color:inherit}.vs-navbar .vs-navbar-items{position:relative}.vs-navbar-submenu{position:absolute;visibility:hidden;opacity:0;background:#fff;z-index:1000;padding-left:0;width:200px}.vs-navbar-submenu .vs-navbar-after{display:none}.vs-navbar-submenu .vs-navbar-items a{text-align:left!important}.vs-navbar-flat{-webkit-box-shadow:none;box-shadow:none}.vs-navbar-flat .vs-navbar-after{display:none}.vs-navbar-fund{-webkit-box-shadow:none;box-shadow:none}.vs-navbar-fund .vs-navbar-after{width:100%!important;height:0%!important;opacity:.1}.vs-navbar-fund .vs-navbar-item.is-active-item .vs-navbar-after,.vs-navbar-fund a:hover~.vs-navbar-after{height:100%!important}.vs-navbar-border{-webkit-box-shadow:none;box-shadow:none;border:1px solid rgba(0,0,0,.05)}.vs-navbar-border .vs-navbar-item{border-left:1px solid rgba(0,0,0,.05)}.vs-navbar-border .vs-navbar-after{height:1px!important;bottom:-1px!important}.vs-navbar-gradient .vs-navbar-item{margin:4px 3px}.vs-navbar-gradient .vs-navbar-item a{padding:6px 12px}.vs-navbar-gradient .vs-navbar-after{display:none}.vs-navbar-shadow{-webkit-box-shadow:none;box-shadow:none}.vs-navbar-shadow .vs-navbar-item{background:rgba(0,0,0,.05)}.vs-navbar-shadow .vs-navbar-item.is-active-item{background:#fff;border-radius:4px;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.07);box-shadow:0 5px 20px 0 rgba(0,0,0,.07)}.vs-navbar-shadow .vs-navbar-after{display:none}.vs-navbar-submenu .vs-navbar-item-primary.is-active-item,.vs-navbar-submenu .vs-navbar-item-primary:hover,.vs-navbar .vs-navbar-item-primary.is-active-item,.vs-navbar .vs-navbar-item-primary:hover>a{color:#1f74ff!important}.vs-navbar-gradient .vs-navbar-item-primary{border-radius:4px}.vs-navbar-gradient .vs-navbar-item-primary.is-active-item{border-radius:6px;color:#fff!important;background:linear-gradient(30deg,#1f74ff,#3a1fff)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-navbar-submenu .vs-navbar-item-secondary.is-active-item,.vs-navbar-submenu .vs-navbar-item-secondary:hover,.vs-navbar .vs-navbar-item-secondary.is-active-item,.vs-navbar .vs-navbar-item-secondary:hover>a{color:#7931b1!important}.vs-navbar-gradient .vs-navbar-item-secondary{border-radius:4px}.vs-navbar-gradient .vs-navbar-item-secondary.is-active-item{border-radius:6px;color:#fff!important;background:linear-gradient(30deg,#7931b1,#b131a9)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-navbar-submenu .vs-navbar-item-danger.is-active-item,.vs-navbar-submenu .vs-navbar-item-danger:hover,.vs-navbar .vs-navbar-item-danger.is-active-item,.vs-navbar .vs-navbar-item-danger:hover>a{color:#ff4757!important}.vs-navbar-gradient .vs-navbar-item-danger{border-radius:4px}.vs-navbar-gradient .vs-navbar-item-danger.is-active-item{border-radius:6px;color:#fff!important;background:linear-gradient(30deg,#ff4757,#c40052)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-navbar-submenu .vs-navbar-item-success.is-active-item,.vs-navbar-submenu .vs-navbar-item-success:hover,.vs-navbar .vs-navbar-item-success.is-active-item,.vs-navbar .vs-navbar-item-success:hover>a{color:#46c93a!important}.vs-navbar-gradient .vs-navbar-item-success{border-radius:4px}.vs-navbar-gradient .vs-navbar-item-success.is-active-item{border-radius:6px;color:#fff!important;background:linear-gradient(30deg,#46c93a,#3ac976)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-navbar-submenu .vs-navbar-item-warning.is-active-item,.vs-navbar-submenu .vs-navbar-item-warning:hover,.vs-navbar .vs-navbar-item-warning.is-active-item,.vs-navbar .vs-navbar-item-warning:hover>a{color:#ffba00!important}.vs-navbar-gradient .vs-navbar-item-warning{border-radius:4px}.vs-navbar-gradient .vs-navbar-item-warning.is-active-item{border-radius:6px;color:#fff!important;background:linear-gradient(30deg,#ffba00,#c4ff00)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-navbar-submenu .vs-navbar-item-dark.is-active-item,.vs-navbar-submenu .vs-navbar-item-dark:hover,.vs-navbar .vs-navbar-item-dark.is-active-item,.vs-navbar .vs-navbar-item-dark:hover>a{color:#1e1e1e!important}.vs-navbar-gradient .vs-navbar-item-dark{border-radius:4px}.vs-navbar-gradient .vs-navbar-item-dark.is-active-item{border-radius:6px;color:#fff!important;background:linear-gradient(30deg,#1e1e1e,#626262)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-navbar-submenu .vs-navbar-item-light.is-active-item,.vs-navbar-submenu .vs-navbar-item-light:hover,.vs-navbar .vs-navbar-item-light.is-active-item,.vs-navbar .vs-navbar-item-light:hover>a{color:#f5f5f5!important}.vs-navbar-gradient .vs-navbar-item-light{border-radius:4px}.vs-navbar-gradient .vs-navbar-item-light.is-active-item{border-radius:6px;color:#fff!important;background:linear-gradient(30deg,#f5f5f5,#f5f5f5)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-spacer{padding:0;margin:0;-webkit-box-flex:1!important;-ms-flex-positive:1!important;flex-grow:1!important;background:transparent}.vs-collapse{-webkit-transition:all .3s ease;transition:all .3s ease;padding:10px;color:#f5f5f5;cursor:pointer}.vs-collapse-primary{color:#1f74ff}.vs-collapse-primary:hover{background:rgba(31,116,255,.1)!important}.vs-collapse-secondary{color:#7931b1}.vs-collapse-secondary:hover{background:rgba(121,49,177,.1)!important}.vs-collapse-danger{color:#ff4757}.vs-collapse-danger:hover{background:rgba(255,71,87,.1)!important}.vs-collapse-success{color:#46c93a}.vs-collapse-success:hover{background:rgba(70,201,58,.1)!important}.vs-collapse-warning{color:#ffba00}.vs-collapse-warning:hover{background:rgba(255,186,0,.1)!important}.vs-collapse-dark{color:#1e1e1e}.vs-collapse-dark:hover{background:rgba(30,30,30,.1)!important}.vs-collapse-light{color:#f5f5f5}.vs-collapse-light:hover{background:hsla(0,0%,96%,.1)!important}.vs-notifications{position:fixed;z-index:200000;padding:5px;margin-left:5px;margin-right:5px;border-radius:10px;overflow:hidden;-webkit-transition:all .3s ease;transition:all .3s ease;cursor:default;max-width:350px;min-width:200px}.vs-notifications:active{opacity:.8}.vs-notifications .content-noti{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;width:100%}.vs-notifications .content-noti .con-text-noti{width:100%}.vs-notifications .content-noti .vs-icon-noti{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;z-index:100;display:block;padding:5px;background:hsla(0,0%,100%,.1);border-radius:6px;font-size:20px;-webkit-animation:openicon .4s ease;animation:openicon .4s ease}.vs-notifications h3,.vs-notifications p{z-index:100;position:relative;-webkit-animation:open .4s ease;animation:open .4s ease}.vs-notifications h3{font-size:16px;padding:5px;padding-bottom:0}.vs-notifications p{font-size:14px;padding:5px;padding-right:10px}.vs-notifications.vs-noti-active h3,.vs-notifications.vs-noti-active p{opacity:1}.vs-notifications .filling{display:block;position:absolute;-webkit-transition:all .45s ease;transition:all .45s ease;z-index:1;-webkit-transform:translateY(-50%);transform:translateY(-50%)}.vs-noti-primary .filling{background:#1f74ff;width:10px;height:10px;border-radius:50%}.vs-noti-secondary .filling{background:#7931b1;width:10px;height:10px;border-radius:50%}.vs-noti-danger .filling{background:#ff4757;width:10px;height:10px;border-radius:50%}.vs-noti-success .filling{background:#46c93a;width:10px;height:10px;border-radius:50%}.vs-noti-warning .filling{background:#ffba00;width:10px;height:10px;border-radius:50%}.vs-noti-dark .filling{background:#1e1e1e;width:10px;height:10px;border-radius:50%}.vs-noti-light .filling{background:#f5f5f5;width:10px;height:10px;border-radius:50%}@-webkit-keyframes open{0%{opacity:0;-webkit-transform:translate(-30px);transform:translate(-30px)}to{-webkit-transform:translate(0);transform:translate(0);opacity:1}}@keyframes open{0%{opacity:0;-webkit-transform:translate(-30px);transform:translate(-30px)}to{-webkit-transform:translate(0);transform:translate(0);opacity:1}}@-webkit-keyframes openicon{0%{opacity:0;-webkit-transform:scale(.4);transform:scale(.4)}to{-webkit-transform:scale(1);transform:scale(1);opacity:1}}@keyframes openicon{0%{opacity:0;-webkit-transform:scale(.4);transform:scale(.4)}to{-webkit-transform:scale(1);transform:scale(1);opacity:1}}.dialog-t-enter,.dialog-t-leave-to{opacity:0!important}.dialog-t-enter .vs-dialog,.dialog-t-leave-to .vs-dialog{-webkit-transform:scale(.9)!important;transform:scale(.9)!important}.dialog-t-enter .vs-dialog-cancel,.dialog-t-leave-to .vs-dialog-cancel{border-radius:50%!important;-webkit-transform:translate(8px,-8px) scale(.5)!important;transform:translate(8px,-8px) scale(.5)!important}.dialog-t-enter .vs-dialog-text,.dialog-t-leave-to .vs-dialog-text{opacity:0;-webkit-transform:translate(-15px)!important;transform:translate(-15px)!important}.dialog-t-enter .after,.dialog-t-leave-to .after{height:0%!important}.dialog-t-enter header h3,.dialog-t-leave-to header h3{-webkit-transform:translate(-50px);transform:translate(-50px);opacity:0}.dialog-t-enter footer button,.dialog-t-leave-to footer button{-webkit-transform:translateY(10px);transform:translateY(10px);opacity:0}.con-vs-dialog{-webkit-transition:all .2s;transition:all .2s;width:100%;height:100%;position:fixed;left:100px;top:100px;left:0;top:0;z-index:200000;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;opacity:1}.con-vs-dialog .vs-dialog-dark{width:100%;background:rgba(0,0,0,.4);position:absolute;left:0;top:0;height:100%;z-index:10;-webkit-transition:all .25s ease;transition:all .25s ease;opacity:1}.con-vs-dialog .vs-dialog{-webkit-transition:all .2s;transition:all .2s;z-index:100;width:calc(100% - 20px);margin:10px;max-width:400px;border-radius:6px;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);background:#fff;-webkit-animation:rebound .3s;animation:rebound .3s}.con-vs-dialog .vs-dialog.locked{-webkit-transform:scale(1.02);transform:scale(1.02)}.con-vs-dialog .vs-dialog .vs-dialog-text{padding:10px;font-size:.875em;-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s}.con-vs-dialog .vs-dialog header{width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;background:#f8f8f8;border-radius:5px 5px;position:relative}.con-vs-dialog .vs-dialog header .con-title-after{width:100%;position:relative;overflow:hidden;border-radius:5px 5px 0 0}.con-vs-dialog .vs-dialog header span.after{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;position:absolute;left:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);width:3px;height:100%;display:block}.con-vs-dialog .vs-dialog header h3{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;padding:8px;padding-left:12px;font-size:1.2rem}.con-vs-dialog .vs-dialog header .vs-dialog-cancel{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;position:relative;padding:8px;cursor:pointer;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);border-radius:5px;-webkit-transform:translate(8px,-8px);transform:translate(8px,-8px);background:#fff;font-size:1.25em}.con-vs-dialog .vs-dialog header .vs-dialog-cancel:hover{-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1);box-shadow:0 0 0 0 rgba(0,0,0,.1);-webkit-transform:translate(5px,-5px);transform:translate(5px,-5px)}.con-vs-dialog .vs-dialog footer{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;position:relative}.con-vs-dialog .vs-dialog footer button{margin-left:0}.con-vs-dialog .vs-dialog footer:before{content:\"\";top:0;left:0;position:absolute;width:90%;margin-left:5%;height:1px;background:rgba(0,0,0,.05)}.vs-dialog-primary header{color:#1f74ff}.vs-dialog-primary .after{background:#1f74ff}.vs-dialog-secondary header{color:#7931b1}.vs-dialog-secondary .after{background:#7931b1}.vs-dialog-danger header{color:#ff4757}.vs-dialog-danger .after{background:#ff4757}.vs-dialog-success header{color:#46c93a}.vs-dialog-success .after{background:#46c93a}.vs-dialog-warning header{color:#ffba00}.vs-dialog-warning .after{background:#ffba00}.vs-dialog-dark header{color:#1e1e1e}.vs-dialog-dark .after{background:#1e1e1e}.vs-dialog-light header{color:#f5f5f5}.vs-dialog-light .after{background:#f5f5f5}@-webkit-keyframes rebound{0%{-webkit-transform:scale(.9);transform:scale(.9)}50%{-webkit-transform:scale(1.08);transform:scale(1.08)}to{-webkit-transform:scale(1);transform:scale(1)}}@keyframes rebound{0%{-webkit-transform:scale(.9);transform:scale(.9)}50%{-webkit-transform:scale(1.08);transform:scale(1.08)}to{-webkit-transform:scale(1);transform:scale(1)}}.vs-con-loading__container{position:relative;overflow:hidden}.vs-con-loading__container .con-vs-loading{position:absolute!important;width:100%;height:100%;min-height:60px;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.beforeRemove{opacity:0}.con-vs-loading{width:100%;height:100%;position:fixed;left:0;top:0;background:hsla(0,0%,100%,.6);z-index:300000;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-transition:all .3s ease;transition:all .3s ease}.con-vs-loading.textAfter{-webkit-box-orient:vertical!important;-webkit-box-direction:reverse!important;-ms-flex-direction:column-reverse!important;flex-direction:column-reverse!important}.con-vs-loading .title-loading{position:relative;padding:5px}.con-vs-loading .effect-click{position:absolute;width:0;height:0;background:rgba(0,0,0,.1);border-radius:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.con-vs-loading .vs-loading{position:relative;width:55px;height:55px;display:block;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box;border:3px solid transparent}.con-vs-loading .vs-loading .effects{-webkit-transition:all .3s ease;transition:all .3s ease}.con-vs-loading .vs-loading.material{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-loading .vs-loading.border .effect-1,.con-vs-loading .vs-loading.default .effect-1{position:absolute;width:100%;height:100%;border:3px solid transparent;border-left:3px solid #1f74ff;-webkit-animation:rotate 1s ease infinite;animation:rotate 1s ease infinite;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.border .effect-2,.con-vs-loading .vs-loading.default .effect-2{position:absolute;width:100%;height:100%;border:3px solid transparent;border-left:3px solid #1f74ff;-webkit-animation:rotateOpacity 1s ease infinite .1s;animation:rotateOpacity 1s ease infinite .1s;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.border .effect-3,.con-vs-loading .vs-loading.default .effect-3{position:absolute;width:100%;height:100%;border:3px solid transparent;border-left:3px solid #1f74ff;-webkit-animation:rotateOpacity 1s ease infinite .2s;animation:rotateOpacity 1s ease infinite .2s;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.border{border:1px solid #f0f0f0}.con-vs-loading .vs-loading.border .effect-1,.con-vs-loading .vs-loading.border .effect-2,.con-vs-loading .vs-loading.border .effect-3{border:1px solid transparent;border-left:1px solid #1f74ff}.con-vs-loading .vs-loading.point .effect-1{-webkit-animation:scale 1.2s ease infinite;animation:scale 1.2s ease infinite}.con-vs-loading .vs-loading.point .effect-1,.con-vs-loading .vs-loading.point .effect-2{background:rgba(31,116,255,.4);position:absolute;width:100%;height:100%;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.point .effect-2{-webkit-animation:scale 1.8s ease infinite;animation:scale 1.8s ease infinite}.con-vs-loading .vs-loading.point .effect-3{background:rgba(31,116,255,.4);position:absolute;width:100%;height:100%;-webkit-animation:scale 3.6s ease-out infinite;animation:scale 3.6s ease-out infinite;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.radius .effect-1{-webkit-animation:radius 1s ease infinite;animation:radius 1s ease infinite}.con-vs-loading .vs-loading.radius .effect-1,.con-vs-loading .vs-loading.radius .effect-2{position:absolute;width:100%;height:100%;border:3px solid #1f74ff;border-radius:10px;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.radius .effect-2{-webkit-animation:radius 2s ease infinite .1s;animation:radius 2s ease infinite .1s}.con-vs-loading .vs-loading.radius .effect-3{-webkit-animation:radius 3s ease infinite .2s;animation:radius 3s ease infinite .2s}.con-vs-loading .vs-loading.corners .effect-1,.con-vs-loading .vs-loading.radius .effect-3{position:absolute;width:100%;height:100%;border:3px solid #1f74ff;border-radius:10px;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.corners .effect-1{-webkit-animation:corners 1s ease infinite;animation:corners 1s ease infinite}.con-vs-loading .vs-loading.sound{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-loading .vs-loading.sound .effect-1{height:100%;-webkit-animation:sound 1.4s ease infinite alternate;animation:sound 1.4s ease infinite alternate}.con-vs-loading .vs-loading.sound .effect-1,.con-vs-loading .vs-loading.sound .effect-2{position:relative;width:5px;border-radius:10px;-webkit-box-sizing:border-box;box-sizing:border-box;background:#1f74ff;margin:0 4px}.con-vs-loading .vs-loading.sound .effect-2{height:60%;-webkit-animation:sound .7s ease infinite alternate;animation:sound .7s ease infinite alternate}.con-vs-loading .vs-loading.sound .effect-3{position:relative;width:5px;height:80%;-webkit-animation:sound 1s ease-out infinite alternate;animation:sound 1s ease-out infinite alternate;border-radius:10px;-webkit-box-sizing:border-box;box-sizing:border-box;background:#1f74ff;margin:0 4px}.spinner{-webkit-animation:rotator 1.4s linear infinite;animation:rotator 1.4s linear infinite}.path{stroke-dasharray:187;stroke-dashoffset:0;-webkit-transform-origin:center;transform-origin:center;-webkit-animation:dash 1.4s ease-in-out infinite,colors 5.6s ease-in-out infinite;animation:dash 1.4s ease-in-out infinite,colors 5.6s ease-in-out infinite}.fade-enter-active,.fade-leave-active{-webkit-transition:opacity .3s;transition:opacity .3s}.fade-enter,.fade-leave-to{opacity:0}.effect-click-leave-active{-webkit-transition:all .3s;transition:all .3s}.effect-click-leave-to{opacity:0;width:1000px!important;height:1000px!important}.vs-loading-background-primary{background:#1f74ff}.vs-loading-color-primary .border .effect-1,.vs-loading-color-primary .border .effect-2,.vs-loading-color-primary .border .effect-3,.vs-loading-color-primary .default .effect-1,.vs-loading-color-primary .default .effect-2,.vs-loading-color-primary .default .effect-3{border-left:3px solid #1f74ff!important}.vs-loading-color-primary .border .effect-1,.vs-loading-color-primary .border .effect-2,.vs-loading-color-primary .border .effect-3{border-left:1px solid #1f74ff!important}.vs-loading-color-primary .point .effect-1,.vs-loading-color-primary .point .effect-2,.vs-loading-color-primary .point .effect-3{background:rgba(31,116,255,.4)!important}.vs-loading-color-primary .corners .effect-1,.vs-loading-color-primary .radius .effect-1,.vs-loading-color-primary .radius .effect-2,.vs-loading-color-primary .radius .effect-3{border:3px solid #1f74ff!important}.vs-loading-color-primary .sound .effect-1,.vs-loading-color-primary .sound .effect-2,.vs-loading-color-primary .sound .effect-3{background:#1f74ff!important}.vs-loading-background-secondary{background:#7931b1}.vs-loading-color-secondary .border .effect-1,.vs-loading-color-secondary .border .effect-2,.vs-loading-color-secondary .border .effect-3,.vs-loading-color-secondary .default .effect-1,.vs-loading-color-secondary .default .effect-2,.vs-loading-color-secondary .default .effect-3{border-left:3px solid #7931b1!important}.vs-loading-color-secondary .border .effect-1,.vs-loading-color-secondary .border .effect-2,.vs-loading-color-secondary .border .effect-3{border-left:1px solid #7931b1!important}.vs-loading-color-secondary .point .effect-1,.vs-loading-color-secondary .point .effect-2,.vs-loading-color-secondary .point .effect-3{background:rgba(121,49,177,.4)!important}.vs-loading-color-secondary .corners .effect-1,.vs-loading-color-secondary .radius .effect-1,.vs-loading-color-secondary .radius .effect-2,.vs-loading-color-secondary .radius .effect-3{border:3px solid #7931b1!important}.vs-loading-color-secondary .sound .effect-1,.vs-loading-color-secondary .sound .effect-2,.vs-loading-color-secondary .sound .effect-3{background:#7931b1!important}.vs-loading-background-danger{background:#ff4757}.vs-loading-color-danger .border .effect-1,.vs-loading-color-danger .border .effect-2,.vs-loading-color-danger .border .effect-3,.vs-loading-color-danger .default .effect-1,.vs-loading-color-danger .default .effect-2,.vs-loading-color-danger .default .effect-3{border-left:3px solid #ff4757!important}.vs-loading-color-danger .border .effect-1,.vs-loading-color-danger .border .effect-2,.vs-loading-color-danger .border .effect-3{border-left:1px solid #ff4757!important}.vs-loading-color-danger .point .effect-1,.vs-loading-color-danger .point .effect-2,.vs-loading-color-danger .point .effect-3{background:rgba(255,71,87,.4)!important}.vs-loading-color-danger .corners .effect-1,.vs-loading-color-danger .radius .effect-1,.vs-loading-color-danger .radius .effect-2,.vs-loading-color-danger .radius .effect-3{border:3px solid #ff4757!important}.vs-loading-color-danger .sound .effect-1,.vs-loading-color-danger .sound .effect-2,.vs-loading-color-danger .sound .effect-3{background:#ff4757!important}.vs-loading-background-success{background:#46c93a}.vs-loading-color-success .border .effect-1,.vs-loading-color-success .border .effect-2,.vs-loading-color-success .border .effect-3,.vs-loading-color-success .default .effect-1,.vs-loading-color-success .default .effect-2,.vs-loading-color-success .default .effect-3{border-left:3px solid #46c93a!important}.vs-loading-color-success .border .effect-1,.vs-loading-color-success .border .effect-2,.vs-loading-color-success .border .effect-3{border-left:1px solid #46c93a!important}.vs-loading-color-success .point .effect-1,.vs-loading-color-success .point .effect-2,.vs-loading-color-success .point .effect-3{background:rgba(70,201,58,.4)!important}.vs-loading-color-success .corners .effect-1,.vs-loading-color-success .radius .effect-1,.vs-loading-color-success .radius .effect-2,.vs-loading-color-success .radius .effect-3{border:3px solid #46c93a!important}.vs-loading-color-success .sound .effect-1,.vs-loading-color-success .sound .effect-2,.vs-loading-color-success .sound .effect-3{background:#46c93a!important}.vs-loading-background-warning{background:#ffba00}.vs-loading-color-warning .border .effect-1,.vs-loading-color-warning .border .effect-2,.vs-loading-color-warning .border .effect-3,.vs-loading-color-warning .default .effect-1,.vs-loading-color-warning .default .effect-2,.vs-loading-color-warning .default .effect-3{border-left:3px solid #ffba00!important}.vs-loading-color-warning .border .effect-1,.vs-loading-color-warning .border .effect-2,.vs-loading-color-warning .border .effect-3{border-left:1px solid #ffba00!important}.vs-loading-color-warning .point .effect-1,.vs-loading-color-warning .point .effect-2,.vs-loading-color-warning .point .effect-3{background:rgba(255,186,0,.4)!important}.vs-loading-color-warning .corners .effect-1,.vs-loading-color-warning .radius .effect-1,.vs-loading-color-warning .radius .effect-2,.vs-loading-color-warning .radius .effect-3{border:3px solid #ffba00!important}.vs-loading-color-warning .sound .effect-1,.vs-loading-color-warning .sound .effect-2,.vs-loading-color-warning .sound .effect-3{background:#ffba00!important}.vs-loading-background-dark{background:#1e1e1e}.vs-loading-color-dark .border .effect-1,.vs-loading-color-dark .border .effect-2,.vs-loading-color-dark .border .effect-3,.vs-loading-color-dark .default .effect-1,.vs-loading-color-dark .default .effect-2,.vs-loading-color-dark .default .effect-3{border-left:3px solid #1e1e1e!important}.vs-loading-color-dark .border .effect-1,.vs-loading-color-dark .border .effect-2,.vs-loading-color-dark .border .effect-3{border-left:1px solid #1e1e1e!important}.vs-loading-color-dark .point .effect-1,.vs-loading-color-dark .point .effect-2,.vs-loading-color-dark .point .effect-3{background:rgba(30,30,30,.4)!important}.vs-loading-color-dark .corners .effect-1,.vs-loading-color-dark .radius .effect-1,.vs-loading-color-dark .radius .effect-2,.vs-loading-color-dark .radius .effect-3{border:3px solid #1e1e1e!important}.vs-loading-color-dark .sound .effect-1,.vs-loading-color-dark .sound .effect-2,.vs-loading-color-dark .sound .effect-3{background:#1e1e1e!important}.vs-loading-background-light{background:#f5f5f5}.vs-loading-color-light .border .effect-1,.vs-loading-color-light .border .effect-2,.vs-loading-color-light .border .effect-3,.vs-loading-color-light .default .effect-1,.vs-loading-color-light .default .effect-2,.vs-loading-color-light .default .effect-3{border-left:3px solid #f5f5f5!important}.vs-loading-color-light .border .effect-1,.vs-loading-color-light .border .effect-2,.vs-loading-color-light .border .effect-3{border-left:1px solid #f5f5f5!important}.vs-loading-color-light .point .effect-1,.vs-loading-color-light .point .effect-2,.vs-loading-color-light .point .effect-3{background:hsla(0,0%,96%,.4)!important}.vs-loading-color-light .corners .effect-1,.vs-loading-color-light .radius .effect-1,.vs-loading-color-light .radius .effect-2,.vs-loading-color-light .radius .effect-3{border:3px solid #f5f5f5!important}.vs-loading-color-light .sound .effect-1,.vs-loading-color-light .sound .effect-2,.vs-loading-color-light .sound .effect-3{background:#f5f5f5!important}@-webkit-keyframes rotate{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}@keyframes rotate{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}@-webkit-keyframes rotateOpacity{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg);opacity:.1}to{-webkit-transform:rotate(1turn);transform:rotate(1turn);opacity:1}}@keyframes rotateOpacity{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg);opacity:.1}to{-webkit-transform:rotate(1turn);transform:rotate(1turn);opacity:1}}@-webkit-keyframes scale{0%{-webkit-transform:scale(.1);transform:scale(.1)}60%{-webkit-transform:scale(1);transform:scale(1)}to{-webkit-transform:scale(.1);transform:scale(.1)}}@keyframes scale{0%{-webkit-transform:scale(.1);transform:scale(.1)}60%{-webkit-transform:scale(1);transform:scale(1)}to{-webkit-transform:scale(.1);transform:scale(.1)}}@-webkit-keyframes radius{0%{-webkit-transform:rotate(0deg) scale(.1);transform:rotate(0deg) scale(.1);opacity:1}60%{-webkit-transform:rotate(160deg) scale(1);transform:rotate(160deg) scale(1);opacity:0}to{-webkit-transform:rotate(0deg) scale(.1);transform:rotate(0deg) scale(.1);opacity:1}}@keyframes radius{0%{-webkit-transform:rotate(0deg) scale(.1);transform:rotate(0deg) scale(.1);opacity:1}60%{-webkit-transform:rotate(160deg) scale(1);transform:rotate(160deg) scale(1);opacity:0}to{-webkit-transform:rotate(0deg) scale(.1);transform:rotate(0deg) scale(.1);opacity:1}}@-webkit-keyframes corners{0%{border-radius:50%;-webkit-transform:rotate(0deg);transform:rotate(0deg)}25%{border-radius:50% 50% 50% 20%}50%{border-radius:50% 50% 20% 30%}75%{border-radius:50% 20% 30% 30%}to{border-radius:50%;-webkit-transform:rotate(-180deg);transform:rotate(-180deg)}}@keyframes corners{0%{border-radius:50%;-webkit-transform:rotate(0deg);transform:rotate(0deg)}25%{border-radius:50% 50% 50% 20%}50%{border-radius:50% 50% 20% 30%}75%{border-radius:50% 20% 30% 30%}to{border-radius:50%;-webkit-transform:rotate(-180deg);transform:rotate(-180deg)}}@-webkit-keyframes sound{0%{-webkit-transform:scaleY(0);transform:scaleY(0);opacity:.7}40%{-webkit-transform:scaleY(1.2);transform:scaleY(1.2);opacity:.5}70%{-webkit-transform:scaleY(.2);transform:scaleY(.2);opacity:.8}50%{-webkit-transform:scaleY(1);transform:scaleY(1);opacity:1}}@keyframes sound{0%{-webkit-transform:scaleY(0);transform:scaleY(0);opacity:.7}40%{-webkit-transform:scaleY(1.2);transform:scaleY(1.2);opacity:.5}70%{-webkit-transform:scaleY(.2);transform:scaleY(.2);opacity:.8}50%{-webkit-transform:scaleY(1);transform:scaleY(1);opacity:1}}@-webkit-keyframes dash{0%{stroke-dashoffset:187}50%{stroke-dashoffset:46.75;-webkit-transform:rotate(135deg);transform:rotate(135deg)}to{stroke-dashoffset:187;-webkit-transform:rotate(450deg);transform:rotate(450deg)}}@keyframes dash{0%{stroke-dashoffset:187}50%{stroke-dashoffset:46.75;-webkit-transform:rotate(135deg);transform:rotate(135deg)}to{stroke-dashoffset:187;-webkit-transform:rotate(450deg);transform:rotate(450deg)}}@-webkit-keyframes colors{0%{stroke:#4285f4}25%{stroke:#de3e35}50%{stroke:#f7c223}75%{stroke:#1b9a59}to{stroke:#4285f4}}@keyframes colors{0%{stroke:#4285f4}25%{stroke:#de3e35}50%{stroke:#f7c223}75%{stroke:#1b9a59}to{stroke:#4285f4}}@-webkit-keyframes rotator{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(270deg);transform:rotate(270deg)}}@keyframes rotator{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(270deg);transform:rotate(270deg)}}", ""]);
 
 // exports
 
 
 /***/ }),
-/* 50 */
-/***/ (function(module, exports) {
-
-/*
-	MIT License http://www.opensource.org/licenses/mit-license.php
-	Author Tobias Koppers @sokra
-*/
-// css base code, injected by the css-loader
-module.exports = function(useSourceMap) {
-	var list = [];
-
-	// return the list of modules as css string
-	list.toString = function toString() {
-		return this.map(function (item) {
-			var content = cssWithMappingToString(item, useSourceMap);
-			if(item[2]) {
-				return "@media " + item[2] + "{" + content + "}";
-			} else {
-				return content;
-			}
-		}).join("");
-	};
-
-	// import a list of modules into the list
-	list.i = function(modules, mediaQuery) {
-		if(typeof modules === "string")
-			modules = [[null, modules, ""]];
-		var alreadyImportedModules = {};
-		for(var i = 0; i < this.length; i++) {
-			var id = this[i][0];
-			if(typeof id === "number")
-				alreadyImportedModules[id] = true;
-		}
-		for(i = 0; i < modules.length; i++) {
-			var item = modules[i];
-			// skip already imported module
-			// this implementation is not 100% perfect for weird media query combinations
-			//  when a module is imported multiple times with different media queries.
-			//  I hope this will never occur (Hey this way we have smaller bundles)
-			if(typeof item[0] !== "number" || !alreadyImportedModules[item[0]]) {
-				if(mediaQuery && !item[2]) {
-					item[2] = mediaQuery;
-				} else if(mediaQuery) {
-					item[2] = "(" + item[2] + ") and (" + mediaQuery + ")";
-				}
-				list.push(item);
-			}
-		}
-	};
-	return list;
-};
-
-function cssWithMappingToString(item, useSourceMap) {
-	var content = item[1] || '';
-	var cssMapping = item[3];
-	if (!cssMapping) {
-		return content;
-	}
-
-	if (useSourceMap && typeof btoa === 'function') {
-		var sourceMapping = toComment(cssMapping);
-		var sourceURLs = cssMapping.sources.map(function (source) {
-			return '/*# sourceURL=' + cssMapping.sourceRoot + source + ' */'
-		});
-
-		return [content].concat(sourceURLs).concat([sourceMapping]).join('\n');
-	}
-
-	return [content].join('\n');
-}
-
-// Adapted from convert-source-map (MIT)
-function toComment(sourceMap) {
-	// eslint-disable-next-line no-undef
-	var base64 = btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap))));
-	var data = 'sourceMappingURL=data:application/json;charset=utf-8;base64,' + base64;
-
-	return '/*# ' + data + ' */';
-}
-
-
-/***/ }),
-/* 51 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/*
-  MIT License http://www.opensource.org/licenses/mit-license.php
-  Author Tobias Koppers @sokra
-  Modified by Evan You @yyx990803
-*/
-
-var hasDocument = typeof document !== 'undefined'
-
-if (typeof DEBUG !== 'undefined' && DEBUG) {
-  if (!hasDocument) {
-    throw new Error(
-    'vue-style-loader cannot be used in a non-browser environment. ' +
-    "Use { target: 'node' } in your Webpack config to indicate a server-rendering environment."
-  ) }
-}
-
-var listToStyles = __webpack_require__(52)
-
-/*
-type StyleObject = {
-  id: number;
-  parts: Array<StyleObjectPart>
-}
-
-type StyleObjectPart = {
-  css: string;
-  media: string;
-  sourceMap: ?string
-}
-*/
-
-var stylesInDom = {/*
-  [id: number]: {
-    id: number,
-    refs: number,
-    parts: Array<(obj?: StyleObjectPart) => void>
-  }
-*/}
-
-var head = hasDocument && (document.head || document.getElementsByTagName('head')[0])
-var singletonElement = null
-var singletonCounter = 0
-var isProduction = false
-var noop = function () {}
-var options = null
-var ssrIdKey = 'data-vue-ssr-id'
-
-// Force single-tag solution on IE6-9, which has a hard limit on the # of <style>
-// tags it will allow on a page
-var isOldIE = typeof navigator !== 'undefined' && /msie [6-9]\b/.test(navigator.userAgent.toLowerCase())
-
-module.exports = function (parentId, list, _isProduction, _options) {
-  isProduction = _isProduction
-
-  options = _options || {}
-
-  var styles = listToStyles(parentId, list)
-  addStylesToDom(styles)
-
-  return function update (newList) {
-    var mayRemove = []
-    for (var i = 0; i < styles.length; i++) {
-      var item = styles[i]
-      var domStyle = stylesInDom[item.id]
-      domStyle.refs--
-      mayRemove.push(domStyle)
-    }
-    if (newList) {
-      styles = listToStyles(parentId, newList)
-      addStylesToDom(styles)
-    } else {
-      styles = []
-    }
-    for (var i = 0; i < mayRemove.length; i++) {
-      var domStyle = mayRemove[i]
-      if (domStyle.refs === 0) {
-        for (var j = 0; j < domStyle.parts.length; j++) {
-          domStyle.parts[j]()
-        }
-        delete stylesInDom[domStyle.id]
-      }
-    }
-  }
-}
-
-function addStylesToDom (styles /* Array<StyleObject> */) {
-  for (var i = 0; i < styles.length; i++) {
-    var item = styles[i]
-    var domStyle = stylesInDom[item.id]
-    if (domStyle) {
-      domStyle.refs++
-      for (var j = 0; j < domStyle.parts.length; j++) {
-        domStyle.parts[j](item.parts[j])
-      }
-      for (; j < item.parts.length; j++) {
-        domStyle.parts.push(addStyle(item.parts[j]))
-      }
-      if (domStyle.parts.length > item.parts.length) {
-        domStyle.parts.length = item.parts.length
-      }
-    } else {
-      var parts = []
-      for (var j = 0; j < item.parts.length; j++) {
-        parts.push(addStyle(item.parts[j]))
-      }
-      stylesInDom[item.id] = { id: item.id, refs: 1, parts: parts }
-    }
-  }
-}
-
-function createStyleElement () {
-  var styleElement = document.createElement('style')
-  styleElement.type = 'text/css'
-  head.appendChild(styleElement)
-  return styleElement
-}
-
-function addStyle (obj /* StyleObjectPart */) {
-  var update, remove
-  var styleElement = document.querySelector('style[' + ssrIdKey + '~="' + obj.id + '"]')
-
-  if (styleElement) {
-    if (isProduction) {
-      // has SSR styles and in production mode.
-      // simply do nothing.
-      return noop
-    } else {
-      // has SSR styles but in dev mode.
-      // for some reason Chrome can't handle source map in server-rendered
-      // style tags - source maps in <style> only works if the style tag is
-      // created and inserted dynamically. So we remove the server rendered
-      // styles and inject new ones.
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  if (isOldIE) {
-    // use singleton mode for IE9.
-    var styleIndex = singletonCounter++
-    styleElement = singletonElement || (singletonElement = createStyleElement())
-    update = applyToSingletonTag.bind(null, styleElement, styleIndex, false)
-    remove = applyToSingletonTag.bind(null, styleElement, styleIndex, true)
-  } else {
-    // use multi-style-tag mode in all other cases
-    styleElement = createStyleElement()
-    update = applyToTag.bind(null, styleElement)
-    remove = function () {
-      styleElement.parentNode.removeChild(styleElement)
-    }
-  }
-
-  update(obj)
-
-  return function updateStyle (newObj /* StyleObjectPart */) {
-    if (newObj) {
-      if (newObj.css === obj.css &&
-          newObj.media === obj.media &&
-          newObj.sourceMap === obj.sourceMap) {
-        return
-      }
-      update(obj = newObj)
-    } else {
-      remove()
-    }
-  }
-}
-
-var replaceText = (function () {
-  var textStore = []
-
-  return function (index, replacement) {
-    textStore[index] = replacement
-    return textStore.filter(Boolean).join('\n')
-  }
-})()
-
-function applyToSingletonTag (styleElement, index, remove, obj) {
-  var css = remove ? '' : obj.css
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = replaceText(index, css)
-  } else {
-    var cssNode = document.createTextNode(css)
-    var childNodes = styleElement.childNodes
-    if (childNodes[index]) styleElement.removeChild(childNodes[index])
-    if (childNodes.length) {
-      styleElement.insertBefore(cssNode, childNodes[index])
-    } else {
-      styleElement.appendChild(cssNode)
-    }
-  }
-}
-
-function applyToTag (styleElement, obj) {
-  var css = obj.css
-  var media = obj.media
-  var sourceMap = obj.sourceMap
-
-  if (media) {
-    styleElement.setAttribute('media', media)
-  }
-  if (options.ssrId) {
-    styleElement.setAttribute(ssrIdKey, obj.id)
-  }
-
-  if (sourceMap) {
-    // https://developer.chrome.com/devtools/docs/javascript-debugging
-    // this makes source maps inside style tags work properly in Chrome
-    css += '\n/*# sourceURL=' + sourceMap.sources[0] + ' */'
-    // http://stackoverflow.com/a/26603875
-    css += '\n/*# sourceMappingURL=data:application/json;base64,' + btoa(unescape(encodeURIComponent(JSON.stringify(sourceMap)))) + ' */'
-  }
-
-  if (styleElement.styleSheet) {
-    styleElement.styleSheet.cssText = css
-  } else {
-    while (styleElement.firstChild) {
-      styleElement.removeChild(styleElement.firstChild)
-    }
-    styleElement.appendChild(document.createTextNode(css))
-  }
-}
-
-
-/***/ }),
-/* 52 */
-/***/ (function(module, exports) {
-
-/**
- * Translates the list format produced by css-loader into something
- * easier to manipulate.
- */
-module.exports = function listToStyles (parentId, list) {
-  var styles = []
-  var newStyles = {}
-  for (var i = 0; i < list.length; i++) {
-    var item = list[i]
-    var id = item[0]
-    var css = item[1]
-    var media = item[2]
-    var sourceMap = item[3]
-    var part = {
-      id: parentId + ':' + i,
-      css: css,
-      media: media,
-      sourceMap: sourceMap
-    }
-    if (!newStyles[id]) {
-      styles.push(newStyles[id] = { id: id, parts: [part] })
-    } else {
-      newStyles[id].parts.push(part)
-    }
-  }
-  return styles
-}
-
-
-/***/ }),
-/* 53 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ({
-  data: function data() {
-    return {
-      active: false,
-      actives: 2
-    };
-  }
-});
-
-/***/ }),
-/* 54 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "con-example-sidebar", attrs: { id: "parentx3" } },
-    [
-      _c(
-        "vs-sidebar",
-        {
-          staticStyle: { width: "200px" },
-          attrs: {
-            "vs-static": "",
-            "vs-parent": "#parentx3",
-            "vs-active": _vm.active
-          },
-          on: {
-            "update:vsActive": function($event) {
-              _vm.active = $event
-            }
-          }
-        },
-        [
-          _c(
-            "vs-sidebar-item",
-            {
-              attrs: {
-                "vs-active": _vm.actives == 1,
-                "vs-icon": "question_answer"
-              },
-              on: {
-                click: function($event) {
-                  _vm.actives = 1
-                }
-              }
-            },
-            [_vm._v("\n       Dashboard\n    ")]
-          ),
-          _vm._v(" "),
-          _c(
-            "vs-sidebar-item",
-            {
-              attrs: { "vs-active": _vm.actives == 2, "vs-icon": "gavel" },
-              on: {
-                click: function($event) {
-                  _vm.actives = 2
-                }
-              }
-            },
-            [_vm._v("\n       History\n    ")]
-          ),
-          _vm._v(" "),
-          _c(
-            "vs-sidebar-item",
-            {
-              attrs: {
-                "vs-active": _vm.actives == 3,
-                "vs-icon": "verified_user"
-              },
-              on: {
-                click: function($event) {
-                  _vm.actives = 3
-                }
-              }
-            },
-            [_vm._v("\n       Settings\n    ")]
-          ),
-          _vm._v(" "),
-          _c(
-            "vs-sidebar-item",
-            {
-              attrs: {
-                "vs-active": _vm.actives == 4,
-                "vs-icon": "account_box"
-              },
-              on: {
-                click: function($event) {
-                  _vm.actives = 4
-                }
-              }
-            },
-            [_vm._v("\n       Profile\n    ")]
-          ),
-          _vm._v(" "),
-          _c(
-            "vs-sidebar-item",
-            {
-              attrs: {
-                "vs-active": _vm.actives == 5,
-                "vs-icon": "card_giftcard"
-              },
-              on: {
-                click: function($event) {
-                  _vm.actives = 5
-                }
-              }
-            },
-            [_vm._v("\n       card\n    ")]
-          )
-        ],
-        1
-      )
-    ],
-    1
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-11ca4512", module.exports)
-  }
-}
-
-/***/ }),
-/* 55 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
-/* 56 */,
-/* 57 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -60309,7 +60054,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(58);
+var	fixUrls = __webpack_require__(46);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -60622,7 +60367,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 58 */
+/* 46 */
 /***/ (function(module, exports) {
 
 
@@ -60717,64 +60462,541 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 59 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// style-loader: Adds some css to the DOM by adding a <style> tag
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(48)
+/* template */
+var __vue_template__ = __webpack_require__(49)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/ExampleComponent.vue"
 
-// load the styles
-var content = __webpack_require__(60);
-if(typeof content === 'string') content = [[module.i, content, '']];
-// Prepare cssTransformation
-var transform;
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-7168fb6a", Component.options)
+  } else {
+    hotAPI.reload("data-v-7168fb6a", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
 
-var options = {}
-options.transform = transform
-// add the styles to the DOM
-var update = __webpack_require__(57)(content, options);
-if(content.locals) module.exports = content.locals;
-// Hot Module Replacement
-if(false) {
-	// When the styles change, update the <style> tags
-	if(!content.locals) {
-		module.hot.accept("!!../../css-loader/index.js!./vuesax.css", function() {
-			var newContent = require("!!../../css-loader/index.js!./vuesax.css");
-			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-			update(newContent);
-		});
-	}
-	// When the module is disposed, remove the <style> tags
-	module.hot.dispose(function() { update(); });
+module.exports = Component.exports
+
+
+/***/ }),
+/* 48 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+    mounted: function mounted() {
+        console.log('Component mounted.');
+    }
+});
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm._m(0)
+}
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "container" }, [
+      _c("div", { staticClass: "row justify-content-center" }, [
+        _c("div", { staticClass: "col-md-8" }, [
+          _c("div", { staticClass: "card card-default" }, [
+            _c("div", { staticClass: "card-header" }, [
+              _vm._v("Example Component")
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "card-body" }, [
+              _vm._v(
+                "\n                    I'm an example component.\n                "
+              )
+            ])
+          ])
+        ])
+      ])
+    ])
+  }
+]
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-7168fb6a", module.exports)
+  }
 }
 
 /***/ }),
-/* 60 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(50)(false);
-// imports
+var disposed = false
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(51)
+/* template */
+var __vue_template__ = __webpack_require__(52)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/partials/LoadingComponent.vue"
 
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-4832d8d2", Component.options)
+  } else {
+    hotAPI.reload("data-v-4832d8d2", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
 
-// module
-exports.push([module.i, "*{margin:0;padding:0;-webkit-box-sizing:border-box;box-sizing:border-box;outline:none;text-transform:none;text-decoration:none}:root{--default:150,150,150;--primary:31,116,255;--danger:255,71,87;--success:70,201,58;--dark:30,30,30;--warning:255,186,0}.vs-component button{border:1px solid hsla(0,0%,100%,0);border-radius:5px;border:0;cursor:pointer;outline:none;-webkit-transition:all .2s ease;transition:all .2s ease;overflow:hidden;position:relative;margin:5px}.material-icons{font-size:1rem}.mt1{margin-top:1px}.mb1{margin-bottom:1px}.ml1{margin-left:1px}.mr1{margin-right:1px}.mt2{margin-top:2px}.mb2{margin-bottom:2px}.ml2{margin-left:2px}.mr2{margin-right:2px}.mt3{margin-top:3px}.mb3{margin-bottom:3px}.ml3{margin-left:3px}.mr3{margin-right:3px}.mt4{margin-top:4px}.mb4{margin-bottom:4px}.ml4{margin-left:4px}.mr4{margin-right:4px}.mt5{margin-top:5px}.mb5{margin-bottom:5px}.ml5{margin-left:5px}.mr5{margin-right:5px}.mt10{margin-top:10px}.mb10{margin-bottom:10px}.ml10{margin-left:10px}.mr10{margin-right:10px}.mt15{margin-top:15px}.mb15{margin-bottom:15px}.ml15{margin-left:15px}.mr15{margin-right:15px}.mt20{margin-top:20px}.mb20{margin-bottom:20px}.ml20{margin-left:20px}.mr20{margin-right:20px}.mt25{margin-top:25px}.mb25{margin-bottom:25px}.ml25{margin-left:25px}.mr25{margin-right:25px}.mt30{margin-top:30px}.mb30{margin-bottom:30px}.ml30{margin-left:30px}.mr30{margin-right:30px}.mt35{margin-top:35px}.mb35{margin-bottom:35px}.ml35{margin-left:35px}.mr35{margin-right:35px}.mt40{margin-top:40px}.mb40{margin-bottom:40px}.ml40{margin-left:40px}.mr40{margin-right:40px}.mt45{margin-top:45px}.mb45{margin-bottom:45px}.ml45{margin-left:45px}.mr45{margin-right:45px}.mt50{margin-top:50px}.mb50{margin-bottom:50px}.ml50{margin-left:50px}.mr50{margin-right:50px}.mt55{margin-top:55px}.mb55{margin-bottom:55px}.ml55{margin-left:55px}.mr55{margin-right:55px}.mt60{margin-top:60px}.mb60{margin-bottom:60px}.ml60{margin-left:60px}.mr60{margin-right:60px}.mt65{margin-top:65px}.mb65{margin-bottom:65px}.ml65{margin-left:65px}.mr65{margin-right:65px}.mt70{margin-top:70px}.mb70{margin-bottom:70px}.ml70{margin-left:70px}.mr70{margin-right:70px}.mt75{margin-top:75px}.mb75{margin-bottom:75px}.ml75{margin-left:75px}.mr75{margin-right:75px}.mt80{margin-top:80px}.mb80{margin-bottom:80px}.ml80{margin-left:80px}.mr80{margin-right:80px}.mt85{margin-top:85px}.mb85{margin-bottom:85px}.ml85{margin-left:85px}.mr85{margin-right:85px}.mt90{margin-top:90px}.mb90{margin-bottom:90px}.ml90{margin-left:90px}.mr90{margin-right:90px}.mt95{margin-top:95px}.mb95{margin-bottom:95px}.ml95{margin-left:95px}.mr95{margin-right:95px}.mt100{margin-top:100px}.mb100{margin-bottom:100px}.ml100{margin-left:100px}.mr100{margin-right:100px}.pt1{padding-top:1px}.pb1{padding-bottom:1px}.pl1{padding-left:1px}.pr1{padding-right:1px}.pt2{padding-top:2px}.pb2{padding-bottom:2px}.pl2{padding-left:2px}.pr2{padding-right:2px}.pt3{padding-top:3px}.pb3{padding-bottom:3px}.pl3{padding-left:3px}.pr3{padding-right:3px}.pt4{padding-top:4px}.pb4{padding-bottom:4px}.pl4{padding-left:4px}.pr4{padding-right:4px}.pt5{padding-top:5px}.pb5{padding-bottom:5px}.pl5{padding-left:5px}.pr5{padding-right:5px}.pt10{padding-top:10px}.pb10{padding-bottom:10px}.pl10{padding-left:10px}.pr10{padding-right:10px}.pt15{padding-top:15px}.pb15{padding-bottom:15px}.pl15{padding-left:15px}.pr15{padding-right:15px}.pt20{padding-top:20px}.pb20{padding-bottom:20px}.pl20{padding-left:20px}.pr20{padding-right:20px}.pt25{padding-top:25px}.pb25{padding-bottom:25px}.pl25{padding-left:25px}.pr25{padding-right:25px}.pt30{padding-top:30px}.pb30{padding-bottom:30px}.pl30{padding-left:30px}.pr30{padding-right:30px}.pt35{padding-top:35px}.pb35{padding-bottom:35px}.pl35{padding-left:35px}.pr35{padding-right:35px}.pt40{padding-top:40px}.pb40{padding-bottom:40px}.pl40{padding-left:40px}.pr40{padding-right:40px}.pt45{padding-top:45px}.pb45{padding-bottom:45px}.pl45{padding-left:45px}.pr45{padding-right:45px}.pt50{padding-top:50px}.pb50{padding-bottom:50px}.pl50{padding-left:50px}.pr50{padding-right:50px}.pt55{padding-top:55px}.pb55{padding-bottom:55px}.pl55{padding-left:55px}.pr55{padding-right:55px}.pt60{padding-top:60px}.pb60{padding-bottom:60px}.pl60{padding-left:60px}.pr60{padding-right:60px}.pt65{padding-top:65px}.pb65{padding-bottom:65px}.pl65{padding-left:65px}.pr65{padding-right:65px}.pt70{padding-top:70px}.pb70{padding-bottom:70px}.pl70{padding-left:70px}.pr70{padding-right:70px}.pt75{padding-top:75px}.pb75{padding-bottom:75px}.pl75{padding-left:75px}.pr75{padding-right:75px}.pt80{padding-top:80px}.pb80{padding-bottom:80px}.pl80{padding-left:80px}.pr80{padding-right:80px}.pt85{padding-top:85px}.pb85{padding-bottom:85px}.pl85{padding-left:85px}.pr85{padding-right:85px}.pt90{padding-top:90px}.pb90{padding-bottom:90px}.pl90{padding-left:90px}.pr90{padding-right:90px}.pt95{padding-top:95px}.pb95{padding-bottom:95px}.pl95{padding-left:95px}.pr95{padding-right:95px}.pt100{padding-top:100px}.pb100{padding-bottom:100px}.pl100{padding-left:100px}.pr100{padding-right:100px}.ft5{font-size:5px}.ft10{font-size:10px}.ft15{font-size:15px}.ft20{font-size:20px}.ft25{font-size:25px}.ft30{font-size:30px}.ft35{font-size:35px}.ft40{font-size:40px}.ft45{font-size:45px}.ft50{font-size:50px}.ft55{font-size:55px}.ft60{font-size:60px}.ft65{font-size:65px}.ft70{font-size:70px}.ft75{font-size:75px}.ft80{font-size:80px}.ft85{font-size:85px}.ft90{font-size:90px}.ft95{font-size:95px}.ft100{font-size:100px}.con-vs-avatar{width:32px;height:32px;border-radius:50%;position:relative;cursor:pointer;display:inline-block;margin:5px}.con-vs-avatar.large{width:50px;height:50px}.con-vs-avatar.small{width:24px;height:24px}.con-vs-avatar.small .vs-avatar-text{font-size:.9375em}.con-vs-avatar .dot-count{position:absolute;top:1px;right:1px;width:7px;height:7px;border-radius:50%;z-index:100}.con-vs-avatar .dot-count.badgeNumber{width:auto;height:auto;top:-3px;right:0;border-radius:4px;padding-left:3px;padding-right:3px;font-size:.625em;color:#fff}.con-vs-avatar .vs-avatar-text{position:absolute;left:50%;top:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.con-vs-avatar .con-img{position:absolute;width:100%;height:100%;overflow:hidden;border-radius:50%}.con-vs-avatar-primary,.dot-count-primary{background:#1f74ff}.vs-avatar-text-primary{color:#1f74ff}.con-vs-avatar-secondary,.dot-count-secondary{background:#7931b1}.vs-avatar-text-secondary{color:#7931b1}.con-vs-avatar-danger,.dot-count-danger{background:#ff4757}.vs-avatar-text-danger{color:#ff4757}.con-vs-avatar-success,.dot-count-success{background:#46c93a}.vs-avatar-text-success{color:#46c93a}.con-vs-avatar-warning,.dot-count-warning{background:#ffba00}.vs-avatar-text-warning{color:#ffba00}.con-vs-avatar-dark,.dot-count-dark{background:#1e1e1e}.vs-avatar-text-dark{color:#1e1e1e}.con-vs-avatar-light,.dot-count-light{background:#f5f5f5}.vs-avatar-text-light{color:#f5f5f5}.vs-breadcrumb{display:-webkit-box;display:-ms-flexbox;display:flex}.vs-breadcrumb .disabled-link{opacity:.5;pointer-events:none}.vs-breadcrumb ol{display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;padding:.75rem 1rem}.vs-breadcrumb a{-webkit-transition:all .2s ease;transition:all .2s ease;color:rgba(0,0,0,.4)}.vs-breadcrumb a:focus,.vs-breadcrumb a:hover{color:rgba(0,0,0,.7);text-decoration:none!important}.vs-breadcrumb li.vs-active{cursor:default}.vs-breadcrumb .separator{color:rgba(0,0,0,.4);padding:0 .5rem}.vs-breadcrumb.material-icons{vertical-align:middle;font-size:inherit}.vs-breadcrumb.vs-align-left{-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}.vs-breadcrumb.vs-align-center{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-breadcrumb.vs-align-right{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-primary{color:#1f74ff}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-secondary{color:#7931b1}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-danger{color:#ff4757}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-success{color:#46c93a}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-warning{color:#ffba00}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-dark{color:#1e1e1e}.vs-breadcrumb .vs-breadcrumb-text.vs-breadcrumb-text-light{color:#f5f5f5}.vs-button{-webkit-transition:all .2s ease;transition:all .2s ease;padding:10px;border:0;border-radius:5px;cursor:pointer;position:relative;overflow:hidden;color:#fff;-webkit-box-sizing:border-box;box-sizing:border-box;background:transparent}.vs-button.large{padding:12px;font-size:1em}.vs-button.small{padding:7px;font-size:.7em}.vs-button:disabled{opacity:.5;cursor:default;pointer-events:none}.vs-button .vs-button-icon{z-index:100;display:block;position:relative;font-size:1.125em;-webkit-transition:all .2s ease;transition:all .2s ease}.vs-button .vs-button-backgroundx{border-radius:50%;width:10px;position:absolute;height:10px;z-index:0;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);-moz-transform:translate(-50%,-50%);-webkit-box-shadow:inset 0 0 60px 0 hsla(0,0%,100%,.5);box-shadow:inset 0 0 60px 0 hsla(0,0%,100%,.5)}.vs-button .vs-button-text{position:relative;color:inherit;display:inline-block;-webkit-transition:all .2s ease;transition:all .2s ease}.vs-button-border{padding:9px}.vs-button-border.isActive .vs-button-icon,.vs-button-border.isActive .vs-button-text,.vs-button-flat.isActive .vs-button-icon,.vs-button-flat.isActive .vs-button-text{color:#fff!important}.vs-button-filled:hover{-webkit-box-shadow:0 9px 28px -9px;box-shadow:0 9px 28px -9px}.vs-button-line{padding:9px 10px;border-radius:0;overflow:visible;border-style:solid}.vs-button-line .vs-button-linex{-webkit-transition:all .2s ease;transition:all .2s ease;width:0;position:absolute;left:0;bottom:-2px;height:2px}.vs-button-line:hover .vs-button-icon,.vs-button-line:hover .vs-button-text{-webkit-transform:translateY(2px);transform:translateY(2px)}.vs-button-line:hover .vs-button-linex{width:100%!important}.vs-button-gradient:hover{-webkit-transform:translateY(-2px);transform:translateY(-2px);-webkit-box-shadow:0 8px 25px -8px #aaa;box-shadow:0 8px 25px -8px #aaa}.vs-button-gradient:active{-webkit-transform:translate(0);transform:translate(0);-webkit-box-shadow:0 8px 0 -8px #aaa;box-shadow:0 8px 0 -8px #aaa}.vs-button-relief{padding:10px}.vs-button-relief:active{-webkit-transform:translateY(3px);transform:translateY(3px);-webkit-box-shadow:none!important;box-shadow:none!important}.includeIcon{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;float:left;padding-top:9px;padding-bottom:8px}.vs-button-primary.vs-button-filled{background:#1f74ff}.vs-button-primary.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #1f74ff;box-shadow:0 8px 25px -8px #1f74ff}.vs-button-primary.vs-button-border,.vs-button-primary.vs-button-flat{border:1px solid #1f74ff;background:transparent!important;color:#1f74ff}.vs-button-primary.vs-button-border .vs-button-text.isActive,.vs-button-primary.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-primary.vs-button-border:hover,.vs-button-primary.vs-button-flat:hover{background:rgba(31,116,255,.08)!important}.vs-button-primary.vs-button-border .vs-button-backgroundx,.vs-button-primary.vs-button-flat .vs-button-backgroundx{background:#1f74ff;-webkit-box-shadow:inset 0 0 60px 0 #1f74ff;box-shadow:inset 0 0 60px 0 #1f74ff}.vs-button-primary.vs-button-flat{border:none!important}.vs-button-primary.vs-button-line{color:#1f74ff;border-color:rgba(31,116,255,.2)}.vs-button-primary.vs-button-line .vs-button-linex{background:#1f74ff}.vs-button-primary.vs-button-gradient{background:linear-gradient(30deg,#1f74ff,#3a1fff)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-primary.vs-button-relief{background:#1f74ff;-webkit-box-shadow:0 3px 0 0 #004cc8;box-shadow:0 3px 0 0 #004cc8}.vs-button-secondary.vs-button-filled{background:#7931b1}.vs-button-secondary.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #7931b1;box-shadow:0 8px 25px -8px #7931b1}.vs-button-secondary.vs-button-border,.vs-button-secondary.vs-button-flat{border:1px solid #7931b1;background:transparent!important;color:#7931b1}.vs-button-secondary.vs-button-border .vs-button-text.isActive,.vs-button-secondary.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-secondary.vs-button-border:hover,.vs-button-secondary.vs-button-flat:hover{background:rgba(121,49,177,.08)!important}.vs-button-secondary.vs-button-border .vs-button-backgroundx,.vs-button-secondary.vs-button-flat .vs-button-backgroundx{background:#7931b1;-webkit-box-shadow:inset 0 0 60px 0 #7931b1;box-shadow:inset 0 0 60px 0 #7931b1}.vs-button-secondary.vs-button-flat{border:none!important}.vs-button-secondary.vs-button-line{color:#7931b1;border-color:rgba(121,49,177,.2)}.vs-button-secondary.vs-button-line .vs-button-linex{background:#7931b1}.vs-button-secondary.vs-button-gradient{background:linear-gradient(30deg,#7931b1,#b131a9)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-secondary.vs-button-relief{background:#7931b1;-webkit-box-shadow:0 3px 0 0 #55227c;box-shadow:0 3px 0 0 #55227c}.vs-button-danger.vs-button-filled{background:#ff4757}.vs-button-danger.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #ff4757;box-shadow:0 8px 25px -8px #ff4757}.vs-button-danger.vs-button-border,.vs-button-danger.vs-button-flat{border:1px solid #ff4757;background:transparent!important;color:#ff4757}.vs-button-danger.vs-button-border .vs-button-text.isActive,.vs-button-danger.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-danger.vs-button-border:hover,.vs-button-danger.vs-button-flat:hover{background:rgba(255,71,87,.08)!important}.vs-button-danger.vs-button-border .vs-button-backgroundx,.vs-button-danger.vs-button-flat .vs-button-backgroundx{background:#ff4757;-webkit-box-shadow:inset 0 0 60px 0 #ff4757;box-shadow:inset 0 0 60px 0 #ff4757}.vs-button-danger.vs-button-flat{border:none!important}.vs-button-danger.vs-button-line{color:#ff4757;border-color:rgba(255,71,87,.2)}.vs-button-danger.vs-button-line .vs-button-linex{background:#ff4757}.vs-button-danger.vs-button-gradient{background:linear-gradient(30deg,#ff4757,#c40052)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-danger.vs-button-relief{background:#ff4757;-webkit-box-shadow:0 3px 0 0 #e40014;box-shadow:0 3px 0 0 #e40014}.vs-button-success.vs-button-filled{background:#46c93a}.vs-button-success.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #46c93a;box-shadow:0 8px 25px -8px #46c93a}.vs-button-success.vs-button-border,.vs-button-success.vs-button-flat{border:1px solid #46c93a;background:transparent!important;color:#46c93a}.vs-button-success.vs-button-border .vs-button-text.isActive,.vs-button-success.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-success.vs-button-border:hover,.vs-button-success.vs-button-flat:hover{background:rgba(70,201,58,.08)!important}.vs-button-success.vs-button-border .vs-button-backgroundx,.vs-button-success.vs-button-flat .vs-button-backgroundx{background:#46c93a;-webkit-box-shadow:inset 0 0 60px 0 #46c93a;box-shadow:inset 0 0 60px 0 #46c93a}.vs-button-success.vs-button-flat{border:none!important}.vs-button-success.vs-button-line{color:#46c93a;border-color:rgba(70,201,58,.2)}.vs-button-success.vs-button-line .vs-button-linex{background:#46c93a}.vs-button-success.vs-button-gradient{background:linear-gradient(30deg,#46c93a,#3ac976)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-success.vs-button-relief{background:#46c93a;-webkit-box-shadow:0 3px 0 0 #308e27;box-shadow:0 3px 0 0 #308e27}.vs-button-warning.vs-button-filled{background:#ffba00}.vs-button-warning.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #ffba00;box-shadow:0 8px 25px -8px #ffba00}.vs-button-warning.vs-button-border,.vs-button-warning.vs-button-flat{border:1px solid #ffba00;background:transparent!important;color:#ffba00}.vs-button-warning.vs-button-border .vs-button-text.isActive,.vs-button-warning.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-warning.vs-button-border:hover,.vs-button-warning.vs-button-flat:hover{background:rgba(255,186,0,.08)!important}.vs-button-warning.vs-button-border .vs-button-backgroundx,.vs-button-warning.vs-button-flat .vs-button-backgroundx{background:#ffba00;-webkit-box-shadow:inset 0 0 60px 0 #ffba00;box-shadow:inset 0 0 60px 0 #ffba00}.vs-button-warning.vs-button-flat{border:none!important}.vs-button-warning.vs-button-line{color:#ffba00;border-color:rgba(255,186,0,.2)}.vs-button-warning.vs-button-line .vs-button-linex{background:#ffba00}.vs-button-warning.vs-button-gradient{background:linear-gradient(30deg,#ffba00,#c4ff00)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-warning.vs-button-relief{background:#ffba00;-webkit-box-shadow:0 3px 0 0 #b38200;box-shadow:0 3px 0 0 #b38200}.vs-button-dark.vs-button-filled{background:#1e1e1e}.vs-button-dark.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #1e1e1e;box-shadow:0 8px 25px -8px #1e1e1e}.vs-button-dark.vs-button-border,.vs-button-dark.vs-button-flat{border:1px solid #1e1e1e;background:transparent!important;color:#1e1e1e}.vs-button-dark.vs-button-border .vs-button-text.isActive,.vs-button-dark.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-dark.vs-button-border:hover,.vs-button-dark.vs-button-flat:hover{background:rgba(30,30,30,.08)!important}.vs-button-dark.vs-button-border .vs-button-backgroundx,.vs-button-dark.vs-button-flat .vs-button-backgroundx{background:#1e1e1e;-webkit-box-shadow:inset 0 0 60px 0 #1e1e1e;box-shadow:inset 0 0 60px 0 #1e1e1e}.vs-button-dark.vs-button-flat{border:none!important}.vs-button-dark.vs-button-line{color:#1e1e1e;border-color:rgba(30,30,30,.2)}.vs-button-dark.vs-button-line .vs-button-linex{background:#1e1e1e}.vs-button-dark.vs-button-gradient{background:linear-gradient(30deg,#1e1e1e,#626262)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-dark.vs-button-relief{background:#1e1e1e;background:#4b4b4b;-webkit-box-shadow:0 3px 0 0 #151515;box-shadow:0 3px 0 0 #151515}.vs-button-light.vs-button-filled{background:#f5f5f5}.vs-button-light.vs-button-filled:hover{-webkit-box-shadow:0 8px 25px -8px #f5f5f5;box-shadow:0 8px 25px -8px #f5f5f5}.vs-button-light.vs-button-border,.vs-button-light.vs-button-flat{border:1px solid #f5f5f5;background:transparent!important;color:#f5f5f5}.vs-button-light.vs-button-border .vs-button-text.isActive,.vs-button-light.vs-button-flat .vs-button-text.isActive{color:#fff!important}.vs-button-light.vs-button-border:hover,.vs-button-light.vs-button-flat:hover{background:hsla(0,0%,96%,.08)!important}.vs-button-light.vs-button-border .vs-button-backgroundx,.vs-button-light.vs-button-flat .vs-button-backgroundx{background:#f5f5f5;-webkit-box-shadow:inset 0 0 60px 0 #f5f5f5;box-shadow:inset 0 0 60px 0 #f5f5f5}.vs-button-light.vs-button-flat{border:none!important}.vs-button-light.vs-button-line{color:#f5f5f5;border-color:hsla(0,0%,96%,.2)}.vs-button-light.vs-button-line .vs-button-linex{background:#f5f5f5}.vs-button-light.vs-button-gradient{background:linear-gradient(30deg,#f5f5f5,#f5f5f5)!important;text-shadow:1px 2px 4px rgba(0,0,0,.3)}.vs-button-light.vs-button-relief{background:#f5f5f5;-webkit-box-shadow:0 3px 0 0 #ababab;box-shadow:0 3px 0 0 #ababab}.vs-divider{width:100%;position:relative;display:block;margin:15px 0;clear:both;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-divider .after,.vs-divider .before{position:relative;display:block;width:100%}.vs-divider .vs-divider-text{cursor:default;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;position:relative;white-space:nowrap;background:#fff;padding-left:12px;padding-right:12px;font-size:.9375em}.vs-divider i.icon-divider{font-size:1.25em}.vs-divider-border-primary{border-top-color:#1f74ff}.vs-divider-text-primary{color:#1f74ff}.vs-divider-border-secondary{border-top-color:#7931b1}.vs-divider-text-secondary{color:#7931b1}.vs-divider-border-danger{border-top-color:#ff4757}.vs-divider-text-danger{color:#ff4757}.vs-divider-border-success{border-top-color:#46c93a}.vs-divider-text-success{color:#46c93a}.vs-divider-border-warning{border-top-color:#ffba00}.vs-divider-text-warning{color:#ffba00}.vs-divider-border-dark{border-top-color:#1e1e1e}.vs-divider-text-dark{color:#1e1e1e}.vs-divider-border-light{border-top-color:#f5f5f5}.vs-divider-text-light{color:#f5f5f5}.fade-select-enter-active{-webkit-transition:opacity .2s,-webkit-transform .2s;transition:opacity .2s,-webkit-transform .2s;transition:transform .2s,opacity .2s;transition:transform .2s,opacity .2s,-webkit-transform .2s}.fade-select-leave-active{-webkit-transition:opacity .15s,-webkit-transform .15s;transition:opacity .15s,-webkit-transform .15s;transition:transform .15s,opacity .15s;transition:transform .15s,opacity .15s,-webkit-transform .15s}.fade-select-enter,.fade-select-leave-to{opacity:0;-webkit-transform:translate(0) scale(.95)!important;transform:translate(0) scale(.95)!important;-webkit-box-shadow:0 10px 0 -5px transparent;box-shadow:0 10px 0 -5px transparent}.con-select{position:relative;width:200px;clear:both}.con-select .icon-select{position:absolute;right:5px;font-size:1.0625em;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);-webkit-transition:all .2s ease;transition:all .2s ease}.con-select.activeOptions:not(.autocompletex) .input-select{opacity:0;-webkit-transform:scale(1.1);transform:scale(1.1)}.con-select.activeOptions .icon-select{-webkit-transform:translateY(-50%) rotate(-180deg)!important;transform:translateY(-50%) rotate(-180deg)!important}.input-select{width:100%;padding:7px;border-radius:5px;border:1px solid rgba(0,0,0,.1);-webkit-transition:all .2s ease;transition:all .2s ease;padding-right:20px;cursor:pointer;overflow:hidden;text-overflow:ellipsis}.input-select,.input-select-con{position:relative}.input-select-label{padding-left:5px;font-size:.85rem;color:rgba(0,0,0,.7)}.con-text-validation{position:relative;font-size:.65rem;overflow:hidden;-webkit-transition:all .2s ease;transition:all .2s ease}.con-text-validation .span-text-validation{padding:2px 4px;padding-bottom:4px;display:block}.scrollx ul{padding-right:4px}.vs-select-options{padding:4px;padding-top:6px;padding-left:5px;padding-bottom:6px;-webkit-box-shadow:0 5px 20px -5px rgba(0,0,0,.1);box-shadow:0 5px 20px -5px rgba(0,0,0,.1);border-radius:5px;position:absolute;z-index:40000;background:#fff}.vs-select-options ul{max-height:260px;overflow:auto;padding-left:0!important;padding:0}.vs-select-options ul li{margin:0}.vs-select-options ul .vs-select-item-btn{text-align:left;color:rgba(0,0,0,.8);padding:7px;border:0;position:relative;border-top:1px solid #fff;border-bottom:1px solid #fff;-webkit-transition:all .3s ease;transition:all .3s ease;margin:0!important}.vs-select-options ul .vs-select-item-btn .icon-item{position:absolute;font-size:1em;left:5px;-webkit-transform:translate(-100%,-50%);transform:translate(-100%,-50%);opacity:0;-webkit-transition:all .2s ease;transition:all .2s ease;top:50%}.vs-select-options ul .vs-select-item-btn:focus,.vs-select-options ul .vs-select-item-btn:hover{background:#f5f5f5}.vs-select-options ul .vs-select-item-btn.con-icon.activex{padding-left:25px}.vs-select-options ul .vs-select-item-btn.con-icon.activex .icon-item{opacity:1;-webkit-transform:translateY(-50%);transform:translateY(-50%)}.vs-select-primary .vs-select-item-btn.activex{background:rgba(31,116,255,.1)!important;color:#1f74ff;font-weight:700}.input-select-label-primary--active,.input-select-validate-primary .input-select-label{color:#1f74ff}.input-select-validate-primary .input-select-con .input-select{border-color:#1f74ff}.input-select-validate-primary .input-select-con .icon-select{color:#1f74ff}.vs-select-secondary .vs-select-item-btn.activex{background:rgba(121,49,177,.1)!important;color:#7931b1;font-weight:700}.input-select-label-secondary--active,.input-select-validate-secondary .input-select-label{color:#7931b1}.input-select-validate-secondary .input-select-con .input-select{border-color:#7931b1}.input-select-validate-secondary .input-select-con .icon-select{color:#7931b1}.vs-select-danger .vs-select-item-btn.activex{background:rgba(255,71,87,.1)!important;color:#ff4757;font-weight:700}.input-select-label-danger--active,.input-select-validate-danger .input-select-label{color:#ff4757}.input-select-validate-danger .input-select-con .input-select{border-color:#ff4757}.input-select-validate-danger .input-select-con .icon-select{color:#ff4757}.vs-select-success .vs-select-item-btn.activex{background:rgba(70,201,58,.1)!important;color:#46c93a;font-weight:700}.input-select-label-success--active,.input-select-validate-success .input-select-label{color:#46c93a}.input-select-validate-success .input-select-con .input-select{border-color:#46c93a}.input-select-validate-success .input-select-con .icon-select{color:#46c93a}.vs-select-warning .vs-select-item-btn.activex{background:rgba(255,186,0,.1)!important;color:#ffba00;font-weight:700}.input-select-label-warning--active,.input-select-validate-warning .input-select-label{color:#ffba00}.input-select-validate-warning .input-select-con .input-select{border-color:#ffba00}.input-select-validate-warning .input-select-con .icon-select{color:#ffba00}.vs-select-dark .vs-select-item-btn.activex{background:rgba(30,30,30,.1)!important;color:#1e1e1e;font-weight:700}.input-select-label-dark--active,.input-select-validate-dark .input-select-label{color:#1e1e1e}.input-select-validate-dark .input-select-con .input-select{border-color:#1e1e1e}.input-select-validate-dark .input-select-con .icon-select{color:#1e1e1e}.vs-select-light .vs-select-item-btn.activex{background:hsla(0,0%,96%,.1)!important;color:#f5f5f5;font-weight:700}.input-select-label-light--active,.input-select-validate-light .input-select-label{color:#f5f5f5}.input-select-validate-light .input-select-con .input-select{border-color:#f5f5f5}.input-select-validate-light .input-select-con .icon-select{color:#f5f5f5}.vs-select-item-btn{background:transparent;padding:5px;width:100%;margin:0!important;text-transform:capitalize}.vs-select-item-btn.disabledx{opacity:.4}.vs-select-item-btn span.searchx{background:rgba(0,0,0,.07);border-bottom:1px solid rgba(0,0,0,.3);font-weight:700;color:inherit}.vs-switch{border-radius:12px;border:0;min-width:42px;height:22px;position:relative;cursor:pointer;-webkit-transition:all .2s ease;transition:all .2s ease;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-switch .input-switch{position:absolute;width:100%;height:100%;z-index:200;opacity:0;cursor:pointer}.vs-switch .text-switch{position:absolute;display:block;font-size:.625em;opacity:0;-webkit-transition:all .2s ease;transition:all .2s ease;display:-webkit-box;display:-ms-flexbox;display:flex;white-space:nowrap}.vs-switch .text-switch,.vs-switch .text-switch .icons-switch{-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;overflow:hidden}.vs-switch .text-switch .icons-switch{font-size:.8rem;display:-webkit-box;display:-ms-flexbox;display:flex;max-width:16px;padding:0 2px}.vs-switch .text-switch.text-on{padding-left:6px;left:0;color:#fff;-webkit-transform:translate(10px);transform:translate(10px)}.vs-switch .text-switch.text-off{right:0;padding-right:5px;color:#a0a0a0;-webkit-transform:translate(-10px);transform:translate(-10px)}.vs-switch .text-switch.active-text{opacity:1;-webkit-transform:translate(0);transform:translate(0)}.vs-switch:disabled{opacity:.5}.vs-switch .vs-circle-switch{display:block;width:18px;height:18px;position:absolute;background:#fff;left:2px;top:2px;border-radius:50%;-webkit-transition:all .25s ease;transition:all .25s ease;-webkit-box-shadow:0 0 4px 0 rgba(0,0,0,.1);box-shadow:0 0 4px 0 rgba(0,0,0,.1)}.vs-switch:active:not(.vs-circle-switch) .vs-circle-switch{width:24px;border-radius:15px}.vs-switch.vs-switch-active:active .vs-circle-switch{width:24px;margin-left:calc(100% - 29px)}.vs-switch.vs-switch-active .vs-circle-switch{margin-left:calc(100% - 22px)}.vs-switch-primary{background:#e2e2e2}.vs-switch-primary.vs-switch-active{background:#1f74ff}.vs-switch-secondary{background:#e2e2e2}.vs-switch-secondary.vs-switch-active{background:#7931b1}.vs-switch-danger{background:#e2e2e2}.vs-switch-danger.vs-switch-active{background:#ff4757}.vs-switch-success{background:#e2e2e2}.vs-switch-success.vs-switch-active{background:#46c93a}.vs-switch-warning{background:#e2e2e2}.vs-switch-warning.vs-switch-active{background:#ffba00}.vs-switch-dark{background:#e2e2e2}.vs-switch-dark.vs-switch-active{background:#1e1e1e}.vs-switch-light{background:#e2e2e2}.vs-switch-light.vs-switch-active{background:#f5f5f5}.con-vs-checkbox{position:relative;display:block;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-left:5px;margin-right:5px}.con-vs-checkbox input[type=checkbox]{position:absolute;width:100%;height:100%;opacity:0;z-index:200;cursor:pointer;background:#55d775}.con-vs-checkbox input[type=checkbox]:active:checked+span.checkbox_x span._check{-webkit-transform:translate(3px)!important;transform:translate(3px)!important}.con-vs-checkbox input[type=checkbox]:active:checked+span.checkbox_x i{-webkit-transform:translate(6px)!important;transform:translate(6px)!important}.con-vs-checkbox input[type=checkbox]:checked+span.checkbox_x{-webkit-transform:rotate(0deg)!important;transform:rotate(0deg)!important}.con-vs-checkbox input[type=checkbox]:checked+span.checkbox_x span._check{-webkit-transform:translate(0);transform:translate(0)}.con-vs-checkbox input[type=checkbox]:checked+span.checkbox_x i{opacity:1;-webkit-transform:translate(0)!important;transform:translate(0)!important;color:#fff!important}.con-vs-checkbox span.checkbox_x{-webkit-transition:all .2s ease;transition:all .2s ease;cursor:pointer;position:relative;display:block;width:20px;height:20px;border-radius:2px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-transform:rotate(-90deg);transform:rotate(-90deg);overflow:hidden;-webkit-box-sizing:border-box;box-sizing:border-box;margin-right:5px}.con-vs-checkbox span.checkbox_x span._check{width:100%;height:100%;position:absolute;left:0;-webkit-transform:translate(100%);transform:translate(100%);-webkit-transform-origin:right;transform-origin:right;-webkit-transition:all .2s ease;transition:all .2s ease;z-index:10}.con-vs-checkbox span.checkbox_x i{-webkit-backface-visibility:visible;backface-visibility:visible;-webkit-transition:all .2s ease-out;transition:all .2s ease-out;z-index:100;font-size:1.125em;opacity:0;-webkit-transform:translate(30px);transform:translate(30px);-webkit-transform-origin:center;transform-origin:center}.vs-checkbox-primary ._check{background:#1f74ff}.vs-checkbox-primary .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-primary input:checked+span.checkbox_x{border:2px solid #1f74ff!important}.vs-checkbox-secondary ._check{background:#7931b1}.vs-checkbox-secondary .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-secondary input:checked+span.checkbox_x{border:2px solid #7931b1!important}.vs-checkbox-danger ._check{background:#ff4757}.vs-checkbox-danger .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-danger input:checked+span.checkbox_x{border:2px solid #ff4757!important}.vs-checkbox-success ._check{background:#46c93a}.vs-checkbox-success .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-success input:checked+span.checkbox_x{border:2px solid #46c93a!important}.vs-checkbox-warning ._check{background:#ffba00}.vs-checkbox-warning .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-warning input:checked+span.checkbox_x{border:2px solid #ffba00!important}.vs-checkbox-dark ._check{background:#1e1e1e}.vs-checkbox-dark .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-dark input:checked+span.checkbox_x{border:2px solid #1e1e1e!important}.vs-checkbox-light ._check{background:#f5f5f5}.vs-checkbox-light .checkbox_x{border:2px solid #b4b4b4}.vs-checkbox-light input:checked+span.checkbox_x{border:2px solid #f5f5f5!important}.con-vs-radio{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-radio:hover .vs-radiox-borde{border:2px solid #a0a0a0!important}.con-vs-radio .vs-radiox-labelx{margin-left:5px}.con-vs-radio input[type=radio]{position:absolute;left:0;opacity:0;width:20px}.con-vs-radio input[type=radio]:checked+.vs-radiox{cursor:default}.con-vs-radio input[type=radio]:checked+.vs-radiox .vs-radiox-circle{-webkit-transform:scale(1)!important;transform:scale(1)!important;opacity:1!important}.con-vs-radio input[type=radio]:checked+.vs-radiox .vs-radiox-borde{opacity:0;-webkit-transform:scale(.3)!important;transform:scale(.3)!important}.con-vs-radio input[type=radio]:active+.vs-radiox .vs-radiox-borde{-webkit-transform:scale(1.1)!important;transform:scale(1.1)!important}.con-vs-radio input[type=radio]:disabled+.vs-radiox{opacity:.4!important}.con-vs-radio input[type=radio]:disabled+.vs-radiox .vs-radiox-circle{pointer-events:none}.con-vs-radio input[type=radio]:disabled+.vs-radiox .vs-radiox-borde{border:2px solid #b4b4b4!important;background:#d2d2d2;pointer-events:none}.con-vs-radio .vs-radiox{width:18px;height:18px;position:relative;display:block;border-radius:50%;cursor:pointer}.con-vs-radio .vs-radiox .vs-radiox-borde{background:transparent}.con-vs-radio .vs-radiox .vs-radiox-borde,.con-vs-radio .vs-radiox .vs-radiox-circle{border-radius:50%;width:100%;height:100%;position:absolute;left:0;-webkit-transition:all .25s ease;transition:all .25s ease;top:0}.con-vs-radio .vs-radiox .vs-radiox-circle{-webkit-transform:scale(.1);transform:scale(.1);opacity:0}.vs-radio-primary .vs-radiox-circle{background:#1f74ff;-webkit-box-shadow:0 3px 12px 0 rgba(31,116,255,.4);box-shadow:0 3px 12px 0 rgba(31,116,255,.4)}.vs-radio-secondary .vs-radiox-circle{background:#7931b1;-webkit-box-shadow:0 3px 12px 0 rgba(121,49,177,.4);box-shadow:0 3px 12px 0 rgba(121,49,177,.4)}.vs-radio-danger .vs-radiox-circle{background:#ff4757;-webkit-box-shadow:0 3px 12px 0 rgba(255,71,87,.4);box-shadow:0 3px 12px 0 rgba(255,71,87,.4)}.vs-radio-success .vs-radiox-circle{background:#46c93a;-webkit-box-shadow:0 3px 12px 0 rgba(70,201,58,.4);box-shadow:0 3px 12px 0 rgba(70,201,58,.4)}.vs-radio-warning .vs-radiox-circle{background:#ffba00;-webkit-box-shadow:0 3px 12px 0 rgba(255,186,0,.4);box-shadow:0 3px 12px 0 rgba(255,186,0,.4)}.vs-radio-dark .vs-radiox-circle{background:#1e1e1e;-webkit-box-shadow:0 3px 12px 0 rgba(30,30,30,.4);box-shadow:0 3px 12px 0 rgba(30,30,30,.4)}.vs-radio-light .vs-radiox-circle{background:#f5f5f5;-webkit-box-shadow:0 3px 12px 0 hsla(0,0%,96%,.4);box-shadow:0 3px 12px 0 hsla(0,0%,96%,.4)}.placeholderx-enter,.placeholderx-leave-to{opacity:0;-webkit-transform:translate(15px)!important;transform:translate(15px)!important}.icon-validate-enter,.icon-validate-leave-to{opacity:0;-webkit-transform:scale(.5)!important;transform:scale(.5)!important}.vs-con-input-label{position:relative;-webkit-transition:all .3s ease;transition:all .3s ease;width:200px}.vs-con-input-label.is-label-palcehoder{margin-top:17px}.vs-con-input-label .vs-con-input{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:start;-ms-flex-align:start;align-items:flex-start;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;position:relative;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-con-input-label .vs-con-input .vs-inputx{color:inherit;position:relative;padding:.4rem;border-radius:5px;border:1px solid rgba(0,0,0,.2);-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.15);box-shadow:0 0 0 0 rgba(0,0,0,.15);-webkit-transition:all .3s ease;transition:all .3s ease;width:100%}.vs-con-input-label .vs-con-input .vs-inputx:focus{-webkit-box-shadow:0 3px 10px 0 rgba(0,0,0,.15);box-shadow:0 3px 10px 0 rgba(0,0,0,.15)}.vs-con-input-label .vs-con-input .vs-inputx.hasValue+.vs-placeholder-label,.vs-con-input-label .vs-con-input .vs-inputx:focus+.vs-placeholder-label{-webkit-transform:translate(-3px,-90%)!important;transform:translate(-3px,-90%)!important;font-size:.7rem;padding-left:.5rem!important}.vs-con-input-label .vs-con-input .vs-inputx:focus+.input-span-placeholder{-webkit-transform:translate(5px);transform:translate(5px)}.vs-con-input-label .vs-con-input .vs-inputx.hasIcon,.vs-con-input-label .vs-con-input .vs-inputx.hasIcon+.input-span-placeholder{padding-left:32px}.vs-con-input-label .vs-con-input .vs-inputx.icon-after-input{padding-left:.4rem!important;padding-right:28px}.vs-con-input-label .vs-con-input .vs-inputx.icon-after-input+.input-span-placeholder{padding-left:.4rem;padding-right:28px}.vs-con-input-label .vs-con-input .input-span-placeholder{-webkit-transition:all .2s ease;transition:all .2s ease;border-radius:5px;left:0;padding:.4rem;padding-left:.55rem;width:100%;-webkit-box-sizing:border-box;box-sizing:border-box;overflow:hidden;font-size:.85rem;white-space:nowrap;cursor:text;top:2px}.vs-con-input-label .vs-con-input .icon-inputx,.vs-con-input-label .vs-con-input .input-span-placeholder{position:absolute;color:rgba(0,0,0,.4);-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.vs-con-input-label .vs-con-input .icon-inputx{left:5px;z-index:100;font-size:1.1rem;border-right:1px solid rgba(0,0,0,.1);padding-right:3px;cursor:default;top:8px}.vs-con-input-label .vs-con-input .icon-inputx.icon-after{left:auto;right:5px;border-left:1px solid rgba(0,0,0,.1);border-right:0;padding-left:3px;padding-right:0}.vs-con-input-label .vs-input-label{padding-left:5px;font-size:.85rem;color:rgba(0,0,0,.7)}.vs-con-input-label .con-text-validation{position:relative;font-size:.65rem;overflow:hidden;-webkit-transition:all .2s ease;transition:all .2s ease}.vs-con-input-label .con-text-validation .span-text-validation{padding:2px 4px;padding-bottom:4px;display:block}.vs-con-input-label .input-icon-validate{position:absolute;top:0;right:0;font-size:1.1rem;height:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;padding:0 4px;border-radius:0 5px 5px 0;-webkit-transition:all .2s ease;transition:all .2s ease}.vs-input-primary .vs-inputx:focus{border:1px solid #1f74ff!important}.vs-input-primary.isFocus .vs-input-label,.vs-input-primary .vs-inputx:focus~.icon-inputx,.vs-input-primary .vs-inputx:focus~.vs-placeholder-label{color:#1f74ff}.span-text-validation-primary{color:#1f74ff!important}.input-icon-validate-primary .vs-inputx,.input-icon-validate-primary .vs-inputx:focus{border:1px solid #1f74ff!important}.input-icon-validate-primary .input-icon-validate{background:rgba(31,116,255,.2);color:#1f74ff}.vs-input-secondary .vs-inputx:focus{border:1px solid #7931b1!important}.vs-input-secondary.isFocus .vs-input-label,.vs-input-secondary .vs-inputx:focus~.icon-inputx,.vs-input-secondary .vs-inputx:focus~.vs-placeholder-label{color:#7931b1}.span-text-validation-secondary{color:#7931b1!important}.input-icon-validate-secondary .vs-inputx,.input-icon-validate-secondary .vs-inputx:focus{border:1px solid #7931b1!important}.input-icon-validate-secondary .input-icon-validate{background:rgba(121,49,177,.2);color:#7931b1}.vs-input-danger .vs-inputx:focus{border:1px solid #ff4757!important}.vs-input-danger.isFocus .vs-input-label,.vs-input-danger .vs-inputx:focus~.icon-inputx,.vs-input-danger .vs-inputx:focus~.vs-placeholder-label{color:#ff4757}.span-text-validation-danger{color:#ff4757!important}.input-icon-validate-danger .vs-inputx,.input-icon-validate-danger .vs-inputx:focus{border:1px solid #ff4757!important}.input-icon-validate-danger .input-icon-validate{background:rgba(255,71,87,.2);color:#ff4757}.vs-input-success .vs-inputx:focus{border:1px solid #46c93a!important}.vs-input-success.isFocus .vs-input-label,.vs-input-success .vs-inputx:focus~.icon-inputx,.vs-input-success .vs-inputx:focus~.vs-placeholder-label{color:#46c93a}.span-text-validation-success{color:#46c93a!important}.input-icon-validate-success .vs-inputx,.input-icon-validate-success .vs-inputx:focus{border:1px solid #46c93a!important}.input-icon-validate-success .input-icon-validate{background:rgba(70,201,58,.2);color:#46c93a}.vs-input-warning .vs-inputx:focus{border:1px solid #ffba00!important}.vs-input-warning.isFocus .vs-input-label,.vs-input-warning .vs-inputx:focus~.icon-inputx,.vs-input-warning .vs-inputx:focus~.vs-placeholder-label{color:#ffba00}.span-text-validation-warning{color:#ffba00!important}.input-icon-validate-warning .vs-inputx,.input-icon-validate-warning .vs-inputx:focus{border:1px solid #ffba00!important}.input-icon-validate-warning .input-icon-validate{background:rgba(255,186,0,.2);color:#ffba00}.vs-input-dark .vs-inputx:focus{border:1px solid #1e1e1e!important}.vs-input-dark.isFocus .vs-input-label,.vs-input-dark .vs-inputx:focus~.icon-inputx,.vs-input-dark .vs-inputx:focus~.vs-placeholder-label{color:#1e1e1e}.span-text-validation-dark{color:#1e1e1e!important}.input-icon-validate-dark .vs-inputx,.input-icon-validate-dark .vs-inputx:focus{border:1px solid #1e1e1e!important}.input-icon-validate-dark .input-icon-validate{background:rgba(30,30,30,.2);color:#1e1e1e}.vs-input-light .vs-inputx:focus{border:1px solid #f5f5f5!important}.vs-input-light.isFocus .vs-input-label,.vs-input-light .vs-inputx:focus~.icon-inputx,.vs-input-light .vs-inputx:focus~.vs-placeholder-label{color:#f5f5f5}.span-text-validation-light{color:#f5f5f5!important}.input-icon-validate-light .vs-inputx,.input-icon-validate-light .vs-inputx:focus{border:1px solid #f5f5f5!important}.input-icon-validate-light .input-icon-validate{background:hsla(0,0%,96%,.2);color:#f5f5f5}.fade-tab-enter-active,.fade-tab-leave-active{-webkit-transition:all .3s;transition:all .3s}.fade-tab-enter,.fade-tab-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0)}.fade-tab-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(100%,0,0);transform:translate3d(100%,0,0)}.fade-tab-invert-enter-active,.fade-tab-invert-leave-active{-webkit-transition:all .3s;transition:all .3s}.fade-tab-invert-enter,.fade-tab-invert-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(100%,0,0);transform:translate3d(100%,0,0)}.fade-tab-invert-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(-100%,0,0);transform:translate3d(-100%,0,0)}.fade-tab-vertical-enter-active,.fade-tab-vertical-leave-active{-webkit-transition:all .3s;transition:all .3s}.fade-tab-vertical-enter{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0)}.fade-tab-vertical-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(0,-100%,0);transform:translate3d(0,-100%,0)}.fade-tab-vertical-invert-enter-active,.fade-tab-vertical-invert-leave-active{-webkit-transition:all .3s;transition:all .3s}.fade-tab-vertical-invert-enter{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(0,-100%,0);transform:translate3d(0,-100%,0)}.fade-tab-vertical-invert-leave-to{top:0;opacity:0;position:absolute!important;-webkit-transform:translate3d(0,100%,0)!important;transform:translate3d(0,100%,0)!important}.con-vs-tabs{width:100%;overflow:hidden;position:relative}.con-vs-tabs .con-slot-tabs{position:relative;display:block;overflow:hidden}.con-vs-tabs .con-ul-tabs{position:relative}.con-vs-tabs .con-ul-tabs .ul-tabs{width:100%;padding-left:0;position:relative;-webkit-box-shadow:0 0 25px 0 rgba(0,0,0,.04);box-shadow:0 0 25px 0 rgba(0,0,0,.04)}.con-vs-tabs .con-ul-tabs .ul-tabs.ul-tabs-center{-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-tabs .con-ul-tabs .ul-tabs.ul-tabs-right{-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end}.con-vs-tabs .con-ul-tabs .ul-tabs.ul-tabs-fixed{-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between}.con-vs-tabs .con-ul-tabs .ul-tabs.ul-tabs-fixed li{width:100%}.con-vs-tabs .con-ul-tabs .ul-tabs li{display:block}.con-vs-tabs .con-ul-tabs .ul-tabs li button{-webkit-box-sizing:border-box;box-sizing:border-box;display:block;position:relative;width:100%;background:transparent;margin:0;padding:10px;border:0;cursor:pointer;-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-tabs .con-ul-tabs .ul-tabs .activeChild button:not(:disabled),.con-vs-tabs .con-ul-tabs .ul-tabs li button:hover:not(:disabled){color:inherit}.con-vs-tabs .con-ul-tabs .ul-tabs .activeChild button{padding-top:8px;padding-bottom:12px}.con-vs-tabs .con-ul-tabs .line-vs-tabs{width:100px;height:2px;display:block;position:absolute;-webkit-transition:all .2s ease;transition:all .2s ease;-webkit-transform:translateZ(0);transform:translateZ(0);will-change:left,right}.vs-tabs-position-bottom,.vs-tabs-position-top .ul-tabs{display:-webkit-box;display:-ms-flexbox;display:flex}.vs-tabs-position-bottom{-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column}.vs-tabs-position-bottom .ul-tabs{border-top:1px solid rgba(0,0,0,.05);border-bottom:0!important}.vs-tabs-position-bottom .con-ul-tabs{-webkit-box-ordinal-group:3;-ms-flex-order:2;order:2}.vs-tabs-position-bottom .line-vs-tabs{top:0}.vs-tabs-position-left{display:-webkit-box;display:-ms-flexbox;display:flex}.vs-tabs-position-left .line-vs-tabs{left:auto!important;right:0}.vs-tabs-position-left .con-ul-tabs{float:left;height:100%;display:block}.vs-tabs-position-left .ul-tabs{display:block;width:auto;border-bottom:0!important;border-right:1px solid rgba(0,0,0,.05)}.vs-tabs-position-left .activeChild button{padding:10px 8px 10px 12px!important}.vs-tabs-position-right{display:-webkit-box;display:-ms-flexbox;display:flex}.vs-tabs-position-right .con-slot-tabs{width:100%}.vs-tabs-position-right .con-ul-tabs{float:left;height:100%;display:block;-webkit-box-ordinal-group:3;-ms-flex-order:2;order:2}.vs-tabs-position-right .ul-tabs{display:block;width:auto;border-bottom:0!important;border-left:1px solid rgba(0,0,0,.05)}.vs-tabs-position-right .activeChild button{padding:10px 12px 10px 8px!important}.vs-tabs-primary button:disabled{opacity:.5;cursor:default!important}.vs-tabs-primary .activeChild button,.vs-tabs-primary button:not(:disabled):hover{color:#1f74ff!important}.vs-tabs-primary .activeChild button:active{background:#000}.vs-tabs-primary .line-vs-tabs{background:linear-gradient(30deg,#1f74ff,rgba(31,116,255,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(31,116,255,.4)!important;box-shadow:0 0 8px 0 rgba(31,116,255,.4)!important}.vs-tabs-secondary button:disabled{opacity:.5;cursor:default!important}.vs-tabs-secondary .activeChild button,.vs-tabs-secondary button:not(:disabled):hover{color:#7931b1!important}.vs-tabs-secondary .activeChild button:active{background:#000}.vs-tabs-secondary .line-vs-tabs{background:linear-gradient(30deg,#7931b1,rgba(121,49,177,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(121,49,177,.4)!important;box-shadow:0 0 8px 0 rgba(121,49,177,.4)!important}.vs-tabs-danger button:disabled{opacity:.5;cursor:default!important}.vs-tabs-danger .activeChild button,.vs-tabs-danger button:not(:disabled):hover{color:#ff4757!important}.vs-tabs-danger .activeChild button:active{background:#000}.vs-tabs-danger .line-vs-tabs{background:linear-gradient(30deg,#ff4757,rgba(255,71,87,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(255,71,87,.4)!important;box-shadow:0 0 8px 0 rgba(255,71,87,.4)!important}.vs-tabs-success button:disabled{opacity:.5;cursor:default!important}.vs-tabs-success .activeChild button,.vs-tabs-success button:not(:disabled):hover{color:#46c93a!important}.vs-tabs-success .activeChild button:active{background:#000}.vs-tabs-success .line-vs-tabs{background:linear-gradient(30deg,#46c93a,rgba(70,201,58,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(70,201,58,.4)!important;box-shadow:0 0 8px 0 rgba(70,201,58,.4)!important}.vs-tabs-warning button:disabled{opacity:.5;cursor:default!important}.vs-tabs-warning .activeChild button,.vs-tabs-warning button:not(:disabled):hover{color:#ffba00!important}.vs-tabs-warning .activeChild button:active{background:#000}.vs-tabs-warning .line-vs-tabs{background:linear-gradient(30deg,#ffba00,rgba(255,186,0,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(255,186,0,.4)!important;box-shadow:0 0 8px 0 rgba(255,186,0,.4)!important}.vs-tabs-dark button:disabled{opacity:.5;cursor:default!important}.vs-tabs-dark .activeChild button,.vs-tabs-dark button:not(:disabled):hover{color:#1e1e1e!important}.vs-tabs-dark .activeChild button:active{background:#000}.vs-tabs-dark .line-vs-tabs{background:linear-gradient(30deg,#1e1e1e,rgba(30,30,30,.5))!important;-webkit-box-shadow:0 0 8px 0 rgba(30,30,30,.4)!important;box-shadow:0 0 8px 0 rgba(30,30,30,.4)!important}.vs-tabs-light button:disabled{opacity:.5;cursor:default!important}.vs-tabs-light .activeChild button,.vs-tabs-light button:not(:disabled):hover{color:#f5f5f5!important}.vs-tabs-light .activeChild button:active{background:#000}.vs-tabs-light .line-vs-tabs{background:linear-gradient(30deg,#f5f5f5,hsla(0,0%,96%,.5))!important;-webkit-box-shadow:0 0 8px 0 hsla(0,0%,96%,.4)!important;box-shadow:0 0 8px 0 hsla(0,0%,96%,.4)!important}.con-tab{padding:10px}.con-tab,.con-vs-slider{position:relative;width:100%;display:block}.con-vs-slider{left:0;margin:16px 0;min-width:300px}.con-vs-slider.disabledx{opacity:.4;cursor:default}.con-vs-slider.disabledx button{cursor:default!important;pointer-events:none}.con-vs-slider .vs-slider{width:100%;height:4px;border-radius:4px;background:#f0f0f0;position:relative;cursor:pointer;border:0;margin:0;display:block;overflow:hidden}.con-vs-slider .vs-slider .vs-slider-ticks{position:absolute;left:100px;background:#d2d2d2;width:4px;height:100%;top:0}.con-vs-slider .vs-slider .vs-slider-ticks.isEnd{-webkit-transform:translate(-100%);transform:translate(-100%)}.con-vs-slider .vs-slider .vs-slider-line-one{width:20px;height:100%;top:0;position:absolute;left:0;z-index:1}.con-vs-slider .vs-slider .vs-slider-line-one.hasTransition{-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-slider .vs-slider .vs-slider-line-efect{width:0;height:100%;top:0;position:absolute;left:0;-webkit-transition:opacity .3s ease,width .3s ease;transition:opacity .3s ease,width .3s ease;-webkit-transform:translate(-50%);transform:translate(-50%)}.con-vs-slider .vs-slider .vs-slider-line-efect:not(.run-effect){opacity:0!important;width:0!important}.con-vs-slider .vs-slider .vs-slider-line-efect.run-effect{width:100%;-webkit-animation:example .3s ease;animation:example .3s ease;-webkit-animation-iteration-count:1;animation-iteration-count:1}.con-vs-slider .vs-circle-slider{width:16px;height:16px;position:absolute;top:-6px;border-radius:50%;cursor:pointer;border:0;margin:0;z-index:200}.con-vs-slider .vs-circle-slider.hasTransition{-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-slider .vs-circle-slider-two{z-index:100;width:16px;height:16px;position:absolute;top:-6px;border-radius:50%;cursor:pointer;border:0;margin:0;color:#fff}.con-vs-slider .vs-circle-slider-two.hasTransition{-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-slider .vs-circles-slider{-webkit-transform:translate(-50%);transform:translate(-50%);-webkit-transition:border .2s ease,border-radius .2s ease,-webkit-transform .2s ease;transition:border .2s ease,border-radius .2s ease,-webkit-transform .2s ease;transition:border .2s ease,transform .2s ease,border-radius .2s ease;transition:border .2s ease,transform .2s ease,border-radius .2s ease,-webkit-transform .2s ease;display:block;background:#fff}.con-vs-slider .vs-circles-slider:active{border-width:7px!important}.con-vs-slider .vs-circles-slider.isEquals.vs-circle-slider-two{border-radius:50% 50% 0 0;-webkit-transform:translate(-50%,-7px) scale(.9)!important;transform:translate(-50%,-7px) scale(.9)!important}.con-vs-slider .vs-circles-slider.isEquals.vs-circle-slider{border-radius:0 0 50% 50%;-webkit-transform:translate(-50%,6px) scale(.9)!important;transform:translate(-50%,6px) scale(.9)!important}.con-vs-slider .vs-circles-slider.changeValue:active{border-width:6px!important}.con-vs-slider .vs-circles-slider.changeValue:active .text-circle-slider{-webkit-transform:translate(-50%,calc(-100% + -19px))!important;transform:translate(-50%,calc(-100% + -19px))!important}.con-vs-slider .vs-circles-slider.isEndValue{border-radius:50% 0 0 50%!important}.con-vs-slider .vs-circles-slider .text-circle-slider{color:#fff;position:absolute;padding:2px 5px;display:block;border-radius:5px;-webkit-transform:translate(-50%,-20%) scale(.3);transform:translate(-50%,-20%) scale(.3);top:0;left:50%;font-size:.75rem;opacity:0;visibility:hidden;-webkit-transition:all .2s ease;transition:all .2s ease;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-slider .vs-circles-slider .text-circle-slider span{margin-left:2px}.con-vs-slider .vs-circles-slider .text-circle-slider i{font-size:.8rem;margin-left:2px}.con-vs-slider .vs-circles-slider .text-circle-slider:after{content:\"\";width:6px;height:6px;display:block;position:absolute;background:inherit;left:50%;bottom:-3px;-webkit-transform:translate(-50%) rotate(45deg);transform:translate(-50%) rotate(45deg)}.con-vs-slider .vs-circles-slider:hover:not(:active){-webkit-transform:scale(1.2) translate(-50%);transform:scale(1.2) translate(-50%)}.con-vs-slider .vs-circles-slider:active .text-circle-slider{opacity:1;-webkit-transform:translate(-50%,calc(-100% + -13px)) scale(1) rotate(0deg);transform:translate(-50%,calc(-100% + -13px)) scale(1) rotate(0deg);visibility:visible}.vs-slider-primary .vs-slider-line-one{background:#1f74ff}.vs-slider-primary .vs-circles-slider{border:2px solid #1f74ff}.vs-slider-primary .text-circle-slider,.vs-slider-primary .vs-slider-line-efect{background:#1f74ff}.vs-slider-secondary .vs-slider-line-one{background:#7931b1}.vs-slider-secondary .vs-circles-slider{border:2px solid #7931b1}.vs-slider-secondary .text-circle-slider,.vs-slider-secondary .vs-slider-line-efect{background:#7931b1}.vs-slider-danger .vs-slider-line-one{background:#ff4757}.vs-slider-danger .vs-circles-slider{border:2px solid #ff4757}.vs-slider-danger .text-circle-slider,.vs-slider-danger .vs-slider-line-efect{background:#ff4757}.vs-slider-success .vs-slider-line-one{background:#46c93a}.vs-slider-success .vs-circles-slider{border:2px solid #46c93a}.vs-slider-success .text-circle-slider,.vs-slider-success .vs-slider-line-efect{background:#46c93a}.vs-slider-warning .vs-slider-line-one{background:#ffba00}.vs-slider-warning .vs-circles-slider{border:2px solid #ffba00}.vs-slider-warning .text-circle-slider,.vs-slider-warning .vs-slider-line-efect{background:#ffba00}.vs-slider-dark .vs-slider-line-one{background:#1e1e1e}.vs-slider-dark .vs-circles-slider{border:2px solid #1e1e1e}.vs-slider-dark .text-circle-slider,.vs-slider-dark .vs-slider-line-efect{background:#1e1e1e}.vs-slider-light .vs-slider-line-one{background:#f5f5f5}.vs-slider-light .vs-circles-slider{border:2px solid #f5f5f5}.vs-slider-light .text-circle-slider,.vs-slider-light .vs-slider-line-efect{background:#f5f5f5}@-webkit-keyframes example{0%{opacity:1}to{opacity:0}}@keyframes example{0%{opacity:1}to{opacity:0}}.vs-input-number{position:relative;display:block;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin:5px 10px;background:#f5f5f5;padding:2px;border-radius:5px}.vs-input-number.isChangeValue input{-webkit-transform:translateY(-2px);transform:translateY(-2px);opacity:.5}.vs-input-number input{-webkit-transition:all .2s ease;transition:all .2s ease;width:40px;min-width:40px;border:0;text-align:center;background:transparent;padding:4px;-moz-appearance:textfield}.vs-input-number input[type=number]::-webkit-inner-spin-button,.vs-input-number input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}.vs-input-number button{min-width:22px;min-height:22px;padding:0;margin:0;display:block;position:relative;border:0;border-radius:5px;cursor:pointer;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-transition:all .3s ease;transition:all .3s ease;color:#fff;-webkit-backface-visibility:hidden;backface-visibility:hidden}.vs-input-number button:disabled{opacity:.5!important}.vs-input-number button i{font-size:.9rem}.vs-input-number button.btn-plus{-webkit-transform:translate(10px);transform:translate(10px)}.vs-input-number button.btn-plus:active{-webkit-transform:scale(.9) translate(10px)!important;transform:scale(.9) translate(10px)!important}.vs-input-number button.btn-less{-webkit-transform:translate(-10px);transform:translate(-10px)}.vs-input-number button.btn-less:active{-webkit-transform:scale(.9) translate(-10px)!important;transform:scale(.9) translate(-10px)!important}.vs-input-number.vs-input-number-size-medium input{padding:3px;font-size:.8rem}.vs-input-number.vs-input-number-size-medium button{min-width:19px;min-height:19px}.vs-input-number.vs-input-number-size-medium button i{font-size:.8rem}.vs-input-number.vs-input-number-size-medium button.btn-plus{-webkit-transform:translate(8px);transform:translate(8px)}.vs-input-number.vs-input-number-size-medium button.btn-plus:active{-webkit-transform:scale(.9) translate(8px)!important;transform:scale(.9) translate(8px)!important}.vs-input-number.vs-input-number-size-medium button.btn-less{-webkit-transform:translate(-8px);transform:translate(-8px)}.vs-input-number.vs-input-number-size-medium button.btn-less:active{-webkit-transform:scale(.9) translate(-8px)!important;transform:scale(.9) translate(-8px)!important}.vs-input-number.vs-input-number-size-small input{padding:2px;font-size:.7rem}.vs-input-number.vs-input-number-size-small button{min-width:16px;min-height:16px}.vs-input-number.vs-input-number-size-small button i{font-size:.7rem}.vs-input-number.vs-input-number-size-small button.btn-plus{-webkit-transform:translate(7px);transform:translate(7px)}.vs-input-number.vs-input-number-size-small button.btn-plus:active{-webkit-transform:scale(.9) translate(7px)!important;transform:scale(.9) translate(7px)!important}.vs-input-number.vs-input-number-size-small button.btn-less{-webkit-transform:translate(-7px);transform:translate(-7px)}.vs-input-number.vs-input-number-size-small button.btn-less:active{-webkit-transform:scale(.9) translate(-7px)!important;transform:scale(.9) translate(-7px)!important}.vs-input-number.vs-input-number-size-mini input{padding:1px;font-size:.6rem}.vs-input-number.vs-input-number-size-mini button{min-width:14px;min-height:14px}.vs-input-number.vs-input-number-size-mini button i{font-size:.6rem}.vs-input-number.vs-input-number-size-mini button.btn-plus{-webkit-transform:translate(6px);transform:translate(6px)}.vs-input-number.vs-input-number-size-mini button.btn-plus:active{-webkit-transform:scale(.9) translate(6px)!important;transform:scale(.9) translate(6px)!important}.vs-input-number.vs-input-number-size-mini button.btn-less{-webkit-transform:translate(-6px);transform:translate(-6px)}.vs-input-number.vs-input-number-size-mini button.btn-less:active{-webkit-transform:scale(.9) translate(-6px)!important;transform:scale(.9) translate(-6px)!important}.vs-input-number-primary button{background:#1f74ff}.vs-input-number-primary button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(31,116,255,.4);box-shadow:0 3px 12px 0 rgba(31,116,255,.4)}.vs-input-number-secondary button{background:#7931b1}.vs-input-number-secondary button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(121,49,177,.4);box-shadow:0 3px 12px 0 rgba(121,49,177,.4)}.vs-input-number-danger button{background:#ff4757}.vs-input-number-danger button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(255,71,87,.4);box-shadow:0 3px 12px 0 rgba(255,71,87,.4)}.vs-input-number-success button{background:#46c93a}.vs-input-number-success button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(70,201,58,.4);box-shadow:0 3px 12px 0 rgba(70,201,58,.4)}.vs-input-number-warning button{background:#ffba00}.vs-input-number-warning button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(255,186,0,.4);box-shadow:0 3px 12px 0 rgba(255,186,0,.4)}.vs-input-number-dark button{background:#1e1e1e}.vs-input-number-dark button:hover{-webkit-box-shadow:0 3px 12px 0 rgba(30,30,30,.4);box-shadow:0 3px 12px 0 rgba(30,30,30,.4)}.vs-input-number-light button{background:#f5f5f5}.vs-input-number-light button:hover{-webkit-box-shadow:0 3px 12px 0 hsla(0,0%,96%,.4);box-shadow:0 3px 12px 0 hsla(0,0%,96%,.4)}.vs-tooltip{display:block;height:auto;position:absolute;left:0;top:0;z-index:40000;background:#323232;padding:5px 7px;font-size:12px;border-radius:6px;max-width:220px;color:#fff}.vs-tooltip.after-none:after{display:none!important}.vs-tooltip h4{font-size:13px;width:100%;border-bottom:1px solid hsla(0,0%,100%,.1);padding-bottom:5px;margin-bottom:5px;text-align:center}.vs-tooltip:after{content:\"\";background:inherit;width:8px;height:8px;position:absolute;display:block}.vs-tooltip.vs-tooltip-top:after{bottom:-6px}.vs-tooltip.vs-tooltip-bottom:after,.vs-tooltip.vs-tooltip-top:after{-webkit-transform:rotate(45deg) translate(-50%);transform:rotate(45deg) translate(-50%);left:50%}.vs-tooltip.vs-tooltip-bottom:after{top:-1px}.vs-tooltip.vs-tooltip-left:after{right:-1px}.vs-tooltip.vs-tooltip-left:after,.vs-tooltip.vs-tooltip-right:after{-webkit-transform:rotate(45deg) translateY(-50%);transform:rotate(45deg) translateY(-50%);top:50%}.vs-tooltip.vs-tooltip-right:after{left:-6px}.tooltip-fade-enter-active,.tooltip-fade-leave-active{-webkit-transition:opacity .2s,-webkit-transform .2s;transition:opacity .2s,-webkit-transform .2s;transition:opacity .2s,transform .2s;transition:opacity .2s,transform .2s,-webkit-transform .2s}.tooltip-fade-enter,.tooltip-fade-leave-to{opacity:0}.tooltip-fade-enter.vs-tooltip-top,.tooltip-fade-leave-to.vs-tooltip-top{-webkit-transform:translateY(-10px);transform:translateY(-10px)}.tooltip-fade-enter.vs-tooltip-bottom,.tooltip-fade-leave-to.vs-tooltip-bottom{-webkit-transform:translateY(10px);transform:translateY(10px)}.tooltip-fade-enter.vs-tooltip-left,.tooltip-fade-leave-to.vs-tooltip-left{-webkit-transform:translate(-10px);transform:translate(-10px)}.tooltip-fade-enter.vs-tooltip-right,.tooltip-fade-leave-to.vs-tooltip-right{-webkit-transform:translate(10px);transform:translate(10px)}.vs-tooltip-primary{background:#1f74ff}.vs-tooltip-secondary{background:#7931b1}.vs-tooltip-danger{background:#ff4757}.vs-tooltip-success{background:#46c93a}.vs-tooltip-warning{background:#ffba00}.vs-tooltip-dark{background:#1e1e1e}.vs-tooltip-light{background:#f5f5f5}.con-input-upload,.con-upload{width:100%;position:relative}.con-input-upload{background:#f5f5f5;border-radius:8px;padding:5px;-webkit-transition:all .3s ease;transition:all .3s ease;border:1px dashed rgba(0,0,0,.1);display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-input-upload:hover{border:1px dashed rgba(31,116,255,.5)}.con-input-upload.disabled-upload{opacity:.5;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.con-input-upload input{position:absolute;width:100%;height:100%;opacity:0;left:0;top:0;cursor:pointer}.con-input-upload .text-input{min-width:200px;display:block;text-align:center;margin:0!important;padding:0!important;width:100%;font-weight:700}.con-input-upload .input-progress{height:100%;position:absolute;display:block;left:0;top:0;width:29%;background:#1f74ff;border-radius:10px}.con-input-upload .btn-upload-all{border:0;padding:4px;border-radius:5px;padding-left:6px;padding-right:6px;font-size:.8rem;z-index:500;cursor:pointer;margin:0;color:#1f74ff;-webkit-transition:all .2s ease;transition:all .2s ease;-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1);box-shadow:0 0 0 0 rgba(0,0,0,.1)}.con-input-upload .btn-upload-all:hover{-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1)}.con-input-upload.on-progress-all-upload{width:100%;height:4px;overflow:hidden;padding:0;border:0 solid transparent}.con-input-upload.on-progress-all-upload .btn-upload-all,.con-input-upload.on-progress-all-upload .text-input{opacity:0;-webkit-transform:translate(-40px);transform:translate(-40px)}.con-input-upload.is-ready-all-upload .input-progress{background:#46c93a!important}.con-img-upload{width:100%;background:#fff;position:relative;border-radius:10px;margin-top:5px;padding-right:5px;-webkit-box-sizing:border-box;box-sizing:border-box;-webkit-column-gap:5px;column-gap:5px}.con-img-upload .img-upload{-webkit-backface-visibility:hidden;backface-visibility:hidden;float:left;overflow:hidden;border-radius:10px;background:rgba(0,80,0,.5);background:#fff;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);-webkit-transition:all .3s ease;transition:all .3s ease;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;width:200px;height:200px;margin:5px;position:relative;cursor:pointer}.con-img-upload .img-upload.fileError{border:1px solid rgba(255,71,87,.2);-webkit-box-shadow:0 5px 20px 0 rgba(255,71,87,.2);box-shadow:0 5px 20px 0 rgba(255,71,87,.2)}.con-img-upload .img-upload.fileError .btn-upload-file{background:rgba(255,71,87,.3)!important}.con-img-upload .img-upload.fileError .btn-upload-file i{background:#ff4757!important}.con-img-upload .img-upload.removeItem{-webkit-transition:all .3s ease,height .2s ease .2s;transition:all .3s ease,height .2s ease .2s;opacity:0!important;width:0!important;visibility:hidden;margin:0!important;height:0!important}.con-img-upload .img-upload img{-webkit-filter:grayscale(0);filter:grayscale(0);-webkit-transition:all .3s ease;transition:all .3s ease;border-radius:10px;max-width:none;position:absolute;left:50%;top:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.con-img-upload .img-upload:hover{-webkit-transform:scale(.99);transform:scale(.99);-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1);box-shadow:0 0 0 0 rgba(0,0,0,.1)}.con-img-upload .img-upload:hover .btn-x-file{opacity:1;-webkit-transform:translate(0);transform:translate(0)}.con-img-upload .img-upload:hover .btn-upload-file{opacity:1;-webkit-transform:translate(-50%,65%);transform:translate(-50%,65%)}.con-img-upload .img-upload .btn-x-file{display:block;position:absolute;top:5px;padding:0;right:5px;margin:0;-webkit-transform:translate(20%,-20%);transform:translate(20%,-20%);background:transparent;z-index:300;opacity:0;border:0;cursor:pointer;-webkit-transition:all .2s ease;transition:all .2s ease;border-radius:10px}.con-img-upload .img-upload .btn-x-file i{-webkit-transition:all .2s ease;transition:all .2s ease;position:relative;padding:4px;font-size:1.4rem;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;border-radius:5px;background:rgba(0,0,0,.1);color:#fff;text-shadow:0 3px 10px rgba(0,0,0,.5)}.con-img-upload .img-upload .btn-x-file:hover i{border-radius:50%;background:#ff4757}.con-img-upload .img-upload .btn-x-file:hover~.btn-upload-file:not(.on-progress){background:radial-gradient(ellipse at center,#ff4757 0,transparent 70%);height:300px}.con-img-upload .img-upload .btn-x-file:hover~.btn-upload-file:not(.on-progress):after{border:1px solid #ff4757}.con-img-upload .img-upload .btn-x-file:hover~.btn-upload-file:not(.on-progress) i{opacity:0}.con-img-upload .img-upload .btn-x-file:hover~.on-progress{background:rgba(255,71,87,.2)}.con-img-upload .img-upload .btn-x-file:hover~.on-progress i{opacity:0}.con-img-upload .img-upload .btn-x-file:hover~img{-webkit-filter:grayscale(80%);filter:grayscale(80%)}.con-img-upload .img-upload .text-archive{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;position:relative;text-align:center;padding:5px}.con-img-upload .img-upload .text-archive i{position:absolute;font-size:7rem;opacity:.05}.con-img-upload .img-upload .text-archive span{position:relative;padding:5px}.con-img-upload .img-upload .btn-upload-file{margin:0;opacity:0;position:absolute;bottom:0;left:50%;z-index:200;border-radius:50%;width:300px;height:200px;-webkit-transform:translate(-50%,80%);transform:translate(-50%,80%);border:0;background:radial-gradient(ellipse at center,#46c93a 0,transparent 70%);cursor:pointer;-webkit-transition:all .3s ease;transition:all .3s ease;-webkit-animation:imageRebound .7s ease!important;animation:imageRebound .7s ease!important}.con-img-upload .img-upload .btn-upload-file:after{content:\"\";width:200px;height:200px;position:absolute;z-index:100;display:block;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);top:50%;border-radius:50%;border:1px solid #46c93a;-webkit-animation:circle 1.5s ease infinite;animation:circle 1.5s ease infinite}.con-img-upload .img-upload .btn-upload-file:not(.on-progress):hover{width:200px;height:200px;-webkit-transform:translate(-50%,70%);transform:translate(-50%,70%)}.con-img-upload .img-upload .btn-upload-file:not(.on-progress):hover i{font-size:1.4rem;background:#46c93a;top:6%;padding:10px}.con-img-upload .img-upload .btn-upload-file i{z-index:50;border-radius:50%;-webkit-transition:all .2s ease;transition:all .2s ease;position:absolute;left:50%;top:12%;-webkit-transform:translate(-50%);transform:translate(-50%);color:#fff;text-shadow:0 3px 10px rgba(0,0,0,.5);padding:20px;-webkit-backface-visibility:visible;backface-visibility:visible}.con-img-upload .img-upload .btn-upload-file span{opacity:0;z-index:300}.con-img-upload .img-upload .btn-upload-file.on-progress{width:100%;height:20px;background:rgba(70,201,58,.3);border-top:1px solid #46c93a;bottom:0;-webkit-transform:translate(0);transform:translate(0);left:0;opacity:1!important;overflow:hidden;border-radius:0;pointer-events:none}.con-img-upload .img-upload .btn-upload-file.on-progress i{opacity:.2;background:#46c93a;-webkit-box-shadow:0 5px 17px 0 rgba(0,0,0,.15);box-shadow:0 5px 17px 0 rgba(0,0,0,.15);top:50%;-webkit-transform:translate(-50%,-50%) scale(1.2);transform:translate(-50%,-50%) scale(1.2);padding:20px}.con-img-upload .img-upload .btn-upload-file.on-progress span{-webkit-transition:all .5s ease;transition:all .5s ease;opacity:1;color:#fff;font-size:1rem;position:absolute;top:calc(50% + 40px);left:0;text-align:center;width:100%;text-shadow:0 3px 15px #46c93a;font-weight:700;z-index:300;display:block;-webkit-transform:translateY(-50%);transform:translateY(-50%)}.con-img-upload .img-upload .btn-upload-file.ready-progress{border-top:0 solid #46c93a;background:rgba(70,201,58,.5)}.con-img-upload .img-upload .btn-upload-file.ready-progress span{z-index:10;-webkit-transform:translateY(-50%) scale(.5);transform:translateY(-50%) scale(.5);top:calc(50% + 20px);opacity:0}.con-img-upload .img-upload .btn-upload-file.ready-progress:after{opacity:0}.con-img-upload .img-upload .btn-upload-file.ready-progress i{opacity:1;background:#46c93a;-webkit-box-shadow:0 5px 17px 0 rgba(0,0,0,.15);box-shadow:0 5px 17px 0 rgba(0,0,0,.15);top:50%;-webkit-transform:translate(-50%,-50%) scale(1);transform:translate(-50%,-50%) scale(1);padding:10px}.upload-enter-active{-webkit-transition:all .7s ease!important;transition:all .7s ease!important;-webkit-animation:imageRebound .7s ease!important;animation:imageRebound .7s ease!important}.view-upload-enter-active,.view-upload-leave-active{-webkit-transition:opacity .5s;transition:opacity .5s}.view-upload-enter,.view-upload-leave-to{opacity:0}.view-upload-enter img,.view-upload-leave-to img{-webkit-transform:scale(.4);transform:scale(.4)}.view-upload{position:fixed;left:0;z-index:15000;width:100%;height:100%;background:rgba(0,0,0,.3);top:0;padding:20px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.view-upload img{-webkit-transition:all .3s ease;transition:all .3s ease;border-radius:10px;position:relative;display:block;left:0;top:0;right:0;bottom:0;max-width:100%;max-height:100%;margin:auto;-webkit-animation:imageRebound .7s ease!important;animation:imageRebound .7s ease!important;-webkit-box-shadow:0 8px 30px 0 rgba(0,0,0,.25);box-shadow:0 8px 30px 0 rgba(0,0,0,.25);background:#fff}@-webkit-keyframes imageRebound{0%{-webkit-transform:scale(.4);transform:scale(.4);border-radius:30%;pointer-events:none}40%{-webkit-transform:scale(1.03);transform:scale(1.03);border-radius:14px;pointer-events:none}70%{-webkit-transform:scale(.98);transform:scale(.98);border-radius:18px;pointer-events:none}to{-webkit-transform:scale(1);transform:scale(1);border-radius:10px;pointer-events:none}}@keyframes imageRebound{0%{-webkit-transform:scale(.4);transform:scale(.4);border-radius:30%;pointer-events:none}40%{-webkit-transform:scale(1.03);transform:scale(1.03);border-radius:14px;pointer-events:none}70%{-webkit-transform:scale(.98);transform:scale(.98);border-radius:18px;pointer-events:none}to{-webkit-transform:scale(1);transform:scale(1);border-radius:10px;pointer-events:none}}@-webkit-keyframes circle{0%{width:0;height:0}to{width:230px;height:230px;opacity:0}}@keyframes circle{0%{width:0;height:0}to{width:230px;height:230px;opacity:0}}.popup-t-enter,.popup-t-leave-to{opacity:0!important}.popup-t-enter .vs-popup,.popup-t-leave-to .vs-popup{-webkit-transform:scale(.9)!important;transform:scale(.9)!important}.popup-t-enter .vs-popup-cancel,.popup-t-leave-to .vs-popup-cancel{border-radius:50%!important;-webkit-transform:translate(8px,-8px) scale(.5)!important;transform:translate(8px,-8px) scale(.5)!important}.popup-t-enter .vs-popup-text,.popup-t-leave-to .vs-popup-text{opacity:0;-webkit-transform:translate(-15px)!important;transform:translate(-15px)!important}.popup-t-enter header h3,.popup-t-leave-to header h3{-webkit-transform:translate(-50px);transform:translate(-50px);opacity:0}.con-vs-popup{-webkit-transition:all .2s;transition:all .2s;width:100%;height:100%;position:fixed;left:100px;top:100px;left:0;top:0;z-index:20000;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;opacity:1}.con-vs-popup .vs-popup-dark{width:100%;background:rgba(0,0,0,.4);position:absolute;left:0;top:0;height:100%;z-index:10;-webkit-transition:all .25s ease;transition:all .25s ease;opacity:1}.con-vs-popup .vs-popup{-webkit-transition:all .2s;transition:all .2s;z-index:100;width:600px;margin:10px;max-width:calc(100% - 30px);max-height:calc(100% - 30px);border-radius:6px;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);background:#fff;-webkit-animation:rebound .3s;animation:rebound .3s}.con-vs-popup .vs-popup .vs-popup-text{padding:13px;font-size:.9em;-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;overflow:auto;max-height:calc(100vh - 100px);margin-right:5px;margin-top:5px;margin-bottom:5px;width:calc(100% - 5px)}.con-vs-popup .vs-popup header{width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;background:rgba(0,0,0,.05);border-radius:5px 5px;position:relative}.con-vs-popup .vs-popup header .con-title-after{width:100%;position:relative;overflow:hidden;border-radius:5px 5px 0 0}.con-vs-popup .vs-popup header h3{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;padding:8px;padding-left:12px;font-size:1.2rem}.con-vs-popup .vs-popup header .vs-popup-cancel{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;position:relative;padding:8px;cursor:pointer;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);border-radius:5px;-webkit-transform:translate(8px,-8px);transform:translate(8px,-8px);background:#fff;font-size:1.25em;color:rgba(0,0,0,.6)}.con-vs-popup .vs-popup header .vs-popup-cancel:hover{-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1);box-shadow:0 0 0 0 rgba(0,0,0,.1);-webkit-transform:translate(5px,-5px);transform:translate(5px,-5px)}.con-vs-popup.fullscreen .vs-popup{width:100%;height:100%}.vs-popup-primary .after{background:#1f74ff}.vs-popup-secondary .after{background:#7931b1}.vs-popup-danger .after{background:#ff4757}.vs-popup-success .after{background:#46c93a}.vs-popup-warning .after{background:#ffba00}.vs-popup-dark .after{background:#1e1e1e}.vs-popup-light .after{background:#f5f5f5}.con-vs-alert{border-radius:6px;color:#fff;width:100%;position:relative;font-size:.8rem;cursor:default;-webkit-transition:all .25s ease;transition:all .25s ease;overflow:hidden}.con-vs-alert .icon-alert{height:100%;position:relative;float:left;padding:0 10px;padding-left:5px;font-size:1.1rem}.con-vs-alert .vs-alert{padding:10px;overflow:hidden;position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.con-vs-alert h4{font-size:.9rem;font-weight:700;padding:8px 10px}.con-vs-alert .con-x{position:relative;margin-top:4px;margin-right:4px;display:inline-block;float:right;padding:4px;border-radius:6px;padding-bottom:1px;cursor:pointer;-webkit-transition:all .2s ease;transition:all .2s ease}.con-vs-alert .con-x:hover{-webkit-box-shadow:0 5px 15px 0 rgba(0,0,0,.1);box-shadow:0 5px 15px 0 rgba(0,0,0,.1)}.con-vs-alert-primary{background:rgba(31,116,255,.15);-webkit-box-shadow:0 0 25px 0 rgba(31,116,255,.15);box-shadow:0 0 25px 0 rgba(31,116,255,.15);color:#1f74ff}.con-vs-alert-primary h4{-webkit-box-shadow:0 6px 15px -7px rgba(31,116,255,.4);box-shadow:0 6px 15px -7px rgba(31,116,255,.4)}.con-vs-alert-primary .con-x{background:#1f74ff;color:#fff}.con-vs-alert-secondary{background:rgba(121,49,177,.15);-webkit-box-shadow:0 0 25px 0 rgba(121,49,177,.15);box-shadow:0 0 25px 0 rgba(121,49,177,.15);color:#7931b1}.con-vs-alert-secondary h4{-webkit-box-shadow:0 6px 15px -7px rgba(121,49,177,.4);box-shadow:0 6px 15px -7px rgba(121,49,177,.4)}.con-vs-alert-secondary .con-x{background:#7931b1;color:#fff}.con-vs-alert-danger{background:rgba(255,71,87,.15);-webkit-box-shadow:0 0 25px 0 rgba(255,71,87,.15);box-shadow:0 0 25px 0 rgba(255,71,87,.15);color:#ff4757}.con-vs-alert-danger h4{-webkit-box-shadow:0 6px 15px -7px rgba(255,71,87,.4);box-shadow:0 6px 15px -7px rgba(255,71,87,.4)}.con-vs-alert-danger .con-x{background:#ff4757;color:#fff}.con-vs-alert-success{background:rgba(70,201,58,.15);-webkit-box-shadow:0 0 25px 0 rgba(70,201,58,.15);box-shadow:0 0 25px 0 rgba(70,201,58,.15);color:#46c93a}.con-vs-alert-success h4{-webkit-box-shadow:0 6px 15px -7px rgba(70,201,58,.4);box-shadow:0 6px 15px -7px rgba(70,201,58,.4)}.con-vs-alert-success .con-x{background:#46c93a;color:#fff}.con-vs-alert-warning{background:rgba(255,186,0,.15);-webkit-box-shadow:0 0 25px 0 rgba(255,186,0,.15);box-shadow:0 0 25px 0 rgba(255,186,0,.15);color:#ffba00}.con-vs-alert-warning h4{-webkit-box-shadow:0 6px 15px -7px rgba(255,186,0,.4);box-shadow:0 6px 15px -7px rgba(255,186,0,.4)}.con-vs-alert-warning .con-x{background:#ffba00;color:#fff}.con-vs-alert-dark{background:rgba(30,30,30,.15);-webkit-box-shadow:0 0 25px 0 rgba(30,30,30,.15);box-shadow:0 0 25px 0 rgba(30,30,30,.15);color:#1e1e1e}.con-vs-alert-dark h4{-webkit-box-shadow:0 6px 15px -7px rgba(30,30,30,.4);box-shadow:0 6px 15px -7px rgba(30,30,30,.4)}.con-vs-alert-dark .con-x{background:#1e1e1e;color:#fff}.con-vs-alert-light{background:hsla(0,0%,96%,.15);-webkit-box-shadow:0 0 25px 0 hsla(0,0%,96%,.15);box-shadow:0 0 25px 0 hsla(0,0%,96%,.15);color:#f5f5f5}.con-vs-alert-light h4{-webkit-box-shadow:0 6px 15px -7px hsla(0,0%,96%,.4);box-shadow:0 6px 15px -7px hsla(0,0%,96%,.4)}.con-vs-alert-light .con-x{background:#f5f5f5;color:#fff}.con-vs-chip{background:#f0f0f0;border-radius:20px;float:left;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;font-size:.7rem;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-right:2px;margin-bottom:3px;min-height:28px;padding-right:10px;color:rgba(0,0,0,.7);position:relative}.con-vs-chip.closable{padding-right:0!important}.con-vs-chip.con-color .con-vs-avatar{background:hsla(0,0%,100%,.2)!important}.con-vs-chip .btn-close{width:20px;height:20px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;border-radius:50%;border:0;margin:0 4px;cursor:pointer;background:rgba(0,0,0,.15)!important;color:#fff;-webkit-transition:all .3s ease;transition:all .3s ease}.con-vs-chip .btn-close:hover{background:#ff4757!important}.con-vs-chip .btn-close i{font-size:.9rem}.con-vs-chip .con-vs-avatar{width:24px;height:24px;position:relative;display:block;margin:2px 0!important;-webkit-transform:translate(-8px);transform:translate(-8px);display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;background:rgba(0,0,0,.15)!important}.con-vs-chip .con-vs-avatar .material-icons{margin-top:0!important;font-size:.8rem}.con-vs-chip .text-chip{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin-left:10px}.vs-chip-primary{background:#1f74ff}.vs-chip-secondary{background:#7931b1}.vs-chip-danger{background:#ff4757}.vs-chip-success{background:#46c93a}.vs-chip-warning{background:#ffba00}.vs-chip-dark{background:#1e1e1e}.vs-chip-light{background:#f5f5f5}.indeterminate-bar{position:absolute;width:0;height:100%;left:-100%;top:0;border-radius:2px;-webkit-animation:indeterminate 1.2s ease infinite;animation:indeterminate 1.2s ease infinite;border-radius:20px}.vs-progress-background{width:100%;border-radius:18px;background-color:rgba(0,0,0,.06);z-index:50;position:relative;display:inline-block;overflow:hidden}.vs-progress-foreground{z-index:100;height:100%;border-radius:18px;-webkit-transition:all .5s ease;transition:all .5s ease}.vs-progress-primary{background:rgba(31,116,255,.1)}.vs-progress-primary .indeterminate-bar,.vs-progress-primary .vs-progress-foreground{background:#1f74ff}.vs-progress-secondary{background:rgba(121,49,177,.1)}.vs-progress-secondary .indeterminate-bar,.vs-progress-secondary .vs-progress-foreground{background:#7931b1}.vs-progress-danger{background:rgba(255,71,87,.1)}.vs-progress-danger .indeterminate-bar,.vs-progress-danger .vs-progress-foreground{background:#ff4757}.vs-progress-success{background:rgba(70,201,58,.1)}.vs-progress-success .indeterminate-bar,.vs-progress-success .vs-progress-foreground{background:#46c93a}.vs-progress-warning{background:rgba(255,186,0,.1)}.vs-progress-warning .indeterminate-bar,.vs-progress-warning .vs-progress-foreground{background:#ffba00}.vs-progress-dark{background:rgba(30,30,30,.1)}.vs-progress-dark .indeterminate-bar,.vs-progress-dark .vs-progress-foreground{background:#1e1e1e}.vs-progress-light{background:hsla(0,0%,96%,.1)}.vs-progress-light .indeterminate-bar,.vs-progress-light .vs-progress-foreground{background:#f5f5f5}@-webkit-keyframes indeterminate{0%{width:30%;left:-40%}60%{left:100%;width:100%}to{left:100%;width:0}}@keyframes indeterminate{0%{width:30%;left:-40%}60%{left:100%;width:100%}to{left:100%;width:0}}.con-vs-card{width:100%;height:auto;background:#fff;border-radius:8px;margin-bottom:10px;display:block;-webkit-box-shadow:0 4px 25px 0 rgba(0,0,0,.1);box-shadow:0 4px 25px 0 rgba(0,0,0,.1);-webkit-transition:all .3s ease;transition:all .3s ease}.con-vs-card.withHover{cursor:pointer}.con-vs-card.withHover:hover{-webkit-transform:translateY(4px);transform:translateY(4px);-webkit-box-shadow:0 0 5px 0 rgba(0,0,0,.1)!important;box-shadow:0 0 5px 0 rgba(0,0,0,.1)!important}.con-vs-card.withHover:hover img{-webkit-transform:scale(1.1);transform:scale(1.1)}.con-vs-card .vs-card-header{padding:10px;-webkit-box-shadow:0 10px 15px -10px rgba(0,0,0,.05);box-shadow:0 10px 15px -10px rgba(0,0,0,.05)}.con-vs-card .vs-card-header h3{padding:0!important}.con-vs-card .vs-card-footer{position:relative;padding:10px;-webkit-transform:translateY(40%);transform:translateY(40%);margin-top:-5%;padding-top:0;overflow:hidden}.con-vs-card .vs-card-content{padding:10px;font-size:.8rem}.con-vs-card .vs-card-media{width:100%;overflow:hidden}.con-vs-card .vs-card-media img{width:100%;-webkit-transition:all .25s ease;transition:all .25s ease;display:block}.vs-list{width:100%;position:relative;padding:5px}.vs-list .list-icon{padding:6px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.vs-list .list-icon i{font-size:1.3rem!important}.vs-list .vs-list-header{padding:8px 0;font-weight:700;-webkit-box-shadow:0 7px 7px -5px rgba(0,0,0,.08);box-shadow:0 7px 7px -5px rgba(0,0,0,.08);margin-bottom:5px}.vs-list .vs-list-header,.vs-list .vs-list-item{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:start;-ms-flex-pack:start;justify-content:flex-start}.vs-list .vs-list-item{border-bottom:1px solid rgba(0,0,0,.08);padding:5px}.vs-list .vs-list-item .list-slot{margin-left:auto}.vs-list .vs-list-item .list-title{font-weight:700}.vs-list .vs-list-item .list-subtitle{font-size:.8rem}.vs-header-list-primary{color:#1f74ff}.vs-header-list-secondary{color:#7931b1}.vs-header-list-danger{color:#ff4757}.vs-header-list-success{color:#46c93a}.vs-header-list-warning{color:#ffba00}.vs-header-list-dark{color:#1e1e1e}.vs-header-list-light{color:#f5f5f5}.con-vs-pagination{--color-pagination:#f0f0f0;--color-pagination-alpha:#f0f0f0}.con-vs-pagination .input-goto{padding:8px;border-radius:5px;border:0 solid rgba(0,0,0,.2);background:#f0f0f0;margin-left:5px}.con-vs-pagination .nav-pagination,.con-vs-pagination .nav-pagination>ul{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-pagination .nav-pagination>ul{padding:0;background:#f0f0f0;border-radius:20px;padding-left:5px;padding-right:5px}.con-vs-pagination .nav-pagination>ul>li{cursor:pointer;width:35px;height:35px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;border-radius:8px;-webkit-transition:all .25s ease;transition:all .25s ease;position:relative;-webkit-backface-visibility:visible;backface-visibility:visible;margin:0 2px;font-weight:700;color:rgba(0,0,0,.5)}.con-vs-pagination .nav-pagination>ul>li span{z-index:100}.con-vs-pagination .nav-pagination>ul>li .effect{z-index:50;content:\"\";position:absolute;width:100%;height:100%;background:var(--color-pagination);left:0;top:0;display:block;border-radius:8px;-webkit-transform:scale(.5);transform:scale(.5);opacity:0;-webkit-transition:all .2s ease;transition:all .2s ease;-webkit-box-shadow:0 0 20px 0 transparent;box-shadow:0 0 20px 0 transparent}.con-vs-pagination .nav-pagination>ul>li.is-current{-webkit-transform:scale(1.05);transform:scale(1.05);color:#fff;font-weight:700}.con-vs-pagination .nav-pagination>ul>li.is-current .effect{opacity:1;-webkit-transform:scale(1)!important;transform:scale(1)!important;-webkit-box-shadow:0 0 20px 0 var(--color-pagination-alpha);box-shadow:0 0 20px 0 var(--color-pagination-alpha)}.con-vs-pagination .nav-pagination>ul>li:hover:not(.is-current){color:var(--color-pagination)}.con-vs-pagination .btn-pagination{width:35px;height:35px;border-radius:50%;border:0;cursor:pointer;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;color:rgba(0,0,0,.6);-webkit-transition:all .2s ease;transition:all .2s ease;background:#f0f0f0;margin:0;z-index:200}.con-vs-pagination .btn-pagination.btn-prev-pagination{margin-right:5px}.con-vs-pagination .btn-pagination.btn-next-pagination{margin-left:5px}.con-vs-pagination .btn-pagination i{font-size:1.2rem}.con-vs-pagination .btn-pagination:hover{background:var(--color-pagination);color:#fff}.vs-pagination-primary li:hover:not(.is-current){color:#1f74ff!important}.vs-pagination-primary .effect{background:#1f74ff!important;-webkit-box-shadow:0 0 20px 0 rgba(31,116,255,.5)!important;box-shadow:0 0 20px 0 rgba(31,116,255,.5)!important}.vs-pagination-primary .btn-pagination:hover{background:#1f74ff!important}.vs-pagination-secondary li:hover:not(.is-current){color:#7931b1!important}.vs-pagination-secondary .effect{background:#7931b1!important;-webkit-box-shadow:0 0 20px 0 rgba(121,49,177,.5)!important;box-shadow:0 0 20px 0 rgba(121,49,177,.5)!important}.vs-pagination-secondary .btn-pagination:hover{background:#7931b1!important}.vs-pagination-danger li:hover:not(.is-current){color:#ff4757!important}.vs-pagination-danger .effect{background:#ff4757!important;-webkit-box-shadow:0 0 20px 0 rgba(255,71,87,.5)!important;box-shadow:0 0 20px 0 rgba(255,71,87,.5)!important}.vs-pagination-danger .btn-pagination:hover{background:#ff4757!important}.vs-pagination-success li:hover:not(.is-current){color:#46c93a!important}.vs-pagination-success .effect{background:#46c93a!important;-webkit-box-shadow:0 0 20px 0 rgba(70,201,58,.5)!important;box-shadow:0 0 20px 0 rgba(70,201,58,.5)!important}.vs-pagination-success .btn-pagination:hover{background:#46c93a!important}.vs-pagination-warning li:hover:not(.is-current){color:#ffba00!important}.vs-pagination-warning .effect{background:#ffba00!important;-webkit-box-shadow:0 0 20px 0 rgba(255,186,0,.5)!important;box-shadow:0 0 20px 0 rgba(255,186,0,.5)!important}.vs-pagination-warning .btn-pagination:hover{background:#ffba00!important}.vs-pagination-dark li:hover:not(.is-current){color:#1e1e1e!important}.vs-pagination-dark .effect{-webkit-box-shadow:0 0 20px 0 rgba(30,30,30,.5)!important;box-shadow:0 0 20px 0 rgba(30,30,30,.5)!important}.vs-pagination-dark .btn-pagination:hover,.vs-pagination-dark .effect{background:#1e1e1e!important}.vs-pagination-light li:hover:not(.is-current){color:#f5f5f5!important}.vs-pagination-light .effect{background:#f5f5f5!important;-webkit-box-shadow:0 0 20px 0 hsla(0,0%,96%,.5)!important;box-shadow:0 0 20px 0 hsla(0,0%,96%,.5)!important}.vs-pagination-light .btn-pagination:hover{background:#f5f5f5!important}.vs-collapse{-webkit-transition:all .3s ease;transition:all .3s ease;padding:10px;color:#f5f5f5;cursor:pointer}.vs-collapse-primary{color:#1f74ff}.vs-collapse-primary:hover{background:rgba(31,116,255,.1)!important}.vs-collapse-secondary{color:#7931b1}.vs-collapse-secondary:hover{background:rgba(121,49,177,.1)!important}.vs-collapse-danger{color:#ff4757}.vs-collapse-danger:hover{background:rgba(255,71,87,.1)!important}.vs-collapse-success{color:#46c93a}.vs-collapse-success:hover{background:rgba(70,201,58,.1)!important}.vs-collapse-warning{color:#ffba00}.vs-collapse-warning:hover{background:rgba(255,186,0,.1)!important}.vs-collapse-dark{color:#1e1e1e}.vs-collapse-dark:hover{background:rgba(30,30,30,.1)!important}.vs-collapse-light{color:#f5f5f5}.vs-collapse-light:hover{background:hsla(0,0%,96%,.1)!important}.vs-notifications{position:fixed;z-index:200000;padding:5px;margin-left:5px;margin-right:5px;border-radius:10px;overflow:hidden;-webkit-transition:all .3s ease;transition:all .3s ease;cursor:default;max-width:350px;min-width:200px}.vs-notifications:active{opacity:.8}.vs-notifications .content-noti{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;width:100%}.vs-notifications .content-noti .con-text-noti{width:100%}.vs-notifications .content-noti .vs-icon-noti{position:relative;display:-webkit-box;display:-ms-flexbox;display:flex;z-index:100;display:block;padding:5px;background:hsla(0,0%,100%,.1);border-radius:6px;font-size:20px;-webkit-animation:openicon .4s ease;animation:openicon .4s ease}.vs-notifications h3,.vs-notifications p{z-index:100;position:relative;-webkit-animation:open .4s ease;animation:open .4s ease}.vs-notifications h3{font-size:16px;padding:5px;padding-bottom:0}.vs-notifications p{font-size:14px;padding:5px;padding-right:10px}.vs-notifications.vs-noti-active h3,.vs-notifications.vs-noti-active p{opacity:1}.vs-notifications .filling{display:block;position:absolute;-webkit-transition:all .45s ease;transition:all .45s ease;z-index:1;-webkit-transform:translateY(-50%);transform:translateY(-50%)}.vs-noti-primary .filling{background:#1f74ff;width:10px;height:10px;border-radius:50%}.vs-noti-secondary .filling{background:#7931b1;width:10px;height:10px;border-radius:50%}.vs-noti-danger .filling{background:#ff4757;width:10px;height:10px;border-radius:50%}.vs-noti-success .filling{background:#46c93a;width:10px;height:10px;border-radius:50%}.vs-noti-warning .filling{background:#ffba00;width:10px;height:10px;border-radius:50%}.vs-noti-dark .filling{background:#1e1e1e;width:10px;height:10px;border-radius:50%}.vs-noti-light .filling{background:#f5f5f5;width:10px;height:10px;border-radius:50%}@-webkit-keyframes open{0%{opacity:0;-webkit-transform:translate(-30px);transform:translate(-30px)}to{-webkit-transform:translate(0);transform:translate(0);opacity:1}}@keyframes open{0%{opacity:0;-webkit-transform:translate(-30px);transform:translate(-30px)}to{-webkit-transform:translate(0);transform:translate(0);opacity:1}}@-webkit-keyframes openicon{0%{opacity:0;-webkit-transform:scale(.4);transform:scale(.4)}to{-webkit-transform:scale(1);transform:scale(1);opacity:1}}@keyframes openicon{0%{opacity:0;-webkit-transform:scale(.4);transform:scale(.4)}to{-webkit-transform:scale(1);transform:scale(1);opacity:1}}.dialog-t-enter,.dialog-t-leave-to{opacity:0!important}.dialog-t-enter .vs-dialog,.dialog-t-leave-to .vs-dialog{-webkit-transform:scale(.9)!important;transform:scale(.9)!important}.dialog-t-enter .vs-dialog-cancel,.dialog-t-leave-to .vs-dialog-cancel{border-radius:50%!important;-webkit-transform:translate(8px,-8px) scale(.5)!important;transform:translate(8px,-8px) scale(.5)!important}.dialog-t-enter .vs-dialog-text,.dialog-t-leave-to .vs-dialog-text{opacity:0;-webkit-transform:translate(-15px)!important;transform:translate(-15px)!important}.dialog-t-enter .after,.dialog-t-leave-to .after{height:0%!important}.dialog-t-enter header h3,.dialog-t-leave-to header h3{-webkit-transform:translate(-50px);transform:translate(-50px);opacity:0}.dialog-t-enter footer button,.dialog-t-leave-to footer button{-webkit-transform:translateY(10px);transform:translateY(10px);opacity:0}.con-vs-dialog{-webkit-transition:all .2s;transition:all .2s;width:100%;height:100%;position:fixed;left:100px;top:100px;left:0;top:0;z-index:200000;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;opacity:1}.con-vs-dialog .vs-dialog-dark{width:100%;background:rgba(0,0,0,.4);position:absolute;left:0;top:0;height:100%;z-index:10;-webkit-transition:all .25s ease;transition:all .25s ease;opacity:1}.con-vs-dialog .vs-dialog{-webkit-transition:all .2s;transition:all .2s;z-index:100;width:calc(100% - 20px);margin:10px;max-width:400px;border-radius:6px;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);background:#fff;-webkit-animation:rebound .3s;animation:rebound .3s}.con-vs-dialog .vs-dialog.locked{-webkit-transform:scale(1.02);transform:scale(1.02)}.con-vs-dialog .vs-dialog .vs-dialog-text{padding:10px;font-size:.875em;-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s}.con-vs-dialog .vs-dialog header{width:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;background:#f8f8f8;border-radius:5px 5px;position:relative}.con-vs-dialog .vs-dialog header .con-title-after{width:100%;position:relative;overflow:hidden;border-radius:5px 5px 0 0}.con-vs-dialog .vs-dialog header span.after{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;position:absolute;left:0;top:50%;-webkit-transform:translateY(-50%);transform:translateY(-50%);width:3px;height:100%;display:block}.con-vs-dialog .vs-dialog header h3{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;padding:8px;padding-left:12px;font-size:1.2rem}.con-vs-dialog .vs-dialog header .vs-dialog-cancel{-webkit-transition:all .23s ease .1s;transition:all .23s ease .1s;position:relative;padding:8px;cursor:pointer;-webkit-box-shadow:0 5px 20px 0 rgba(0,0,0,.1);box-shadow:0 5px 20px 0 rgba(0,0,0,.1);border-radius:5px;-webkit-transform:translate(8px,-8px);transform:translate(8px,-8px);background:#fff;font-size:1.25em}.con-vs-dialog .vs-dialog header .vs-dialog-cancel:hover{-webkit-box-shadow:0 0 0 0 rgba(0,0,0,.1);box-shadow:0 0 0 0 rgba(0,0,0,.1);-webkit-transform:translate(5px,-5px);transform:translate(5px,-5px)}.con-vs-dialog .vs-dialog footer{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;position:relative}.con-vs-dialog .vs-dialog footer button{margin-left:0}.con-vs-dialog .vs-dialog footer:before{content:\"\";top:0;left:0;position:absolute;width:90%;margin-left:5%;height:1px;background:rgba(0,0,0,.05)}.vs-dialog-primary header{color:#1f74ff}.vs-dialog-primary .after{background:#1f74ff}.vs-dialog-secondary header{color:#7931b1}.vs-dialog-secondary .after{background:#7931b1}.vs-dialog-danger header{color:#ff4757}.vs-dialog-danger .after{background:#ff4757}.vs-dialog-success header{color:#46c93a}.vs-dialog-success .after{background:#46c93a}.vs-dialog-warning header{color:#ffba00}.vs-dialog-warning .after{background:#ffba00}.vs-dialog-dark header{color:#1e1e1e}.vs-dialog-dark .after{background:#1e1e1e}.vs-dialog-light header{color:#f5f5f5}.vs-dialog-light .after{background:#f5f5f5}@-webkit-keyframes rebound{0%{-webkit-transform:scale(.9);transform:scale(.9)}50%{-webkit-transform:scale(1.08);transform:scale(1.08)}to{-webkit-transform:scale(1);transform:scale(1)}}@keyframes rebound{0%{-webkit-transform:scale(.9);transform:scale(.9)}50%{-webkit-transform:scale(1.08);transform:scale(1.08)}to{-webkit-transform:scale(1);transform:scale(1)}}.vs-con-loading__container{position:relative;overflow:hidden}.vs-con-loading__container .con-vs-loading{position:absolute!important;width:100%;height:100%;min-height:60px;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.beforeRemove{opacity:0}.con-vs-loading{width:100%;height:100%;position:fixed;left:0;top:0;background:hsla(0,0%,100%,.6);z-index:300000;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-transition:all .3s ease;transition:all .3s ease}.con-vs-loading.textAfter{-webkit-box-orient:vertical!important;-webkit-box-direction:reverse!important;-ms-flex-direction:column-reverse!important;flex-direction:column-reverse!important}.con-vs-loading .title-loading{position:relative;padding:5px}.con-vs-loading .effect-click{position:absolute;width:0;height:0;background:rgba(0,0,0,.1);border-radius:50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%)}.con-vs-loading .vs-loading{position:relative;width:55px;height:55px;display:block;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box;border:3px solid transparent}.con-vs-loading .vs-loading .effects{-webkit-transition:all .3s ease;transition:all .3s ease}.con-vs-loading .vs-loading.material{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-loading .vs-loading.border .effect-1,.con-vs-loading .vs-loading.default .effect-1{position:absolute;width:100%;height:100%;border:3px solid transparent;border-left:3px solid #1f74ff;-webkit-animation:rotate 1s ease infinite;animation:rotate 1s ease infinite;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.border .effect-2,.con-vs-loading .vs-loading.default .effect-2{position:absolute;width:100%;height:100%;border:3px solid transparent;border-left:3px solid #1f74ff;-webkit-animation:rotateOpacity 1s ease infinite .1s;animation:rotateOpacity 1s ease infinite .1s;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.border .effect-3,.con-vs-loading .vs-loading.default .effect-3{position:absolute;width:100%;height:100%;border:3px solid transparent;border-left:3px solid #1f74ff;-webkit-animation:rotateOpacity 1s ease infinite .2s;animation:rotateOpacity 1s ease infinite .2s;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.border{border:1px solid #f0f0f0}.con-vs-loading .vs-loading.border .effect-1,.con-vs-loading .vs-loading.border .effect-2,.con-vs-loading .vs-loading.border .effect-3{border:1px solid transparent;border-left:1px solid #1f74ff}.con-vs-loading .vs-loading.point .effect-1{-webkit-animation:scale 1.2s ease infinite;animation:scale 1.2s ease infinite}.con-vs-loading .vs-loading.point .effect-1,.con-vs-loading .vs-loading.point .effect-2{background:rgba(31,116,255,.4);position:absolute;width:100%;height:100%;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.point .effect-2{-webkit-animation:scale 1.8s ease infinite;animation:scale 1.8s ease infinite}.con-vs-loading .vs-loading.point .effect-3{background:rgba(31,116,255,.4);position:absolute;width:100%;height:100%;-webkit-animation:scale 3.6s ease-out infinite;animation:scale 3.6s ease-out infinite;border-radius:50%;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.radius .effect-1{-webkit-animation:radius 1s ease infinite;animation:radius 1s ease infinite}.con-vs-loading .vs-loading.radius .effect-1,.con-vs-loading .vs-loading.radius .effect-2{position:absolute;width:100%;height:100%;border:3px solid #1f74ff;border-radius:10px;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.radius .effect-2{-webkit-animation:radius 2s ease infinite .1s;animation:radius 2s ease infinite .1s}.con-vs-loading .vs-loading.radius .effect-3{-webkit-animation:radius 3s ease infinite .2s;animation:radius 3s ease infinite .2s}.con-vs-loading .vs-loading.corners .effect-1,.con-vs-loading .vs-loading.radius .effect-3{position:absolute;width:100%;height:100%;border:3px solid #1f74ff;border-radius:10px;-webkit-box-sizing:border-box;box-sizing:border-box}.con-vs-loading .vs-loading.corners .effect-1{-webkit-animation:corners 1s ease infinite;animation:corners 1s ease infinite}.con-vs-loading .vs-loading.sound{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.con-vs-loading .vs-loading.sound .effect-1{height:100%;-webkit-animation:sound 1.4s ease infinite alternate;animation:sound 1.4s ease infinite alternate}.con-vs-loading .vs-loading.sound .effect-1,.con-vs-loading .vs-loading.sound .effect-2{position:relative;width:5px;border-radius:10px;-webkit-box-sizing:border-box;box-sizing:border-box;background:#1f74ff;margin:0 4px}.con-vs-loading .vs-loading.sound .effect-2{height:60%;-webkit-animation:sound .7s ease infinite alternate;animation:sound .7s ease infinite alternate}.con-vs-loading .vs-loading.sound .effect-3{position:relative;width:5px;height:80%;-webkit-animation:sound 1s ease-out infinite alternate;animation:sound 1s ease-out infinite alternate;border-radius:10px;-webkit-box-sizing:border-box;box-sizing:border-box;background:#1f74ff;margin:0 4px}.spinner{-webkit-animation:rotator 1.4s linear infinite;animation:rotator 1.4s linear infinite}.path{stroke-dasharray:187;stroke-dashoffset:0;-webkit-transform-origin:center;transform-origin:center;-webkit-animation:dash 1.4s ease-in-out infinite,colors 5.6s ease-in-out infinite;animation:dash 1.4s ease-in-out infinite,colors 5.6s ease-in-out infinite}.fade-enter-active,.fade-leave-active{-webkit-transition:opacity .3s;transition:opacity .3s}.fade-enter,.fade-leave-to{opacity:0}.effect-click-leave-active{-webkit-transition:all .3s;transition:all .3s}.effect-click-leave-to{opacity:0;width:1000px!important;height:1000px!important}.vs-loading-background-primary{background:#1f74ff}.vs-loading-color-primary .border .effect-1,.vs-loading-color-primary .border .effect-2,.vs-loading-color-primary .border .effect-3,.vs-loading-color-primary .default .effect-1,.vs-loading-color-primary .default .effect-2,.vs-loading-color-primary .default .effect-3{border-left:3px solid #1f74ff!important}.vs-loading-color-primary .border .effect-1,.vs-loading-color-primary .border .effect-2,.vs-loading-color-primary .border .effect-3{border-left:1px solid #1f74ff!important}.vs-loading-color-primary .point .effect-1,.vs-loading-color-primary .point .effect-2,.vs-loading-color-primary .point .effect-3{background:rgba(31,116,255,.4)!important}.vs-loading-color-primary .corners .effect-1,.vs-loading-color-primary .radius .effect-1,.vs-loading-color-primary .radius .effect-2,.vs-loading-color-primary .radius .effect-3{border:3px solid #1f74ff!important}.vs-loading-color-primary .sound .effect-1,.vs-loading-color-primary .sound .effect-2,.vs-loading-color-primary .sound .effect-3{background:#1f74ff!important}.vs-loading-background-secondary{background:#7931b1}.vs-loading-color-secondary .border .effect-1,.vs-loading-color-secondary .border .effect-2,.vs-loading-color-secondary .border .effect-3,.vs-loading-color-secondary .default .effect-1,.vs-loading-color-secondary .default .effect-2,.vs-loading-color-secondary .default .effect-3{border-left:3px solid #7931b1!important}.vs-loading-color-secondary .border .effect-1,.vs-loading-color-secondary .border .effect-2,.vs-loading-color-secondary .border .effect-3{border-left:1px solid #7931b1!important}.vs-loading-color-secondary .point .effect-1,.vs-loading-color-secondary .point .effect-2,.vs-loading-color-secondary .point .effect-3{background:rgba(121,49,177,.4)!important}.vs-loading-color-secondary .corners .effect-1,.vs-loading-color-secondary .radius .effect-1,.vs-loading-color-secondary .radius .effect-2,.vs-loading-color-secondary .radius .effect-3{border:3px solid #7931b1!important}.vs-loading-color-secondary .sound .effect-1,.vs-loading-color-secondary .sound .effect-2,.vs-loading-color-secondary .sound .effect-3{background:#7931b1!important}.vs-loading-background-danger{background:#ff4757}.vs-loading-color-danger .border .effect-1,.vs-loading-color-danger .border .effect-2,.vs-loading-color-danger .border .effect-3,.vs-loading-color-danger .default .effect-1,.vs-loading-color-danger .default .effect-2,.vs-loading-color-danger .default .effect-3{border-left:3px solid #ff4757!important}.vs-loading-color-danger .border .effect-1,.vs-loading-color-danger .border .effect-2,.vs-loading-color-danger .border .effect-3{border-left:1px solid #ff4757!important}.vs-loading-color-danger .point .effect-1,.vs-loading-color-danger .point .effect-2,.vs-loading-color-danger .point .effect-3{background:rgba(255,71,87,.4)!important}.vs-loading-color-danger .corners .effect-1,.vs-loading-color-danger .radius .effect-1,.vs-loading-color-danger .radius .effect-2,.vs-loading-color-danger .radius .effect-3{border:3px solid #ff4757!important}.vs-loading-color-danger .sound .effect-1,.vs-loading-color-danger .sound .effect-2,.vs-loading-color-danger .sound .effect-3{background:#ff4757!important}.vs-loading-background-success{background:#46c93a}.vs-loading-color-success .border .effect-1,.vs-loading-color-success .border .effect-2,.vs-loading-color-success .border .effect-3,.vs-loading-color-success .default .effect-1,.vs-loading-color-success .default .effect-2,.vs-loading-color-success .default .effect-3{border-left:3px solid #46c93a!important}.vs-loading-color-success .border .effect-1,.vs-loading-color-success .border .effect-2,.vs-loading-color-success .border .effect-3{border-left:1px solid #46c93a!important}.vs-loading-color-success .point .effect-1,.vs-loading-color-success .point .effect-2,.vs-loading-color-success .point .effect-3{background:rgba(70,201,58,.4)!important}.vs-loading-color-success .corners .effect-1,.vs-loading-color-success .radius .effect-1,.vs-loading-color-success .radius .effect-2,.vs-loading-color-success .radius .effect-3{border:3px solid #46c93a!important}.vs-loading-color-success .sound .effect-1,.vs-loading-color-success .sound .effect-2,.vs-loading-color-success .sound .effect-3{background:#46c93a!important}.vs-loading-background-warning{background:#ffba00}.vs-loading-color-warning .border .effect-1,.vs-loading-color-warning .border .effect-2,.vs-loading-color-warning .border .effect-3,.vs-loading-color-warning .default .effect-1,.vs-loading-color-warning .default .effect-2,.vs-loading-color-warning .default .effect-3{border-left:3px solid #ffba00!important}.vs-loading-color-warning .border .effect-1,.vs-loading-color-warning .border .effect-2,.vs-loading-color-warning .border .effect-3{border-left:1px solid #ffba00!important}.vs-loading-color-warning .point .effect-1,.vs-loading-color-warning .point .effect-2,.vs-loading-color-warning .point .effect-3{background:rgba(255,186,0,.4)!important}.vs-loading-color-warning .corners .effect-1,.vs-loading-color-warning .radius .effect-1,.vs-loading-color-warning .radius .effect-2,.vs-loading-color-warning .radius .effect-3{border:3px solid #ffba00!important}.vs-loading-color-warning .sound .effect-1,.vs-loading-color-warning .sound .effect-2,.vs-loading-color-warning .sound .effect-3{background:#ffba00!important}.vs-loading-background-dark{background:#1e1e1e}.vs-loading-color-dark .border .effect-1,.vs-loading-color-dark .border .effect-2,.vs-loading-color-dark .border .effect-3,.vs-loading-color-dark .default .effect-1,.vs-loading-color-dark .default .effect-2,.vs-loading-color-dark .default .effect-3{border-left:3px solid #1e1e1e!important}.vs-loading-color-dark .border .effect-1,.vs-loading-color-dark .border .effect-2,.vs-loading-color-dark .border .effect-3{border-left:1px solid #1e1e1e!important}.vs-loading-color-dark .point .effect-1,.vs-loading-color-dark .point .effect-2,.vs-loading-color-dark .point .effect-3{background:rgba(30,30,30,.4)!important}.vs-loading-color-dark .corners .effect-1,.vs-loading-color-dark .radius .effect-1,.vs-loading-color-dark .radius .effect-2,.vs-loading-color-dark .radius .effect-3{border:3px solid #1e1e1e!important}.vs-loading-color-dark .sound .effect-1,.vs-loading-color-dark .sound .effect-2,.vs-loading-color-dark .sound .effect-3{background:#1e1e1e!important}.vs-loading-background-light{background:#f5f5f5}.vs-loading-color-light .border .effect-1,.vs-loading-color-light .border .effect-2,.vs-loading-color-light .border .effect-3,.vs-loading-color-light .default .effect-1,.vs-loading-color-light .default .effect-2,.vs-loading-color-light .default .effect-3{border-left:3px solid #f5f5f5!important}.vs-loading-color-light .border .effect-1,.vs-loading-color-light .border .effect-2,.vs-loading-color-light .border .effect-3{border-left:1px solid #f5f5f5!important}.vs-loading-color-light .point .effect-1,.vs-loading-color-light .point .effect-2,.vs-loading-color-light .point .effect-3{background:hsla(0,0%,96%,.4)!important}.vs-loading-color-light .corners .effect-1,.vs-loading-color-light .radius .effect-1,.vs-loading-color-light .radius .effect-2,.vs-loading-color-light .radius .effect-3{border:3px solid #f5f5f5!important}.vs-loading-color-light .sound .effect-1,.vs-loading-color-light .sound .effect-2,.vs-loading-color-light .sound .effect-3{background:#f5f5f5!important}@-webkit-keyframes rotate{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}@keyframes rotate{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(1turn);transform:rotate(1turn)}}@-webkit-keyframes rotateOpacity{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg);opacity:.1}to{-webkit-transform:rotate(1turn);transform:rotate(1turn);opacity:1}}@keyframes rotateOpacity{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg);opacity:.1}to{-webkit-transform:rotate(1turn);transform:rotate(1turn);opacity:1}}@-webkit-keyframes scale{0%{-webkit-transform:scale(.1);transform:scale(.1)}60%{-webkit-transform:scale(1);transform:scale(1)}to{-webkit-transform:scale(.1);transform:scale(.1)}}@keyframes scale{0%{-webkit-transform:scale(.1);transform:scale(.1)}60%{-webkit-transform:scale(1);transform:scale(1)}to{-webkit-transform:scale(.1);transform:scale(.1)}}@-webkit-keyframes radius{0%{-webkit-transform:rotate(0deg) scale(.1);transform:rotate(0deg) scale(.1);opacity:1}60%{-webkit-transform:rotate(160deg) scale(1);transform:rotate(160deg) scale(1);opacity:0}to{-webkit-transform:rotate(0deg) scale(.1);transform:rotate(0deg) scale(.1);opacity:1}}@keyframes radius{0%{-webkit-transform:rotate(0deg) scale(.1);transform:rotate(0deg) scale(.1);opacity:1}60%{-webkit-transform:rotate(160deg) scale(1);transform:rotate(160deg) scale(1);opacity:0}to{-webkit-transform:rotate(0deg) scale(.1);transform:rotate(0deg) scale(.1);opacity:1}}@-webkit-keyframes corners{0%{border-radius:50%;-webkit-transform:rotate(0deg);transform:rotate(0deg)}25%{border-radius:50% 50% 50% 20%}50%{border-radius:50% 50% 20% 30%}75%{border-radius:50% 20% 30% 30%}to{border-radius:50%;-webkit-transform:rotate(-180deg);transform:rotate(-180deg)}}@keyframes corners{0%{border-radius:50%;-webkit-transform:rotate(0deg);transform:rotate(0deg)}25%{border-radius:50% 50% 50% 20%}50%{border-radius:50% 50% 20% 30%}75%{border-radius:50% 20% 30% 30%}to{border-radius:50%;-webkit-transform:rotate(-180deg);transform:rotate(-180deg)}}@-webkit-keyframes sound{0%{-webkit-transform:scaleY(0);transform:scaleY(0);opacity:.7}40%{-webkit-transform:scaleY(1.2);transform:scaleY(1.2);opacity:.5}70%{-webkit-transform:scaleY(.2);transform:scaleY(.2);opacity:.8}50%{-webkit-transform:scaleY(1);transform:scaleY(1);opacity:1}}@keyframes sound{0%{-webkit-transform:scaleY(0);transform:scaleY(0);opacity:.7}40%{-webkit-transform:scaleY(1.2);transform:scaleY(1.2);opacity:.5}70%{-webkit-transform:scaleY(.2);transform:scaleY(.2);opacity:.8}50%{-webkit-transform:scaleY(1);transform:scaleY(1);opacity:1}}@-webkit-keyframes dash{0%{stroke-dashoffset:187}50%{stroke-dashoffset:46.75;-webkit-transform:rotate(135deg);transform:rotate(135deg)}to{stroke-dashoffset:187;-webkit-transform:rotate(450deg);transform:rotate(450deg)}}@keyframes dash{0%{stroke-dashoffset:187}50%{stroke-dashoffset:46.75;-webkit-transform:rotate(135deg);transform:rotate(135deg)}to{stroke-dashoffset:187;-webkit-transform:rotate(450deg);transform:rotate(450deg)}}@-webkit-keyframes colors{0%{stroke:#4285f4}25%{stroke:#de3e35}50%{stroke:#f7c223}75%{stroke:#1b9a59}to{stroke:#4285f4}}@keyframes colors{0%{stroke:#4285f4}25%{stroke:#de3e35}50%{stroke:#f7c223}75%{stroke:#1b9a59}to{stroke:#4285f4}}@-webkit-keyframes rotator{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(270deg);transform:rotate(270deg)}}@keyframes rotator{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}to{-webkit-transform:rotate(270deg);transform:rotate(270deg)}}", ""]);
-
-// exports
+module.exports = Component.exports
 
 
 /***/ }),
-/* 61 */
+/* 51 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      colorLoading: '#FFA500'
+    };
+  },
+
+  methods: {
+    openLoading: function openLoading() {
+      var _this = this;
+
+      this.$vs.loading({ color: this.colorLoading });
+
+      setTimeout(function () {
+        _this.$vs.loading.close();
+      }, 5000);
+    }
+  }
+});
+
+/***/ }),
+/* 52 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "centerx" },
+    [
+      _c(
+        "vs-button",
+        {
+          attrs: { "vs-type": "line", "vs-color": "warning" },
+          on: { click: _vm.openLoading }
+        },
+        [_vm._v("Register")]
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-4832d8d2", module.exports)
+  }
+}
+
+/***/ }),
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var disposed = false
 function injectStyle (ssrContext) {
   if (disposed) return
-  __webpack_require__(102)
+  __webpack_require__(54)
 }
-var normalizeComponent = __webpack_require__(4)
+var normalizeComponent = __webpack_require__(2)
 /* script */
-var __vue_script__ = __webpack_require__(101)
+var __vue_script__ = __webpack_require__(57)
 /* template */
-var __vue_template__ = __webpack_require__(104)
+var __vue_template__ = __webpack_require__(58)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = injectStyle
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/assets/js/components/partials/SidebarComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-11ca4512", Component.options)
+  } else {
+    hotAPI.reload("data-v-11ca4512", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(55);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(14)("2b9d75a3", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-11ca4512\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/stylus-loader/index.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SidebarComponent.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-11ca4512\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/stylus-loader/index.js!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./SidebarComponent.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.con-example-sidebar {\n  height: 100%;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports) {
+
+/**
+ * Translates the list format produced by css-loader into something
+ * easier to manipulate.
+ */
+module.exports = function listToStyles (parentId, list) {
+  var styles = []
+  var newStyles = {}
+  for (var i = 0; i < list.length; i++) {
+    var item = list[i]
+    var id = item[0]
+    var css = item[1]
+    var media = item[2]
+    var sourceMap = item[3]
+    var part = {
+      id: parentId + ':' + i,
+      css: css,
+      media: media,
+      sourceMap: sourceMap
+    }
+    if (!newStyles[id]) {
+      styles.push(newStyles[id] = { id: id, parts: [part] })
+    } else {
+      newStyles[id].parts.push(part)
+    }
+  }
+  return styles
+}
+
+
+/***/ }),
+/* 57 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      active: false,
+      actives: 2
+    };
+  }
+});
+
+/***/ }),
+/* 58 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    { staticClass: "con-example-sidebar", attrs: { id: "parentx3" } },
+    [
+      _c(
+        "vs-sidebar",
+        {
+          staticStyle: { width: "200px" },
+          attrs: {
+            "vs-static": "",
+            "vs-parent": "#parentx3",
+            "vs-active": _vm.active
+          },
+          on: {
+            "update:vsActive": function($event) {
+              _vm.active = $event
+            }
+          }
+        },
+        [
+          _c(
+            "vs-sidebar-item",
+            {
+              attrs: {
+                "vs-active": _vm.actives == 1,
+                "vs-icon": "question_answer"
+              },
+              on: {
+                click: function($event) {
+                  _vm.actives = 1
+                }
+              }
+            },
+            [_vm._v("\n       Dashboard\n    ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "vs-sidebar-item",
+            {
+              attrs: { "vs-active": _vm.actives == 2, "vs-icon": "gavel" },
+              on: {
+                click: function($event) {
+                  _vm.actives = 2
+                }
+              }
+            },
+            [_vm._v("\n       History\n    ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "vs-sidebar-item",
+            {
+              attrs: {
+                "vs-active": _vm.actives == 3,
+                "vs-icon": "verified_user"
+              },
+              on: {
+                click: function($event) {
+                  _vm.actives = 3
+                }
+              }
+            },
+            [_vm._v("\n       Settings\n    ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "vs-sidebar-item",
+            {
+              attrs: {
+                "vs-active": _vm.actives == 4,
+                "vs-icon": "account_box"
+              },
+              on: {
+                click: function($event) {
+                  _vm.actives = 4
+                }
+              }
+            },
+            [_vm._v("\n       Profile\n    ")]
+          ),
+          _vm._v(" "),
+          _c(
+            "vs-sidebar-item",
+            {
+              attrs: {
+                "vs-active": _vm.actives == 5,
+                "vs-icon": "card_giftcard"
+              },
+              on: {
+                click: function($event) {
+                  _vm.actives = 5
+                }
+              }
+            },
+            [_vm._v("\n       card\n    ")]
+          )
+        ],
+        1
+      )
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-11ca4512", module.exports)
+  }
+}
+
+/***/ }),
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+function injectStyle (ssrContext) {
+  if (disposed) return
+  __webpack_require__(60)
+}
+var normalizeComponent = __webpack_require__(2)
+/* script */
+var __vue_script__ = __webpack_require__(62)
+/* template */
+var __vue_template__ = __webpack_require__(63)
 /* template functional */
 var __vue_template_functional__ = false
 /* styles */
@@ -60813,2601 +61035,47 @@ module.exports = Component.exports
 
 
 /***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(61);
+if(typeof content === 'string') content = [[module.i, content, '']];
+if(content.locals) module.exports = content.locals;
+// add the styles to the DOM
+var update = __webpack_require__(14)("1f14cf63", content, false, {});
+// Hot Module Replacement
+if(false) {
+ // When the styles change, update the <style> tags
+ if(!content.locals) {
+   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-500f40a0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./InboxComponent.vue", function() {
+     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-500f40a0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./InboxComponent.vue");
+     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+     update(newContent);
+   });
+ }
+ // When the module is disposed, remove the <style> tags
+ module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(5)(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+
+// exports
+
+
+/***/ }),
 /* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-exports.default = function (options) {
-  var mappedProps = options.mappedProps,
-      name = options.name,
-      ctr = options.ctr,
-      ctrArgs = options.ctrArgs,
-      events = options.events,
-      beforeCreate = options.beforeCreate,
-      afterCreate = options.afterCreate,
-      props = options.props,
-      rest = _objectWithoutProperties(options, ['mappedProps', 'name', 'ctr', 'ctrArgs', 'events', 'beforeCreate', 'afterCreate', 'props']);
-
-  var promiseName = '$' + name + 'Promise';
-  var instanceName = '$' + name + 'Object';
-
-  assert(!(rest.props instanceof Array), '`props` should be an object, not Array');
-
-  return _extends({}, typeof GENERATE_DOC !== 'undefined' ? { $vgmOptions: options } : {}, {
-    mixins: [_mapElementMixin2.default],
-    props: _extends({}, props, mappedPropsToVueProps(mappedProps)),
-    render: function render() {
-      return '';
-    },
-    provide: function provide() {
-      var _this = this;
-
-      var promise = this.$mapPromise.then(function (map) {
-        // Infowindow needs this to be immediately available
-        _this.$map = map;
-
-        // Initialize the maps with the given options
-        var options = _extends({}, _this.options, {
-          map: map
-        }, (0, _bindProps.getPropsValues)(_this, mappedProps));
-        delete options.options; // delete the extra options
-
-        if (beforeCreate) {
-          var result = beforeCreate.bind(_this)(options);
-
-          if (result instanceof Promise) {
-            return result.then(function () {
-              return { options: options };
-            });
-          }
-        }
-        return { options: options };
-      }).then(function (_ref) {
-        var _Function$prototype$b;
-
-        var options = _ref.options;
-
-        var ConstructorObject = ctr();
-        // https://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible
-        _this[instanceName] = ctrArgs ? new ((_Function$prototype$b = Function.prototype.bind).call.apply(_Function$prototype$b, [ConstructorObject, null].concat(_toConsumableArray(ctrArgs(options, (0, _bindProps.getPropsValues)(_this, props || {}))))))() : new ConstructorObject(options);
-
-        (0, _bindProps.bindProps)(_this, _this[instanceName], mappedProps);
-        (0, _bindEvents2.default)(_this, _this[instanceName], events);
-
-        if (afterCreate) {
-          afterCreate.bind(_this)(_this[instanceName]);
-        }
-        return _this[instanceName];
-      });
-      this[promiseName] = promise;
-      return _defineProperty({}, promiseName, promise);
-    },
-    destroyed: function destroyed() {
-      // Note: not all Google Maps components support maps
-      if (this[instanceName] && this[instanceName].setMap) {
-        this[instanceName].setMap(null);
-      }
-    }
-  }, rest);
-};
-
-exports.mappedPropsToVueProps = mappedPropsToVueProps;
-
-var _bindEvents = __webpack_require__(64);
-
-var _bindEvents2 = _interopRequireDefault(_bindEvents);
-
-var _bindProps = __webpack_require__(63);
-
-var _mapElementMixin = __webpack_require__(67);
-
-var _mapElementMixin2 = _interopRequireDefault(_mapElementMixin);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-/**
- *
- * @param {Object} options
- * @param {Object} options.mappedProps - Definitions of props
- * @param {Object} options.mappedProps.PROP.type - Value type
- * @param {Boolean} options.mappedProps.PROP.twoWay
- *  - Whether the prop has a corresponding PROP_changed
- *   event
- * @param {Boolean} options.mappedProps.PROP.noBind
- *  - If true, do not apply the default bindProps / bindEvents.
- * However it will still be added to the list of component props
- * @param {Object} options.props - Regular Vue-style props.
- *  Note: must be in the Object form because it will be
- *  merged with the `mappedProps`
- *
- * @param {Object} options.events - Google Maps API events
- *  that are not bound to a corresponding prop
- * @param {String} options.name - e.g. `polyline`
- * @param {=> String} options.ctr - constructor, e.g.
- *  `google.maps.Polyline`. However, since this is not
- *  generally available during library load, this becomes
- *  a function instead, e.g. () => google.maps.Polyline
- *  which will be called only after the API has been loaded
- * @param {(MappedProps, OtherVueProps) => Array} options.ctrArgs -
- *   If the constructor in `ctr` needs to be called with
- *   arguments other than a single `options` object, e.g. for
- *   GroundOverlay, we call `new GroundOverlay(url, bounds, options)`
- *   then pass in a function that returns the argument list as an array
- *
- * Otherwise, the constructor will be called with an `options` object,
- *   with property and values merged from:
- *
- *   1. the `options` property, if any
- *   2. a `map` property with the Google Maps
- *   3. all the properties passed to the component in `mappedProps`
- * @param {Object => Any} options.beforeCreate -
- *  Hook to modify the options passed to the initializer
- * @param {(options.ctr, Object) => Any} options.afterCreate -
- *  Hook called when
- *
- */
-
-
-function assert(v, message) {
-  if (!v) throw new Error(message);
-}
-
-/**
- * Strips out the extraneous properties we have in our
- * props definitions
- * @param {Object} props
- */
-function mappedPropsToVueProps(mappedProps) {
-  return Object.entries(mappedProps).map(function (_ref3) {
-    var _ref4 = _slicedToArray(_ref3, 2),
-        key = _ref4[0],
-        prop = _ref4[1];
-
-    var value = {};
-
-    if ('type' in prop) value.type = prop.type;
-    if ('default' in prop) value.default = prop.default;
-    if ('required' in prop) value.required = prop.required;
-
-    return [key, value];
-  }).reduce(function (acc, _ref5) {
-    var _ref6 = _slicedToArray(_ref5, 2),
-        key = _ref6[0],
-        val = _ref6[1];
-
-    acc[key] = val;
-    return acc;
-  }, {});
-}
-
-/***/ }),
-/* 63 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getPropsValues = getPropsValues;
-exports.bindProps = bindProps;
-
-var _WatchPrimitiveProperties = __webpack_require__(65);
-
-var _WatchPrimitiveProperties2 = _interopRequireDefault(_WatchPrimitiveProperties);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function capitalizeFirstLetter(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-function getPropsValues(vueInst, props) {
-  return Object.keys(props).reduce(function (acc, prop) {
-    if (vueInst[prop] !== undefined) {
-      acc[prop] = vueInst[prop];
-    }
-    return acc;
-  }, {});
-}
-
-/**
-  * Binds the properties defined in props to the google maps instance.
-  * If the prop is an Object type, and we wish to track the properties
-  * of the object (e.g. the lat and lng of a LatLng), then we do a deep
-  * watch. For deep watch, we also prevent the _changed event from being
-  * emitted if the data source was external.
-  */
-function bindProps(vueInst, googleMapsInst, props) {
-  var _loop = function (attribute) {
-    var _props$attribute = props[attribute],
-        twoWay = _props$attribute.twoWay,
-        type = _props$attribute.type,
-        trackProperties = _props$attribute.trackProperties,
-        noBind = _props$attribute.noBind;
-
-
-    if (noBind) return 'continue';
-
-    var setMethodName = 'set' + capitalizeFirstLetter(attribute);
-    var getMethodName = 'get' + capitalizeFirstLetter(attribute);
-    var eventName = attribute.toLowerCase() + '_changed';
-    var initialValue = vueInst[attribute];
-
-    if (typeof googleMapsInst[setMethodName] === 'undefined') {
-      throw new Error(setMethodName + ' is not a method of (the Maps object corresponding to) ' + vueInst.$options._componentTag);
-    }
-
-    // We need to avoid an endless
-    // propChanged -> event emitted -> propChanged -> event emitted loop
-    // although this may really be the user's responsibility
-    if (type !== Object || !trackProperties) {
-      // Track the object deeply
-      vueInst.$watch(attribute, function () {
-        var attributeValue = vueInst[attribute];
-
-        googleMapsInst[setMethodName](attributeValue);
-      }, {
-        immediate: typeof initialValue !== 'undefined',
-        deep: type === Object
-      });
-    } else {
-      (0, _WatchPrimitiveProperties2.default)(vueInst, trackProperties.map(function (prop) {
-        return attribute + '.' + prop;
-      }), function () {
-        googleMapsInst[setMethodName](vueInst[attribute]);
-      }, vueInst[attribute] !== undefined);
-    }
-
-    if (twoWay && (vueInst.$gmapOptions.autobindAllEvents || vueInst.$listeners[eventName])) {
-      googleMapsInst.addListener(eventName, function () {
-        // eslint-disable-line no-unused-vars
-        vueInst.$emit(eventName, googleMapsInst[getMethodName]());
-      });
-    }
-  };
-
-  for (var attribute in props) {
-    var _ret = _loop(attribute);
-
-    if (_ret === 'continue') continue;
-  }
-}
-
-/***/ }),
-/* 64 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-exports.default = function (vueInst, googleMapsInst, events) {
-  var _loop = function (eventName) {
-    if (vueInst.$gmapOptions.autobindAllEvents || vueInst.$listeners[eventName]) {
-      googleMapsInst.addListener(eventName, function (ev) {
-        vueInst.$emit(eventName, ev);
-      });
-    }
-  };
-
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = events[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var eventName = _step.value;
-
-      _loop(eventName);
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-};
-
-/***/ }),
-/* 65 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = WatchPrimitiveProperties;
-/**
- * Watch the individual properties of a PoD object, instead of the object
- * per se. This is different from a deep watch where both the reference
- * and the individual values are watched.
- *
- * In effect, it throttles the multiple $watch to execute at most once per tick.
- */
-function WatchPrimitiveProperties(vueInst, propertiesToTrack, handler) {
-  var immediate = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-  var isHandled = false;
-
-  function requestHandle() {
-    if (!isHandled) {
-      isHandled = true;
-      vueInst.$nextTick(function () {
-        isHandled = false;
-        handler();
-      });
-    }
-  }
-
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = propertiesToTrack[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var prop = _step.value;
-
-      vueInst.$watch(prop, requestHandle, { immediate: immediate });
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-}
-
-/***/ }),
-/* 66 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/*
-Mixin for objects that are mounted by Google Maps
-Javascript API.
-
-These are objects that are sensitive to element resize
-operations so it exposes a property which accepts a bus
-
-*/
-
-exports.default = {
-  props: ['resizeBus'],
-
-  data: function data() {
-    return {
-      _actualResizeBus: null
-    };
-  },
-  created: function created() {
-    if (typeof this.resizeBus === 'undefined') {
-      this.$data._actualResizeBus = this.$gmapDefaultResizeBus;
-    } else {
-      this.$data._actualResizeBus = this.resizeBus;
-    }
-  },
-
-
-  methods: {
-    _resizeCallback: function _resizeCallback() {
-      this.resize();
-    },
-    _delayedResizeCallback: function _delayedResizeCallback() {
-      var _this = this;
-
-      this.$nextTick(function () {
-        return _this._resizeCallback();
-      });
-    }
-  },
-
-  watch: {
-    resizeBus: function resizeBus(newVal) {
-      // eslint-disable-line no-unused-vars
-      this.$data._actualResizeBus = newVal;
-    },
-    '$data._actualResizeBus': function $data_actualResizeBus(newVal, oldVal) {
-      if (oldVal) {
-        oldVal.$off('resize', this._delayedResizeCallback);
-      }
-      if (newVal) {
-        newVal.$on('resize', this._delayedResizeCallback);
-      }
-    }
-  },
-
-  destroyed: function destroyed() {
-    if (this.$data._actualResizeBus) {
-      this.$data._actualResizeBus.$off('resize', this._delayedResizeCallback);
-    }
-  }
-};
-
-/***/ }),
-/* 67 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-/**
- * @class MapElementMixin
- *
- * Extends components to include the following fields:
- *
- * @property $map        The Google map (valid only after the promise returns)
- *
- *
- * */
-exports.default = {
-  inject: {
-    '$mapPromise': { default: 'abcdef' }
-  },
-
-  provide: function provide() {
-    var _this = this;
-
-    // Note: although this mixin is not "providing" anything,
-    // components' expect the `$map` property to be present on the component.
-    // In order for that to happen, this mixin must intercept the $mapPromise
-    // .then(() =>) first before its component does so.
-    //
-    // Since a provide() on a mixin is executed before a provide() on the
-    // component, putting this code in provide() ensures that the $map is
-    // already set by the time the
-    // component's provide() is called.
-    this.$mapPromise.then(function (map) {
-      _this.$map = map;
-    });
-
-    return {};
-  }
-};
-
-/***/ }),
-/* 68 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = TwoWayBindingWrapper;
-/**
- * When you have two-way bindings, but the actual bound value will not equal
- * the value you initially passed in, then to avoid an infinite loop you
- * need to increment a counter every time you pass in a value, decrement the
- * same counter every time the bound value changed, but only bubble up
- * the event when the counter is zero.
- *
-Example:
-
-Let's say DrawingRecognitionCanvas is a deep-learning backed canvas
-that, when given the name of an object (e.g. 'dog'), draws a dog.
-But whenever the drawing on it changes, it also sends back its interpretation
-of the image by way of the @newObjectRecognized event.
-
-<input
-  type="text"
-  placeholder="an object, e.g. Dog, Cat, Frog"
-  v-model="identifiedObject" />
-<DrawingRecognitionCanvas
-  :object="identifiedObject"
-  @newObjectRecognized="identifiedObject = $event"
-  />
-
-new TwoWayBindingWrapper((increment, decrement, shouldUpdate) => {
-  this.$watch('identifiedObject', () => {
-    // new object passed in
-    increment()
-  })
-  this.$deepLearningBackend.on('drawingChanged', () => {
-    recognizeObject(this.$deepLearningBackend)
-      .then((object) => {
-        decrement()
-        if (shouldUpdate()) {
-          this.$emit('newObjectRecognized', object.name)
-        }
-      })
-  })
-})
- */
-function TwoWayBindingWrapper(fn) {
-  var counter = 0;
-
-  fn(function () {
-    counter += 1;
-  }, function () {
-    counter = Math.max(0, counter - 1);
-  }, function () {
-    return counter === 0;
-  });
-}
-
-/***/ }),
-/* 69 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-// This piece of code was orignally written by amirnissim and can be seen here
-// http://stackoverflow.com/a/11703018/2694653
-// This has been ported to Vanilla.js by GuillaumeLeclerc
-exports.default = function (input) {
-  var _addEventListener = input.addEventListener ? input.addEventListener : input.attachEvent;
-
-  function addEventListenerWrapper(type, listener) {
-    // Simulate a 'down arrow' keypress on hitting 'return' when no pac suggestion is selected,
-    // and then trigger the original listener.
-    if (type === 'keydown') {
-      var origListener = listener;
-      listener = function (event) {
-        var suggestionSelected = document.getElementsByClassName('pac-item-selected').length > 0;
-        if (event.which === 13 && !suggestionSelected) {
-          var simulatedEvent = document.createEvent('Event');
-          simulatedEvent.keyCode = 40;
-          simulatedEvent.which = 40;
-          origListener.apply(input, [simulatedEvent]);
-        }
-        origListener.apply(input, [event]);
-      };
-    }
-    _addEventListener.apply(input, [type, listener]);
-  }
-
-  input.addEventListener = addEventListenerWrapper;
-  input.attachEvent = addEventListenerWrapper;
-};
-
-/***/ }),
-/* 70 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.StreetViewPanorama = exports.MountableMixin = exports.Autocomplete = exports.MapElementFactory = exports.MapElementMixin = exports.PlaceInput = exports.Map = exports.InfoWindow = exports.Rectangle = exports.Cluster = exports.Circle = exports.Polygon = exports.Polyline = exports.Marker = exports.loadGmapApi = undefined;
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-// Vue component imports
-
-
-exports.install = install;
-exports.gmapApi = gmapApi;
-
-var _lazyValue = __webpack_require__(71);
-
-var _lazyValue2 = _interopRequireDefault(_lazyValue);
-
-var _manager = __webpack_require__(72);
-
-var _marker = __webpack_require__(73);
-
-var _marker2 = _interopRequireDefault(_marker);
-
-var _polyline = __webpack_require__(74);
-
-var _polyline2 = _interopRequireDefault(_polyline);
-
-var _polygon = __webpack_require__(75);
-
-var _polygon2 = _interopRequireDefault(_polygon);
-
-var _circle = __webpack_require__(76);
-
-var _circle2 = _interopRequireDefault(_circle);
-
-var _rectangle = __webpack_require__(77);
-
-var _rectangle2 = _interopRequireDefault(_rectangle);
-
-var _infoWindow = __webpack_require__(78);
-
-var _infoWindow2 = _interopRequireDefault(_infoWindow);
-
-var _map = __webpack_require__(82);
-
-var _map2 = _interopRequireDefault(_map);
-
-var _streetViewPanorama = __webpack_require__(88);
-
-var _streetViewPanorama2 = _interopRequireDefault(_streetViewPanorama);
-
-var _placeInput = __webpack_require__(94);
-
-var _placeInput2 = _interopRequireDefault(_placeInput);
-
-var _autocomplete = __webpack_require__(97);
-
-var _autocomplete2 = _interopRequireDefault(_autocomplete);
-
-var _mapElementMixin = __webpack_require__(67);
-
-var _mapElementMixin2 = _interopRequireDefault(_mapElementMixin);
-
-var _mapElementFactory = __webpack_require__(62);
-
-var _mapElementFactory2 = _interopRequireDefault(_mapElementFactory);
-
-var _mountableMixin = __webpack_require__(66);
-
-var _mountableMixin2 = _interopRequireDefault(_mountableMixin);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-// HACK: Cluster should be loaded conditionally
-// However in the web version, it's not possible to write
-// `import 'vue2-google-maps/src/components/cluster'`, so we need to
-// import it anyway (but we don't have to register it)
-// Therefore we use babel-plugin-transform-inline-environment-variables to
-// set BUILD_DEV to truthy / falsy
-var Cluster = undefined;
-
-var GmapApi = null;
-
-// export everything
-exports.loadGmapApi = _manager.loadGmapApi;
-exports.Marker = _marker2.default;
-exports.Polyline = _polyline2.default;
-exports.Polygon = _polygon2.default;
-exports.Circle = _circle2.default;
-exports.Cluster = Cluster;
-exports.Rectangle = _rectangle2.default;
-exports.InfoWindow = _infoWindow2.default;
-exports.Map = _map2.default;
-exports.PlaceInput = _placeInput2.default;
-exports.MapElementMixin = _mapElementMixin2.default;
-exports.MapElementFactory = _mapElementFactory2.default;
-exports.Autocomplete = _autocomplete2.default;
-exports.MountableMixin = _mountableMixin2.default;
-exports.StreetViewPanorama = _streetViewPanorama2.default;
-function install(Vue, options) {
-  // Set defaults
-  options = _extends({
-    installComponents: true,
-    autobindAllEvents: false
-  }, options);
-
-  // Update the global `GmapApi`. This will allow
-  // components to use the `google` global reactively
-  // via:
-  //   import {gmapApi} from 'vue2-google-maps'
-  //   export default {  computed: { google: gmapApi }  }
-  GmapApi = new Vue({ data: { gmapApi: null } });
-
-  var defaultResizeBus = new Vue();
-
-  // Use a lazy to only load the API when
-  // a VGM component is loaded
-  var gmapApiPromiseLazy = makeGmapApiPromiseLazy(options);
-
-  Vue.mixin({
-    created: function created() {
-      this.$gmapDefaultResizeBus = defaultResizeBus;
-      this.$gmapOptions = options;
-      this.$gmapApiPromiseLazy = gmapApiPromiseLazy;
-    }
-  });
-  Vue.$gmapDefaultResizeBus = defaultResizeBus;
-  Vue.$gmapApiPromiseLazy = gmapApiPromiseLazy;
-
-  if (options.installComponents) {
-    Vue.component('GmapMap', _map2.default);
-    Vue.component('GmapMarker', _marker2.default);
-    Vue.component('GmapInfoWindow', _infoWindow2.default);
-    Vue.component('GmapPolyline', _polyline2.default);
-    Vue.component('GmapPolygon', _polygon2.default);
-    Vue.component('GmapCircle', _circle2.default);
-    Vue.component('GmapRectangle', _rectangle2.default);
-    Vue.component('GmapAutocomplete', _autocomplete2.default);
-    Vue.component('GmapPlaceInput', _placeInput2.default);
-    Vue.component('GmapStreetViewPanorama', _streetViewPanorama2.default);
-  }
-}
-
-function makeGmapApiPromiseLazy(options) {
-  // Things to do once the API is loaded
-  function onApiLoaded() {
-    GmapApi.gmapApi = {};
-    return window.google;
-  }
-
-  if (options.load) {
-    // If library should load the API
-    return (0, _lazyValue2.default)(function () {
-      // Load the
-      // This will only be evaluated once
-      if (typeof window === 'undefined') {
-        // server side -- never resolve this promise
-        return new Promise(function () {}).then(onApiLoaded);
-      } else {
-        return new Promise(function (resolve, reject) {
-          try {
-            window['vueGoogleMapsInit'] = resolve;
-            (0, _manager.loadGmapApi)(options.load, options.loadCn);
-          } catch (err) {
-            reject(err);
-          }
-        }).then(onApiLoaded);
-      }
-    });
-  } else {
-    // If library should not handle API, provide
-    // end-users with the global `vueGoogleMapsInit: () => undefined`
-    // when the Google Maps API has been loaded
-    var promise = new Promise(function (resolve) {
-      if (typeof window === 'undefined') {
-        // Do nothing if run from server-side
-        return;
-      }
-      window['vueGoogleMapsInit'] = resolve;
-    }).then(onApiLoaded);
-
-    return (0, _lazyValue2.default)(function () {
-      return promise;
-    });
-  }
-}
-
-function gmapApi() {
-  return GmapApi.gmapApi && window.google;
-}
-
-/***/ }),
-/* 71 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-// This piece of code was orignally written by sindresorhus and can be seen here
-// https://github.com/sindresorhus/lazy-value/blob/master/index.js
-
-exports.default = function (fn) {
-  var called = false;
-  var ret = void 0;
-
-  return function () {
-    if (!called) {
-      called = true;
-      ret = fn();
-    }
-
-    return ret;
-  };
-};
-
-/***/ }),
-/* 72 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
-var isApiSetUp = false;
-
-/**
- * @param apiKey    API Key, or object with the URL parameters. For example
- *                  to use Google Maps Premium API, pass
- *                    `{ client: <YOUR-CLIENT-ID> }`.
- *                  You may pass the libraries and/or version (as `v`) parameter into
- *                  this parameter and skip the next two parameters
- * @param version   Google for Maps version
- * @param libraries Libraries to load (@see
- *                  https://developers.google.com/maps/documentation/javascript/libraries)
- * @param loadCn    Boolean. If set to true, the map will be loaded form goole maps China
- *                  (@see https://developers.google.com/maps/documentation/javascript/basics#GoogleMapsChina)
- *
- * Example:
- * ```
- *      import {load} from 'vue-google-maps'
- *
- *      load(<YOUR-API-KEY>)
- *
- *      load({
- *              key: <YOUR-API-KEY>,
- *      })
- *
- *      load({
- *              client: <YOUR-CLIENT-ID>,
- *              channel: <YOUR CHANNEL>
- *      })
- * ```
- */
-var loadGmapApi = exports.loadGmapApi = function (options, loadCn) {
-  if (typeof document === 'undefined') {
-    // Do nothing if run from server-side
-    return;
-  }
-  if (!isApiSetUp) {
-    isApiSetUp = true;
-
-    var googleMapScript = document.createElement('SCRIPT');
-
-    // Allow options to be an object.
-    // This is to support more esoteric means of loading Google Maps,
-    // such as Google for business
-    // https://developers.google.com/maps/documentation/javascript/get-api-key#premium-auth
-    if ((typeof options === 'undefined' ? 'undefined' : _typeof(options)) !== 'object') {
-      throw new Error('options should  be an object');
-    }
-
-    // libraries
-    if (Array.prototype.isPrototypeOf(options.libraries)) {
-      options.libraries = options.libraries.join(',');
-    }
-    options['callback'] = 'vueGoogleMapsInit';
-
-    var baseUrl = 'https://maps.googleapis.com/';
-
-    if (typeof loadCn === 'boolean' && loadCn === true) {
-      baseUrl = 'http://maps.google.cn/';
-    }
-
-    var url = baseUrl + 'maps/api/js?' + Object.keys(options).map(function (key) {
-      return encodeURIComponent(key) + '=' + encodeURIComponent(options[key]);
-    }).join('&');
-
-    googleMapScript.setAttribute('src', url);
-    googleMapScript.setAttribute('async', '');
-    googleMapScript.setAttribute('defer', '');
-    document.head.appendChild(googleMapScript);
-  } else {
-    throw new Error('You already started the loading of google maps');
-  }
-};
-
-/***/ }),
-/* 73 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _mapElementFactory = __webpack_require__(62);
-
-var _mapElementFactory2 = _interopRequireDefault(_mapElementFactory);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var props = {
-  animation: {
-    twoWay: true,
-    type: Number
-  },
-  attribution: {
-    type: Object
-  },
-  clickable: {
-    type: Boolean,
-    twoWay: true,
-    default: true
-  },
-  cursor: {
-    type: String,
-    twoWay: true
-  },
-  draggable: {
-    type: Boolean,
-    twoWay: true,
-    default: false
-  },
-  icon: {
-    twoWay: true
-  },
-  label: {},
-  opacity: {
-    type: Number,
-    default: 1
-  },
-  options: {
-    type: Object
-  },
-  place: {
-    type: Object
-  },
-  position: {
-    type: Object,
-    twoWay: true
-  },
-  shape: {
-    type: Object,
-    twoWay: true
-  },
-  title: {
-    type: String,
-    twoWay: true
-  },
-  zIndex: {
-    type: Number,
-    twoWay: true
-  },
-  visible: {
-    twoWay: true,
-    default: true
-  }
-};
-
-var events = ['click', 'rightclick', 'dblclick', 'drag', 'dragstart', 'dragend', 'mouseup', 'mousedown', 'mouseover', 'mouseout'];
-
-/**
- * @class Marker
- *
- * Marker class with extra support for
- *
- * - Embedded info windows
- * - Clustered markers
- *
- * Support for clustered markers is for backward-compatability
- * reasons. Otherwise we should use a cluster-marker mixin or
- * subclass.
- */
-exports.default = (0, _mapElementFactory2.default)({
-  mappedProps: props,
-  events: events,
-  name: 'marker',
-  ctr: function ctr() {
-    return google.maps.Marker;
-  },
-
-  inject: {
-    '$clusterPromise': {
-      default: null
-    }
-  },
-
-  render: function render(h) {
-    if (!this.$slots.default || this.$slots.default.length === 0) {
-      return '';
-    } else if (this.$slots.default.length === 1) {
-      // So that infowindows can have a marker parent
-      return this.$slots.default[0];
-    } else {
-      return h('div', this.$slots.default);
-    }
-  },
-  destroyed: function destroyed() {
-    if (!this.$markerObject) {
-      return;
-    }
-
-    if (this.$clusterObject) {
-      // Repaint will be performed in `updated()` of cluster
-      this.$clusterObject.removeMarker(this.$markerObject, true);
-    } else {
-      this.$markerObject.setMap(null);
-    }
-  },
-  beforeCreate: function beforeCreate(options) {
-    if (this.$clusterPromise) {
-      options.map = null;
-    }
-
-    return this.$clusterPromise;
-  },
-  afterCreate: function afterCreate(inst) {
-    var _this = this;
-
-    if (this.$clusterPromise) {
-      this.$clusterPromise.then(function (co) {
-        co.addMarker(inst);
-        _this.$clusterObject = co;
-      });
-    }
-  }
-});
-
-/***/ }),
-/* 74 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _mapElementFactory = __webpack_require__(62);
-
-var _mapElementFactory2 = _interopRequireDefault(_mapElementFactory);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var props = {
-  draggable: {
-    type: Boolean
-  },
-  editable: {
-    type: Boolean
-  },
-  options: {
-    twoWay: false,
-    type: Object
-  },
-  path: {
-    type: Array,
-    twoWay: true
-  }
-};
-
-var events = ['click', 'dblclick', 'drag', 'dragend', 'dragstart', 'mousedown', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'rightclick'];
-
-exports.default = (0, _mapElementFactory2.default)({
-  mappedProps: props,
-  props: {
-    deepWatch: {
-      type: Boolean,
-      default: false
-    }
-  },
-  events: events,
-
-  name: 'polyline',
-  ctr: function ctr() {
-    return google.maps.Polyline;
-  },
-
-  afterCreate: function afterCreate() {
-    var _this = this;
-
-    var clearEvents = function () {};
-
-    this.$watch('path', function (path) {
-      if (path) {
-        clearEvents();
-
-        _this.$polylineObject.setPath(path);
-
-        var mvcPath = _this.$polylineObject.getPath();
-        var eventListeners = [];
-
-        var updatePaths = function () {
-          _this.$emit('path_changed', _this.$polylineObject.getPath());
-        };
-
-        eventListeners.push([mvcPath, mvcPath.addListener('insert_at', updatePaths)]);
-        eventListeners.push([mvcPath, mvcPath.addListener('remove_at', updatePaths)]);
-        eventListeners.push([mvcPath, mvcPath.addListener('set_at', updatePaths)]);
-
-        clearEvents = function () {
-          eventListeners.map(function (_ref) {
-            var _ref2 = _slicedToArray(_ref, 2),
-                obj = _ref2[0],
-                listenerHandle = _ref2[1];
-
-            return (// eslint-disable-line no-unused-vars
-              google.maps.event.removeListener(listenerHandle)
-            );
-          });
-        };
-      }
-    }, {
-      deep: this.deepWatch,
-      immediate: true
-    });
-  }
-});
-
-/***/ }),
-/* 75 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
-var _mapElementFactory = __webpack_require__(62);
-
-var _mapElementFactory2 = _interopRequireDefault(_mapElementFactory);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var props = {
-  draggable: {
-    type: Boolean
-  },
-  editable: {
-    type: Boolean
-  },
-  options: {
-    type: Object
-  },
-  path: {
-    type: Array,
-    twoWay: true,
-    noBind: true
-  },
-  paths: {
-    type: Array,
-    twoWay: true,
-    noBind: true
-  }
-};
-
-var events = ['click', 'dblclick', 'drag', 'dragend', 'dragstart', 'mousedown', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'rightclick'];
-
-exports.default = (0, _mapElementFactory2.default)({
-  props: {
-    deepWatch: {
-      type: Boolean,
-      default: false
-    }
-  },
-  events: events,
-  mappedProps: props,
-  name: 'polygon',
-  ctr: function ctr() {
-    return google.maps.Polygon;
-  },
-
-  beforeCreate: function beforeCreate(options) {
-    if (!options.path) delete options.path;
-    if (!options.paths) delete options.paths;
-  },
-  afterCreate: function afterCreate(inst) {
-    var _this = this;
-
-    var clearEvents = function () {};
-
-    // Watch paths, on our own, because we do not want to set either when it is
-    // empty
-    this.$watch('paths', function (paths) {
-      if (paths) {
-        clearEvents();
-
-        inst.setPaths(paths);
-
-        var updatePaths = function () {
-          _this.$emit('paths_changed', inst.getPaths());
-        };
-        var eventListeners = [];
-
-        var mvcArray = inst.getPaths();
-        for (var i = 0; i < mvcArray.getLength(); i++) {
-          var mvcPath = mvcArray.getAt(i);
-          eventListeners.push([mvcPath, mvcPath.addListener('insert_at', updatePaths)]);
-          eventListeners.push([mvcPath, mvcPath.addListener('remove_at', updatePaths)]);
-          eventListeners.push([mvcPath, mvcPath.addListener('set_at', updatePaths)]);
-        }
-        eventListeners.push([mvcArray, mvcArray.addListener('insert_at', updatePaths)]);
-        eventListeners.push([mvcArray, mvcArray.addListener('remove_at', updatePaths)]);
-        eventListeners.push([mvcArray, mvcArray.addListener('set_at', updatePaths)]);
-
-        clearEvents = function () {
-          eventListeners.map(function (_ref) {
-            var _ref2 = _slicedToArray(_ref, 2),
-                obj = _ref2[0],
-                listenerHandle = _ref2[1];
-
-            return (// eslint-disable-line no-unused-vars
-              google.maps.event.removeListener(listenerHandle)
-            );
-          });
-        };
-      }
-    }, {
-      deep: this.deepWatch,
-      immediate: true
-    });
-
-    this.$watch('path', function (path) {
-      if (path) {
-        clearEvents();
-
-        inst.setPaths(path);
-
-        var mvcPath = inst.getPath();
-        var eventListeners = [];
-
-        var updatePaths = function () {
-          _this.$emit('path_changed', inst.getPath());
-        };
-
-        eventListeners.push([mvcPath, mvcPath.addListener('insert_at', updatePaths)]);
-        eventListeners.push([mvcPath, mvcPath.addListener('remove_at', updatePaths)]);
-        eventListeners.push([mvcPath, mvcPath.addListener('set_at', updatePaths)]);
-
-        clearEvents = function () {
-          eventListeners.map(function (_ref3) {
-            var _ref4 = _slicedToArray(_ref3, 2),
-                obj = _ref4[0],
-                listenerHandle = _ref4[1];
-
-            return (// eslint-disable-line no-unused-vars
-              google.maps.event.removeListener(listenerHandle)
-            );
-          });
-        };
-      }
-    }, {
-      deep: this.deepWatch,
-      immediate: true
-    });
-  }
-});
-
-/***/ }),
-/* 76 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _mapElementFactory = __webpack_require__(62);
-
-var _mapElementFactory2 = _interopRequireDefault(_mapElementFactory);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var props = {
-  center: {
-    type: Object,
-    twoWay: true,
-    required: true
-  },
-  radius: {
-    type: Number,
-    twoWay: true
-  },
-  draggable: {
-    type: Boolean,
-    default: false
-  },
-  editable: {
-    type: Boolean,
-    default: false
-  },
-  options: {
-    type: Object,
-    twoWay: false
-  }
-};
-
-var events = ['click', 'dblclick', 'drag', 'dragend', 'dragstart', 'mousedown', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'rightclick'];
-
-exports.default = (0, _mapElementFactory2.default)({
-  mappedProps: props,
-  name: 'circle',
-  ctr: function ctr() {
-    return google.maps.Circle;
-  },
-  events: events
-});
-
-/***/ }),
-/* 77 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _mapElementFactory = __webpack_require__(62);
-
-var _mapElementFactory2 = _interopRequireDefault(_mapElementFactory);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var props = {
-  bounds: {
-    type: Object,
-    twoWay: true
-  },
-  draggable: {
-    type: Boolean,
-    default: false
-  },
-  editable: {
-    type: Boolean,
-    default: false
-  },
-  options: {
-    type: Object,
-    twoWay: false
-  }
-};
-
-var events = ['click', 'dblclick', 'drag', 'dragend', 'dragstart', 'mousedown', 'mousemove', 'mouseout', 'mouseover', 'mouseup', 'rightclick'];
-
-exports.default = (0, _mapElementFactory2.default)({
-  mappedProps: props,
-  name: 'rectangle',
-  ctr: function ctr() {
-    return google.maps.Rectangle;
-  },
-  events: events
-});
-
-/***/ }),
-/* 78 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(79)
-/* template */
-var __vue_template__ = __webpack_require__(81)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "node_modules/vue2-google-maps/dist/components/infoWindow.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-17fc7ddc", Component.options)
-  } else {
-    hotAPI.reload("data-v-17fc7ddc", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 79 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ((function (x) {
-  return x.default || x;
-})(__webpack_require__(80)));
-
-/***/ }),
-/* 80 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _mapElementFactory = __webpack_require__(62);
-
-var _mapElementFactory2 = _interopRequireDefault(_mapElementFactory);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var props = {
-  options: {
-    type: Object,
-    required: false,
-    default: function _default() {
-      return {};
-    }
-  },
-  position: {
-    type: Object,
-    twoWay: true
-  },
-  zIndex: {
-    type: Number,
-    twoWay: true
-  }
-};
-
-var events = ['domready', 'closeclick', 'content_changed'];
-
-exports.default = (0, _mapElementFactory2.default)({
-  mappedProps: props,
-  events: events,
-  name: 'infoWindow',
-  ctr: function ctr() {
-    return google.maps.InfoWindow;
-  },
-  props: {
-    opened: {
-      type: Boolean,
-      default: true
-    }
-  },
-
-  inject: {
-    '$markerPromise': {
-      default: null
-    }
-  },
-
-  mounted: function mounted() {
-    var el = this.$refs.flyaway;
-    el.parentNode.removeChild(el);
-  },
-  beforeCreate: function beforeCreate(options) {
-    var _this = this;
-
-    options.content = this.$refs.flyaway;
-
-    if (this.$markerPromise) {
-      delete options.position;
-      return this.$markerPromise.then(function (mo) {
-        _this.$markerObject = mo;
-        return mo;
-      });
-    }
-  },
-
-
-  methods: {
-    _openInfoWindow: function _openInfoWindow() {
-      if (this.opened) {
-        if (this.$markerObject !== null) {
-          this.$infoWindowObject.open(this.$map, this.$markerObject);
-        } else {
-          this.$infoWindowObject.open(this.$map);
-        }
-      } else {
-        this.$infoWindowObject.close();
-      }
-    }
-  },
-
-  afterCreate: function afterCreate() {
-    var _this2 = this;
-
-    this._openInfoWindow();
-    this.$watch('opened', function () {
-      _this2._openInfoWindow();
-    });
-  }
-});
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("div", [_c("div", { ref: "flyaway" }, [_vm._t("default")], 2)])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-17fc7ddc", module.exports)
-  }
-}
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(83)
-}
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(85)
-/* template */
-var __vue_template__ = __webpack_require__(87)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "node_modules/vue2-google-maps/dist/components/map.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-85ca06a4", Component.options)
-  } else {
-    hotAPI.reload("data-v-85ca06a4", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 83 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(84);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(51)("325be528", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../css-loader/index.js!../../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85ca06a4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../vue-loader/lib/selector.js?type=styles&index=0!./map.vue", function() {
-     var newContent = require("!!../../../css-loader/index.js!../../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-85ca06a4\",\"scoped\":false,\"hasInlineConfig\":true}!../../../vue-loader/lib/selector.js?type=styles&index=0!./map.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 84 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(50)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.vue-map-container {\n  position: relative;\n}\n.vue-map-container .vue-map {\n  left: 0; right: 0; top: 0; bottom: 0;\n  position: absolute;\n}\n.vue-map-hidden {\n  display: none;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 85 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ((function (x) {
-  return x.default || x;
-})(__webpack_require__(86)));
-
-/***/ }),
-/* 86 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _bindEvents = __webpack_require__(64);
-
-var _bindEvents2 = _interopRequireDefault(_bindEvents);
-
-var _bindProps = __webpack_require__(63);
-
-var _mountableMixin = __webpack_require__(66);
-
-var _mountableMixin2 = _interopRequireDefault(_mountableMixin);
-
-var _TwoWayBindingWrapper = __webpack_require__(68);
-
-var _TwoWayBindingWrapper2 = _interopRequireDefault(_TwoWayBindingWrapper);
-
-var _WatchPrimitiveProperties = __webpack_require__(65);
-
-var _WatchPrimitiveProperties2 = _interopRequireDefault(_WatchPrimitiveProperties);
-
-var _mapElementFactory = __webpack_require__(62);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var props = {
-  center: {
-    required: true,
-    twoWay: true,
-    type: Object,
-    noBind: true
-  },
-  zoom: {
-    required: false,
-    twoWay: true,
-    type: Number,
-    noBind: true
-  },
-  heading: {
-    type: Number,
-    twoWay: true
-  },
-  mapTypeId: {
-    twoWay: true,
-    type: String
-  },
-  tilt: {
-    twoWay: true,
-    type: Number
-  },
-  options: {
-    type: Object,
-    default: function _default() {
-      return {};
-    }
-  }
-};
-
-var events = ['bounds_changed', 'click', 'dblclick', 'drag', 'dragend', 'dragstart', 'idle', 'mousemove', 'mouseout', 'mouseover', 'resize', 'rightclick', 'tilesloaded'];
-
-// Plain Google Maps methods exposed here for convenience
-var linkedMethods = ['panBy', 'panTo', 'panToBounds', 'fitBounds'].reduce(function (all, methodName) {
-  all[methodName] = function () {
-    if (this.$mapObject) {
-      this.$mapObject[methodName].apply(this.$mapObject, arguments);
-    }
-  };
-  return all;
-}, {});
-
-// Other convenience methods exposed by Vue Google Maps
-var customMethods = {
-  resize: function resize() {
-    if (this.$mapObject) {
-      google.maps.event.trigger(this.$mapObject, 'resize');
-    }
-  },
-  resizePreserveCenter: function resizePreserveCenter() {
-    if (!this.$mapObject) {
-      return;
-    }
-
-    var oldCenter = this.$mapObject.getCenter();
-    google.maps.event.trigger(this.$mapObject, 'resize');
-    this.$mapObject.setCenter(oldCenter);
-  },
-
-
-  /// Override mountableMixin::_resizeCallback
-  /// because resizePreserveCenter is usually the
-  /// expected behaviour
-  _resizeCallback: function _resizeCallback() {
-    this.resizePreserveCenter();
-  }
-};
-
-exports.default = {
-  mixins: [_mountableMixin2.default],
-  props: (0, _mapElementFactory.mappedPropsToVueProps)(props),
-
-  provide: function provide() {
-    var _this = this;
-
-    this.$mapPromise = new Promise(function (resolve, reject) {
-      _this.$mapPromiseDeferred = { resolve: resolve, reject: reject };
-    });
-    return {
-      '$mapPromise': this.$mapPromise
-    };
-  },
-
-
-  computed: {
-    finalLat: function finalLat() {
-      return this.center && typeof this.center.lat === 'function' ? this.center.lat() : this.center.lat;
-    },
-    finalLng: function finalLng() {
-      return this.center && typeof this.center.lng === 'function' ? this.center.lng() : this.center.lng;
-    },
-    finalLatLng: function finalLatLng() {
-      return { lat: this.finalLat, lng: this.finalLng };
-    }
-  },
-
-  watch: {
-    zoom: function zoom(_zoom) {
-      if (this.$mapObject) {
-        this.$mapObject.setZoom(_zoom);
-      }
-    }
-  },
-
-  mounted: function mounted() {
-    var _this2 = this;
-
-    return this.$gmapApiPromiseLazy().then(function () {
-      // getting the DOM element where to create the map
-      var element = _this2.$refs['vue-map'];
-
-      // creating the map
-      var options = _extends({}, _this2.options, (0, _bindProps.getPropsValues)(_this2, props));
-      delete options.options;
-      _this2.$mapObject = new google.maps.Map(element, options);
-
-      // binding properties (two and one way)
-      (0, _bindProps.bindProps)(_this2, _this2.$mapObject, props);
-      // binding events
-      (0, _bindEvents2.default)(_this2, _this2.$mapObject, events);
-
-      // manually trigger center and zoom
-      (0, _TwoWayBindingWrapper2.default)(function (increment, decrement, shouldUpdate) {
-        _this2.$mapObject.addListener('center_changed', function () {
-          if (shouldUpdate()) {
-            _this2.$emit('center_changed', _this2.$mapObject.getCenter());
-          }
-          decrement();
-        });
-
-        (0, _WatchPrimitiveProperties2.default)(_this2, ['finalLat', 'finalLng'], function updateCenter() {
-          increment();
-          _this2.$mapObject.setCenter(_this2.finalLatLng);
-        });
-      });
-      _this2.$mapObject.addListener('zoom_changed', function () {
-        _this2.$emit('zoom_changed', _this2.$mapObject.getZoom());
-      });
-      _this2.$mapObject.addListener('bounds_changed', function () {
-        _this2.$emit('bounds_changed', _this2.$mapObject.getBounds());
-      });
-
-      _this2.$mapPromiseDeferred.resolve(_this2.$mapObject);
-
-      return _this2.$mapObject;
-    }).catch(function (error) {
-      throw error;
-    });
-  },
-
-  methods: _extends({}, customMethods, linkedMethods)
-};
-
-/***/ }),
-/* 87 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "vue-map-container" },
-    [
-      _c("div", { ref: "vue-map", staticClass: "vue-map" }),
-      _vm._v(" "),
-      _c("div", { staticClass: "vue-map-hidden" }, [_vm._t("default")], 2),
-      _vm._v(" "),
-      _vm._t("visible")
-    ],
-    2
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-85ca06a4", module.exports)
-  }
-}
-
-/***/ }),
-/* 88 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-function injectStyle (ssrContext) {
-  if (disposed) return
-  __webpack_require__(89)
-}
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(91)
-/* template */
-var __vue_template__ = __webpack_require__(93)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = injectStyle
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "node_modules/vue2-google-maps/dist/components/streetViewPanorama.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-ed35740a", Component.options)
-  } else {
-    hotAPI.reload("data-v-ed35740a", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 89 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(90);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(51)("09541a99", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../css-loader/index.js!../../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ed35740a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../vue-loader/lib/selector.js?type=styles&index=0!./streetViewPanorama.vue", function() {
-     var newContent = require("!!../../../css-loader/index.js!../../../vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-ed35740a\",\"scoped\":false,\"hasInlineConfig\":true}!../../../vue-loader/lib/selector.js?type=styles&index=0!./streetViewPanorama.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 90 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(50)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n.vue-street-view-pano-container {\n  position: relative;\n}\n.vue-street-view-pano-container .vue-street-view-pano {\n  left: 0; right: 0; top: 0; bottom: 0;\n  position: absolute;\n}\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 91 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ((function (x) {
-  return x.default || x;
-})(__webpack_require__(92)));
-
-/***/ }),
-/* 92 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _bindEvents = __webpack_require__(64);
-
-var _bindEvents2 = _interopRequireDefault(_bindEvents);
-
-var _bindProps = __webpack_require__(63);
-
-var _mountableMixin = __webpack_require__(66);
-
-var _mountableMixin2 = _interopRequireDefault(_mountableMixin);
-
-var _TwoWayBindingWrapper = __webpack_require__(68);
-
-var _TwoWayBindingWrapper2 = _interopRequireDefault(_TwoWayBindingWrapper);
-
-var _WatchPrimitiveProperties = __webpack_require__(65);
-
-var _WatchPrimitiveProperties2 = _interopRequireDefault(_WatchPrimitiveProperties);
-
-var _mapElementFactory = __webpack_require__(62);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var props = {
-  zoom: {
-    twoWay: true,
-    type: Number
-  },
-  pov: {
-    twoWay: true,
-    type: Object,
-    trackProperties: ['pitch', 'heading']
-  },
-  position: {
-    twoWay: true,
-    type: Object,
-    noBind: true
-  },
-  pano: {
-    twoWay: true,
-    type: String
-  },
-  motionTracking: {
-    twoWay: false,
-    type: Boolean
-  },
-  visible: {
-    twoWay: true,
-    type: Boolean,
-    default: true
-  },
-  options: {
-    twoWay: false,
-    type: Object,
-    default: function _default() {
-      return {};
-    }
-  }
-};
-
-var events = ['closeclick', 'status_changed'];
-
-exports.default = {
-  mixins: [_mountableMixin2.default],
-  props: (0, _mapElementFactory.mappedPropsToVueProps)(props),
-  replace: false, // necessary for css styles
-  methods: {
-    resize: function resize() {
-      if (this.$panoObject) {
-        google.maps.event.trigger(this.$panoObject, 'resize');
-      }
-    }
-  },
-
-  provide: function provide() {
-    var _this = this;
-
-    var promise = new Promise(function (resolve, reject) {
-      _this.$panoPromiseDeferred = { resolve: resolve, reject: reject };
-    });
-    return {
-      '$panoPromise': promise,
-      '$mapPromise': promise // so that we can use it with markers
-    };
-  },
-
-
-  computed: {
-    finalLat: function finalLat() {
-      return this.position && typeof this.position.lat === 'function' ? this.position.lat() : this.position.lat;
-    },
-    finalLng: function finalLng() {
-      return this.position && typeof this.position.lng === 'function' ? this.position.lng() : this.position.lng;
-    },
-    finalLatLng: function finalLatLng() {
-      return {
-        lat: this.finalLat,
-        lng: this.finalLng
-      };
-    }
-  },
-
-  watch: {
-    zoom: function zoom(_zoom) {
-      if (this.$panoObject) {
-        this.$panoObject.setZoom(_zoom);
-      }
-    }
-  },
-
-  mounted: function mounted() {
-    var _this2 = this;
-
-    return this.$gmapApiPromiseLazy().then(function () {
-      // getting the DOM element where to create the map
-      var element = _this2.$refs['vue-street-view-pano'];
-
-      // creating the map
-      var options = _extends({}, _this2.options, (0, _bindProps.getPropsValues)(_this2, props));
-      delete options.options;
-
-      _this2.$panoObject = new google.maps.StreetViewPanorama(element, options);
-
-      // binding properties (two and one way)
-      (0, _bindProps.bindProps)(_this2, _this2.$panoObject, props);
-      // binding events
-      (0, _bindEvents2.default)(_this2, _this2.$panoObject, events);
-
-      // manually trigger position
-      (0, _TwoWayBindingWrapper2.default)(function (increment, decrement, shouldUpdate) {
-        // Panos take a while to load
-        increment();
-
-        _this2.$panoObject.addListener('position_changed', function () {
-          if (shouldUpdate()) {
-            _this2.$emit('position_changed', _this2.$panoObject.getPosition());
-          }
-          decrement();
-        });
-
-        (0, _WatchPrimitiveProperties2.default)(_this2, ['finalLat', 'finalLng'], function updateCenter() {
-          increment();
-          _this2.$panoObject.setPosition(_this2.finalLatLng);
-        });
-      });
-
-      _this2.$panoPromiseDeferred.resolve(_this2.$panoObject);
-
-      return _this2.$panoPromise;
-    }).catch(function (error) {
-      throw error;
-    });
-  }
-};
-
-/***/ }),
-/* 93 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c(
-    "div",
-    { staticClass: "vue-street-view-pano-container" },
-    [
-      _c("div", {
-        ref: "vue-street-view-pano",
-        staticClass: "vue-street-view-pano"
-      }),
-      _vm._v(" "),
-      _vm._t("default")
-    ],
-    2
-  )
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-ed35740a", module.exports)
-  }
-}
-
-/***/ }),
-/* 94 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(95)
-/* template */
-var __vue_template__ = __webpack_require__(96)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "node_modules/vue2-google-maps/dist/components/placeInput.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-c1ab87be", Component.options)
-  } else {
-    hotAPI.reload("data-v-c1ab87be", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 95 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _bindProps = __webpack_require__(63);
-
-var _simulateArrowDown = __webpack_require__(69);
-
-var _simulateArrowDown2 = _interopRequireDefault(_simulateArrowDown);
-
-function _interopRequireDefault(obj) {
-  return obj && obj.__esModule ? obj : { default: obj };
-}
-
-function _objectWithoutProperties(obj, keys) {
-  var target = {};for (var i in obj) {
-    if (keys.indexOf(i) >= 0) continue;if (!Object.prototype.hasOwnProperty.call(obj, i)) continue;target[i] = obj[i];
-  }return target;
-}
-
-var props = {
-  bounds: {
-    type: Object
-  },
-  defaultPlace: {
-    type: String,
-    default: ''
-  },
-  componentRestrictions: {
-    type: Object,
-    default: null
-  },
-  types: {
-    type: Array,
-    default: function _default() {
-      return [];
-    }
-  },
-  placeholder: {
-    required: false,
-    type: String
-  },
-  className: {
-    required: false,
-    type: String
-  },
-  label: {
-    required: false,
-    type: String,
-    default: null
-  },
-  selectFirstOnEnter: {
-    require: false,
-    type: Boolean,
-    default: false
-  }
-};
-
-exports.default = {
-  mounted: function mounted() {
-    var _this = this;
-
-    var input = this.$refs.input;
-
-    // Allow default place to be set
-    input.value = this.defaultPlace;
-    this.$watch('defaultPlace', function () {
-      input.value = _this.defaultPlace;
-    });
-
-    this.$gmapApiPromiseLazy().then(function () {
-      var options = (0, _bindProps.getPropsValues)(_this, props);
-      if (_this.selectFirstOnEnter) {
-        (0, _simulateArrowDown2.default)(_this.$refs.input);
-      }
-
-      if (typeof google.maps.places.Autocomplete !== 'function') {
-        throw new Error('google.maps.places.Autocomplete is undefined. Did you add \'places\' to libraries when loading Google Maps?');
-      }
-
-      _this.autoCompleter = new google.maps.places.Autocomplete(_this.$refs.input, options);
-
-      var placeholder = props.placeholder,
-          place = props.place,
-          defaultPlace = props.defaultPlace,
-          className = props.className,
-          label = props.label,
-          selectFirstOnEnter = props.selectFirstOnEnter,
-          rest = _objectWithoutProperties(props, ['placeholder', 'place', 'defaultPlace', 'className', 'label', 'selectFirstOnEnter']); // eslint-disable-line
-
-
-      (0, _bindProps.bindProps)(_this, _this.autoCompleter, rest);
-
-      _this.autoCompleter.addListener('place_changed', function () {
-        _this.$emit('place_changed', _this.autoCompleter.getPlace());
-      });
-    });
-  },
-  created: function created() {
-    console.warn('The PlaceInput class is deprecated! Please consider using the Autocomplete input instead'); // eslint-disable-line no-console
-  },
-
-  props: props
-};
-
-/***/ }),
-/* 96 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("label", [
-    _c("span", { domProps: { textContent: _vm._s(_vm.label) } }),
-    _vm._v(" "),
-    _c("input", {
-      ref: "input",
-      class: _vm.className,
-      attrs: { type: "text", placeholder: _vm.placeholder }
-    })
-  ])
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-c1ab87be", module.exports)
-  }
-}
-
-/***/ }),
-/* 97 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var disposed = false
-var normalizeComponent = __webpack_require__(4)
-/* script */
-var __vue_script__ = __webpack_require__(98)
-/* template */
-var __vue_template__ = __webpack_require__(100)
-/* template functional */
-var __vue_template_functional__ = false
-/* styles */
-var __vue_styles__ = null
-/* scopeId */
-var __vue_scopeId__ = null
-/* moduleIdentifier (server only) */
-var __vue_module_identifier__ = null
-var Component = normalizeComponent(
-  __vue_script__,
-  __vue_template__,
-  __vue_template_functional__,
-  __vue_styles__,
-  __vue_scopeId__,
-  __vue_module_identifier__
-)
-Component.options.__file = "node_modules/vue2-google-maps/dist/components/autocomplete.vue"
-
-/* hot reload */
-if (false) {(function () {
-  var hotAPI = require("vue-hot-reload-api")
-  hotAPI.install(require("vue"), false)
-  if (!hotAPI.compatible) return
-  module.hot.accept()
-  if (!module.hot.data) {
-    hotAPI.createRecord("data-v-2c922d06", Component.options)
-  } else {
-    hotAPI.reload("data-v-2c922d06", Component.options)
-  }
-  module.hot.dispose(function (data) {
-    disposed = true
-  })
-})()}
-
-module.exports = Component.exports
-
-
-/***/ }),
-/* 98 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-//
-//
-//
-//
-//
-
-/* harmony default export */ __webpack_exports__["default"] = ((function (x) {
-  return x.default || x;
-})(__webpack_require__(99)));
-
-/***/ }),
-/* 99 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-var _bindProps = __webpack_require__(63);
-
-var _simulateArrowDown = __webpack_require__(69);
-
-var _simulateArrowDown2 = _interopRequireDefault(_simulateArrowDown);
-
-var _mapElementFactory = __webpack_require__(62);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var mappedProps = {
-  bounds: {
-    type: Object
-  },
-  componentRestrictions: {
-    type: Object,
-    // Do not bind -- must check for undefined
-    // in the property
-    noBind: true
-  },
-  types: {
-    type: Array,
-    default: function _default() {
-      return [];
-    }
-  }
-};
-
-var props = {
-  placeholder: {
-    required: false,
-    type: String
-  },
-  selectFirstOnEnter: {
-    require: false,
-    type: Boolean,
-    default: false
-  },
-  value: {
-    type: String,
-    default: ''
-  },
-  options: {
-    type: Object
-  }
-};
-
-exports.default = {
-  mounted: function mounted() {
-    var _this = this;
-
-    this.$gmapApiPromiseLazy().then(function () {
-      if (_this.selectFirstOnEnter) {
-        (0, _simulateArrowDown2.default)(_this.$refs.input);
-      }
-
-      if (typeof google.maps.places.Autocomplete !== 'function') {
-        throw new Error('google.maps.places.Autocomplete is undefined. Did you add \'places\' to libraries when loading Google Maps?');
-      }
-
-      /* eslint-disable no-unused-vars */
-      var finalOptions = _extends({}, (0, _bindProps.getPropsValues)(_this, mappedProps), _this.options);
-
-      _this.$autocomplete = new google.maps.places.Autocomplete(_this.$refs.input, finalOptions);
-      (0, _bindProps.bindProps)(_this, _this.$autocomplete, mappedProps);
-
-      _this.$watch('componentRestrictions', function (v) {
-        if (v !== undefined) {
-          _this.$autocomplete.setComponentRestrictions(v);
-        }
-      });
-
-      // Not using `bindEvents` because we also want
-      // to return the result of `getPlace()`
-      _this.$autocomplete.addListener('place_changed', function () {
-        _this.$emit('place_changed', _this.$autocomplete.getPlace());
-      });
-    });
-  },
-
-  props: _extends({}, (0, _mapElementFactory.mappedPropsToVueProps)(mappedProps), props)
-};
-
-/***/ }),
-/* 100 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var render = function() {
-  var _vm = this
-  var _h = _vm.$createElement
-  var _c = _vm._self._c || _h
-  return _c("input", {
-    ref: "input",
-    attrs: { type: "text", placeholder: _vm.placeholder },
-    domProps: { value: _vm.value }
-  })
-}
-var staticRenderFns = []
-render._withStripped = true
-module.exports = { render: render, staticRenderFns: staticRenderFns }
-if (false) {
-  module.hot.accept()
-  if (module.hot.data) {
-    require("vue-hot-reload-api")      .rerender("data-v-2c922d06", module.exports)
-  }
-}
-
-/***/ }),
-/* 101 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -63444,47 +61112,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 });
 
 /***/ }),
-/* 102 */
-/***/ (function(module, exports, __webpack_require__) {
-
-// style-loader: Adds some css to the DOM by adding a <style> tag
-
-// load the styles
-var content = __webpack_require__(103);
-if(typeof content === 'string') content = [[module.i, content, '']];
-if(content.locals) module.exports = content.locals;
-// add the styles to the DOM
-var update = __webpack_require__(51)("1f14cf63", content, false, {});
-// Hot Module Replacement
-if(false) {
- // When the styles change, update the <style> tags
- if(!content.locals) {
-   module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-500f40a0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./InboxComponent.vue", function() {
-     var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/vue-loader/lib/style-compiler/index.js?{\"vue\":true,\"id\":\"data-v-500f40a0\",\"scoped\":false,\"hasInlineConfig\":true}!../../../../../node_modules/vue-loader/lib/selector.js?type=styles&index=0!./InboxComponent.vue");
-     if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
-     update(newContent);
-   });
- }
- // When the module is disposed, remove the <style> tags
- module.hot.dispose(function() { update(); });
-}
-
-/***/ }),
-/* 103 */
-/***/ (function(module, exports, __webpack_require__) {
-
-exports = module.exports = __webpack_require__(50)(false);
-// imports
-
-
-// module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
-
-// exports
-
-
-/***/ }),
-/* 104 */
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var render = function() {
@@ -63582,6 +61210,15 @@ if (false) {
     require("vue-hot-reload-api")      .rerender("data-v-500f40a0", module.exports)
   }
 }
+
+/***/ }),
+/* 64 */,
+/* 65 */,
+/* 66 */,
+/* 67 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
 
 /***/ })
 /******/ ]);

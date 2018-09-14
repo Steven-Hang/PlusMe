@@ -37,7 +37,6 @@ Vue.component('map-component', require('./components/MessageInbox/InboxComponent
 
 
 
-
 const app = new Vue({
     el: '#app',
       data: {
