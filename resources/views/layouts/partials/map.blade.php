@@ -2,18 +2,18 @@
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
       #map {
-        height: 100%;
+        height: 100% !important;
       }
       /* Optional: Makes the sample page fill the window. */
       html, body {
-        height: 100%;
+        height: 100vh ;
         margin: 0;
         padding: 0;
       }
     </style>
   </head>
-  <body>
     <div id="map"></div>
+  
     <script>
       // Note: This example requires that you consent to location sharing when
       // prompted by your browser. If you see the error "The Geolocation service

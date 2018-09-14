@@ -71,6 +71,12 @@ body {
 
 
 #myVideo {
+<<<<<<< HEAD
+=======
+    position: relative;
+    right: 0;
+    height: 500px;
+>>>>>>> 06557874df7bcf8d637c5dd983999a457bce5e80
     width: 100%;
     height:100%;
     display: flex;
@@ -135,9 +141,13 @@ footer {
     background-color:white;
     align-content: center;
     text-decoration:none;
-    padding-top: 3%;
+    padding-top: 2%;
     font-family: "Nunito",sans-serif;
-    margin-top: 3%;
+    position: sticky;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
 }
 
 .footer-link:hover,
@@ -160,8 +170,8 @@ p {
 }
 
 a, a:hover, a:focus {
-    color: inherit;
-    text-decoration: none;
+    color: orange;
+    text-decoration: underline;
     transition: all 0.3s;
 }
 
@@ -593,7 +603,15 @@ a, a:hover, a:focus {
       width: 100%;
       padding: 0px 5px;
     }
+<<<<<<< HEAD
   }
+=======
+    .modal-lg {
+        width: 90%;
+        width:1200px;
+      }
+}
+>>>>>>> 06557874df7bcf8d637c5dd983999a457bce5e80
 
 
   /*---- Alert validate ----*/

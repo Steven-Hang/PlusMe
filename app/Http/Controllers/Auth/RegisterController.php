@@ -50,10 +50,7 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    /*TODO:
-     *Set Up Date Vaildation
-        
-    */
+    
 
     protected function validator(array $data)
     {
@@ -61,9 +58,11 @@ class RegisterController extends Controller
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'contact_number' => 'required|string|max:10',
+            'date_of_birth' => 'required|before:01-01-2000|after:01-01-1900',
+            'licence_number' => 'required|string|max:10',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/|confirmed',
-            'terms' => 'required',
+            'terms' => 'required'
         ]);
     }
 
@@ -80,10 +79,14 @@ class RegisterController extends Controller
             'last_name' => $data['last_name'],    
             'date_of_birth' => $data['date_of_birth'],
             'contact_number' => $data['contact_number'],
+            'licence_number' => $data['licence_number'],
             'email' => $data['email'],
             'terms' => $data['terms'],
             'password' => Hash::make($data['password']),
         ]);
+
+        event(new \App\Events\UserReferred(request()->cookie('ref'), $user));
+        
         $activateUser = ActivateUser::create([
             'user_id' => $user->id,
             'token' => str_random(40)
@@ -115,6 +118,6 @@ class RegisterController extends Controller
     protected function registered(Request $request, $user)
     {
         $this->guard()->logout();
-        return redirect('/login')->with('status', 'We sent you an activation code. Check your email and click on the link to verify.');
+        return redirect('/login')->with('status', 'We sent you an activation code. Check your email and click on the link to activate.');
     }
 }

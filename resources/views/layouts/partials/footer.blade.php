@@ -38,7 +38,7 @@
     </div>
 
     <!-- Copyright -->
-    <div class="footer-copyright text2018 Copyright:-center py-3">
+    <div class=" text2018 Copyright:-center py-3">
       <p style="text-align: center;color: #263238;font-family:Century Gothic;font-size:11px;">&copy copyright Plus Me 2018</p>
     </div>
 
