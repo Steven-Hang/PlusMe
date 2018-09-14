@@ -36,6 +36,7 @@
 
 
         </div>
+
         <div class="form-group row">
                 <div class="col-sm-10">
                     <img src="./images/fakemap.png" class="img" alt="Map" width="80%" >

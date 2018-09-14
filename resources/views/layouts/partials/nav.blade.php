@@ -28,6 +28,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('register') }}">REGISTER</a>
                 </li>
+
                 @else
                 <!-- First Name of the user -->
                 <li class="nav-item">
@@ -45,6 +46,8 @@
             <form class="form-inline" id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
             </form>
+            <a class="nav-link" href="{{ route('user.show', Auth::user()->id) }}">Profile</a>
+            <a class="nav-link" href="{{ route('booking/step2')}}">BOOK!</a>
             @endguest
     </div>
 </nav>
