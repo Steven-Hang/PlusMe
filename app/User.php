@@ -21,7 +21,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'first_name', 'last_name','date_of_birth','license_image','contact_number', 'email', 'password','terms'
+        'first_name', 'last_name','date_of_birth','licence_number','contact_number', 'email', 'password','terms'
     ];
 
     /**
@@ -32,4 +32,11 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function getReferrals()
+    {
+        return ReferralProgram::all()->map(function ($program) {
+            return ReferralLink::getReferral($this, $program);
+        });
+    }
 }

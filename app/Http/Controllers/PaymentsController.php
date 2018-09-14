@@ -23,6 +23,7 @@ class PaymentsController extends Controller
             ]
         ]);
     
-        return response()->json($status);
+        
+        return view('home');
     }
 }

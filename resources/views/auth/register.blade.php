@@ -1,12 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+<br><br>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Register') }}</div>
+            <div class="card" style="opacity:0.96">
+                
+                <div class=""></div>
                     <div class="card-body">
+                        <h1>Sign Up </h1>
                     <!-- Begin Register form -->
                     <form method="POST" action="{{ route('register') }}" aria-label="{{ __('Register') }}">
                         @csrf
@@ -58,7 +61,7 @@
                             <label for="contact_number" class="col-md-4 col-form-label text-md-right">{{ __('Contact Number') }}</label>
 
                             <div class="col-md-6">
-                                <input id="contact_number" type="text" class="form-control{{ $errors->has('contact_number') ? ' is-invalid' : '' }}" name="contact_number" value="{{ old('contact_number') }}" required autofocus>
+                                <input id="contact_number" type="text" class="form-control{{ $errors->has('contact_number') ? ' is-invalid' : '' }}" name="contact_number" value="{{ old('contact_number') }}" pattern="^[\+]?[0-9\s\-\)\(]{8,17}" required autofocus>
 
                                 @if ($errors->has('contact_number'))
                                     <span class="invalid-feedback" role="alert">
@@ -102,13 +105,30 @@
                             <div class="col-md-6">
                                 <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
                             </div>
+                            <!-- TODO:compare with pwd -->
                         </div>
+                        <!-- Driver licence -->
+                        <div class="form-group row">
+                            <label for="licence_number" class="col-md-4 col-form-label text-md-right">{{ __('Driver licence number') }}</label>
+
+                            <div class="col-md-6">
+                                <input id="licence_number" type="text" class="form-control{{ $errors->has('licence_number') ? ' is-invalid' : '' }}" name="licence_number" value="{{ old('licence_number') }}" required autofocus>
+
+                                @if ($errors->has('licence_number'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('licence_number') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+        
                         <!-- Terms and Condition Checkbox -->
                         <div class="form-group row">
-                            <label for="terms" class="col-md-4 col-form-label text-md-right"> {{ __('I agree to the terms of service') }}</label>
-                                
-                            <div class="col-md-2"> 
-                                <input type="checkbox" class="form-control" name="terms" value="1" class="form-control{{ $errors->has('terms') ? ' has-error' : '' }}" value="{{ old('terms') }}" />
+                        <div class="col-md-12">
+                        <label for="terms"> I agree to the <a href="#" data-toggle="modal" data-target="#TermsModalLong"> terms of service</a> </label>
+
+                            <div class="col-md-12">
+                                <input type="checkbox" class="" name="terms" value="1" class="form-control{{ $errors->has('terms') ? ' has-error' : '' }}" value="{{ old('terms') }}" />
 
                                  @if ($errors->has('terms'))
                                   <span class="help-block">
@@ -117,19 +137,47 @@
                                  @endif
                              </div>
                         </div>
+                    </div>
+                    
                         <!-- register button -->
-                        <div class="form-group row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
+                        <div class="form-group row" id="">
+                            <div id="app" class="col-md-12">
+                                    <!-- vuesax file found assets/js/partials/Loading -->
+                                    <loading-component></loading-component>
+                                </div>
                             </div>
+                            
                         </div>
                     </form>
                     <!-- end form -->
                 </div>
+            <!-- End Card  -->
             </div>
+
+        <!-- Modal (the thing that pops up when you click terms of service) -->
+        <div class="modal fade" id="TermsModalLong" tabindex="-1" role="dialog" aria-labelledby="TermsLongTitle" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                 <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="TermsLongTitle">TERMS OF SERVICE ---- OVERVIEW</h5>
+                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                    <div class="modal-body">
+                       @include('general.terms')
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">I Understand</button>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         </div>
     </div>
 </div>
 @endsection
+

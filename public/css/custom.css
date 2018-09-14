@@ -1,14 +1,21 @@
 
+
 body {
-    background-image: images/bg/png;
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     margin: 0;
     padding: 0;
-    background-color: #fff;
     font-family: "Lucida Grande", "Helvetica Neue", Roboto, "Droid Sans", Prelude, Helvetica, Arial, sans-serif;
     font-size: 100%;
     color: #334;
     text-align:center;
 }
+
+/* ---------------------------------------------------
+    welcome.blade.php custom style
+----------------------------------------------------- */
 
 .full-height {
     height: 100vh;
@@ -49,17 +56,6 @@ body {
     text-transform: uppercase;
 }
 
-
-
-#frame {
-    padding-left:20%;
-    padding-Right:20%;
-}
-
-#googleMap {
-    width:100%;
-}
-
 .button {
     background-color: #ddd;
     border: none;
@@ -74,22 +70,51 @@ body {
 }
 
 
+#myVideo {
+    position: relative;
+    right: 0;
+    height: 500px;
+    width: 100%;
+    object-fit: fill;
+}
 
-.footer {
+/* Add some content at the bottom of the video/page */
+.content {
+    position: fixed;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.151);
+    color: #f1f1f1;
+    width: 100%;
+    padding: 20px;
+}
+
+/* ---------------------------------------------------
+    footer.blade.php custom style
+----------------------------------------------------- */
+
+footer {
+    background-color:white;
+    align-content: center;
     text-decoration:none;
-    color: #636b6f;
-    font-family: Century Gothic;
-    padding: 10px;
+    padding-top: 2%;
+    font-family: "Nunito",sans-serif;
+    position: sticky;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+}
+
+.footer-link:hover,
+.footer-link:active{
+    color:#ff9100;
+    text-decoration: underline;
 }
 
 
 @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 
 
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #fafafa;
-}
 
 p {
     font-family: 'Poppins', sans-serif;
@@ -100,8 +125,8 @@ p {
 }
 
 a, a:hover, a:focus {
-    color: inherit;
-    text-decoration: none;
+    color: orange;
+    text-decoration: underline;
     transition: all 0.3s;
 }
 
@@ -247,5 +272,57 @@ a.article, a.article:hover {
     #sidebarCollapse span {
         display: none;
     }
+    .modal-lg {
+        width: 90%;
+        width:1200px;
+      }
+}
+
+/* ---------------------------------------------------
+    login.blade.php custom style
+----------------------------------------------------- */
+.btn-login,
+.btn-register{
+    color: #000000;
+    background-color: #FFCC00;
+    border: none;
+    border-radius: 6px;
+    width: 210px;
+}
+
+.btn-login:hover,
+.btn-login:focus,
+.btn-login:active,
+.btn-register:hover,
+.btn-register:focus,
+.btn-register:active {
+color: #000000;
+background-color: #FFC400;
+}
+
+.forgetpwd{
+    color: black;
+    font-size: 14px;
+}
+
+.forgetpwd:hover,
+.forgetpwd:active,
+.forgetpwd:focus{
+    color:#ff9100;
+    text-decoration: underline;
+}
+
+.signup,
+#terms{
+    color: #ff9100;
+}
+
+.signup:hover,
+.signup:active,
+#terms:hover,
+#terms:active,
+#terms:focus{
+    color: #ff9100;
+    text-decoration: underline;
 }
 

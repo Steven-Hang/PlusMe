@@ -5,12 +5,8 @@
         <br>
         <div style="text-align: center">
             <h1>Payment & Policy</h1>
-            <p class="lead">qwert asdfg adsjk</p>
+            <p class="lead"></p>
         </div>
-    
-    <div class="row">
-    @include('layouts.partials.footer')
-    </div>
-
 </div>
+
 @endsection

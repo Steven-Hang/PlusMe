@@ -12,11 +12,21 @@
     "devDependencies": {
         "axios": "^0.18",
         "bootstrap": "^4.0.0",
-        "popper.js": "^1.12",
-        "cross-env": "^5.1",
+        "cross-env": "^5.2.0",
         "jquery": "^3.2",
         "laravel-mix": "^2.0",
         "lodash": "^4.17.4",
-        "vue": "^2.5.7"
+        "popper.js": "^1.12",
+        "stylus": "^0.54.5",
+        "stylus-loader": "^3.0.2",
+        "vue": "^2.5.17"
+    },
+    "dependencies": {
+        "npm": "^6.4.1",
+        "v-slim-dialog": "0.0.9",
+        "vue-modaltor": "^1.2.9",
+        "vue-template-compiler": "^2.5.17",
+        "vue2-google-maps": "^0.10.2",
+        "vuesax": "^3.2.26"
     }
 }
