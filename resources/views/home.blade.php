@@ -84,9 +84,4 @@ sth {
             @include('layouts.partials.map')
         </div>
 </div>
-<<<<<<< HEAD
-@include('layouts.partials.footer')
-</div>
-=======
->>>>>>> 1cd9e6bc088b9ccd5bf983e081c024d6e82d0c1b
 @endsection
