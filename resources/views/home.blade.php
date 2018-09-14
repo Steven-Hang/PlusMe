@@ -6,7 +6,6 @@
  overflow: hidden;
  display: block;
  position: relative;
- padding-bottom: 150px; /* height of your footer */
 }
 footer {
  position: absolute;

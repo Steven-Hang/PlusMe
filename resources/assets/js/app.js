@@ -30,14 +30,23 @@ import Vue from 'vue'
 
 
 
-
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('loading-component', require('./components/partials/LoadingComponent.vue'));
+Vue.component('sidebar-component', require('./components/partials/SidebarComponent.vue'));
+Vue.component('map-component', require('./components/MessageInbox/InboxComponent.vue').default);
+
 
 
 
 const app = new Vue({
-    el: '#app'
-});
+    el: '#app',
+      data: {
+        place: '',
+      },
+    });
+
 
 const route = [
+    {path: '/inbox', component: PrivateMessageInbox, name: 'inbox', meta: { requiresAuth: true}}
+
 ]

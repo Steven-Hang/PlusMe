@@ -69,3 +69,15 @@ Route::get('ausers','PagesController@users')->name('ausers');
 Route::get('aparkinglot','PagesController@parkinglot')->name('aparkinglot');
 Route::get('anotifications','PagesController@notification')->name('anotifications');
 Route::get('adminprofile','PagesController@adminprofile')->name('adminprofile');
+
+
+/* Private Message urls */
+Route::post('get-message-notifications', 'MessageController@getUserMessagesNotifications');
+Route::post('get-messages', 'MessageController@getMessages');
+Route::post('get-message', 'MessageController@getMessagesById');
+Route::post('get-messages-sent', 'MessageController@getMessagesBySent');
+Route::post('send-message', 'MessageController@sendMessage');
+
+//Locations
+Route::get('location/add', 'LocationController@add')->name('Location-add');
+Route::post('location/save', 'LocationController@add')->name('Location-post');

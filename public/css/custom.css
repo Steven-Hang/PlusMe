@@ -1,7 +1,11 @@
 
+
 body {
     height: 100%;
+<<<<<<< HEAD
     background-color: white;
+=======
+>>>>>>> VuejsStyleSheet
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -597,6 +601,10 @@ a, a:hover, a:focus {
       width: 100%;
       padding: 0px 5px;
     }
+    .modal-lg {
+        width: 90%;
+        width:1200px;
+      }
   }
 
 
