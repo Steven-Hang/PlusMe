@@ -19,9 +19,10 @@
                 {{ session('warning') }}
             </div>
         @endif
-        <form class="login-form validate-form">
+        <form method="POST" class="login-form validate-form" action="{{ route('login') }}" >
+             @csrf
             <div class="wrap-input validate-input" data-validate="Username is required">
-                @csrf
+
                     <span class="label-input">{{ __('E-Mail') }}</span>
                     <input id="email" type="email" class="input form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" placeholder="Enter E-mail" required autofocus>
 
