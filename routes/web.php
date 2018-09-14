@@ -57,8 +57,10 @@ Route::get('/logout','AdminController@logout')->name('adminLogout');
 //Resource routes
 Route::resource('vehicles','VehiclesController');
 
-//pagenotfound route
+//errors route
 Route::get('404',['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']);
+Route::get('403',['as' => 'forbidden', 'uses' => 'PagesController@forbidden']);
+
 
 //test use only will delete later
 Route::get('admindashboard','PagesController@admindashboard')->name('admindashboard');
