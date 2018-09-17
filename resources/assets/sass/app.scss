@@ -8,6 +8,8 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+@import url("//unpkg.com/element-ui@2.4.7/lib/theme-chalk/index.css");
+
 .navbar-laravel {
   background-color: #fff;
   box-shadow: 0 2px 0px rgba(0, 0, 0, 0.04);

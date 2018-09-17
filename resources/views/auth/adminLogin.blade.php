@@ -1,66 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    @include('layouts.partials.head')
+@include('layouts.partials.head')
 
 	<style>
-        body, html {
-            height: 100%;
-            font-family: Poppins-Regular, sans-serif;
-        }
-
-        a {
-            font-family: Poppins-Regular;
-            font-size: 14px;
-            line-height: 1.7;
-            color: #666666;
-            margin: 0px;
-            transition: all 0.4s;
-            -webkit-transition: all 0.4s;
-            -o-transition: all 0.4s;
-            -moz-transition: all 0.4s;
-        }
-
-        a:focus {
-            outline: none !important;
-        }
-
-        a:hover {
-            text-decoration: none;
-            color: #333333;
-        }
-
-        ul, li {
-            margin: 0px;
-            list-style-type: none;
-        }
-
-        input {
-            outline: none;
-            border: none;
-        }
-
-        input:focus::-webkit-input-placeholder { color:transparent;}
-        input:focus:-moz-placeholder { color:transparent; }
-        input:focus::-moz-placeholder { color:transparent; }
-        input:focus:-ms-input-placeholder { color:transparent; }
-        input::-webkit-input-placeholder { color: #adadad;}
-        input:-moz-placeholder { color: #adadad;}
-        input::-moz-placeholder { color: #adadad;}
-        input:-ms-input-placeholder { color: #adadad;}
-
-        button {
-            outline: none !important;
-            border: none;
-            background: transparent;
-        }
-
-        button:hover {
-            cursor: pointer;
-        }
 
         .forgot {
-            font-family: Poppins-Regular;
             font-size: 15px;
             color:orange;
             line-height: 1.5;
@@ -97,7 +39,6 @@
 
         .Login-form-title {
         display: block;
-        font-family: Poppins-Bold;
         font-size: 32px;
         color: #333333;
         line-height: 1.2;
@@ -114,7 +55,6 @@
         }
 
         .input {
-        font-family: Poppins-SemiBold;
         font-size: 18px;
         color: #555555;
         line-height: 1.2;
@@ -156,7 +96,6 @@
         }
 
         .focus-input::after {
-        font-family: Poppins-Medium;
         font-size: 18px;
         color: #999999;
         line-height: 1.2;
@@ -207,7 +146,6 @@
         }
 
         .Login-form-btn {
-        font-family: Poppins-Medium;
         font-size: 16px;
         color: #fff;
         line-height: 1.2;
@@ -274,7 +212,6 @@
         right: 0px;
         pointer-events: none;
 
-        font-family: Poppins-Regular;
         color: #c80000;
         font-size: 13px;
         line-height: 1.4;
@@ -291,7 +228,6 @@
 
         .alert-validate::after {
         content: "\f06a";
-        font-family: FontAwesome;
         font-size: 16px;
         color: #c80000;
 
@@ -373,14 +309,8 @@
                 </div>
 
                 <div class="form-group row">
-                    <div class="col-md-6 offset-md-4">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-
-                            <label class="form-check-label" for="remember">
-                                {{ __('Remember Me') }}
-                            </label>
-                        </div>
+                    <div class="col-md-6 offset-md-3">
+                        <input  type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>{{ __('Remember Me') }}
                     </div>
                 </div>
                 <div class="container-Login-form-btn">

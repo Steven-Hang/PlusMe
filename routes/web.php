@@ -64,6 +64,7 @@ Route::get('403',['as' => 'forbidden', 'uses' => 'PagesController@forbidden']);
 
 //test use only will delete later
 Route::get('admindashboard','PagesController@admindashboard')->name('admindashboard');
+Route::get('abooking','PagesController@bookings')->name('abookings');
 Route::get('avehicles','PagesController@vehicles')->name('avehicles');
 Route::get('ausers','PagesController@users')->name('ausers');
 Route::get('aparkinglot','PagesController@parkinglot')->name('aparkinglot');

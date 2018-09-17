@@ -68,6 +68,10 @@ class PagesController extends Controller
         return view('admin.dashboard');
     }
 
+    public function bookings(){
+        return view('admin.bookings');
+    }
+
     public function vehicles(){
         return view('admin.vehicles');
     }
