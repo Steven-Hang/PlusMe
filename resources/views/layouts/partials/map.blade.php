@@ -13,30 +13,117 @@
     </style>
   </head>
     <div id="map"></div>
-
     <script>
-      // Note: This example requires that you consent to location sharing when
-      // prompted by your browser. If you see the error "The Geolocation service
-      // failed.", it means you probably did not give permission for the browser to
-      // locate you.
+     
       var map, infoWindow;
+
       function initMap() {
 
-        var myLatLng = {lat: -37.809277, lng: 144.960712};
+            var markers= @json($locations);
+            var marks = [];
 
+
+        //Allows User input to Search 
+        var input = document.getElementById('pac-input');
+
+        //creates function to auto complete map searches 
+        var autocomplete = new google.maps.places.Autocomplete(input);
+        // Set the data fields to return when the user selects a place.
+        autocomplete.setFields(
+            ['address_components', 'geometry', 'icon', 'name']);
+        
+        autocomplete.addListener('place_changed', function() {
+          var place = autocomplete.getPlace();
+          if (!place.geometry) {
+            // User entered the name of a Place that was not suggested and
+            // pressed the Enter key, or the Place Details request failed.
+            window.alert("No details available for input: '" + place.name + "'");
+            return;
+          }
+
+          // If the place has a geometry, then present it on a map.
+          if (place.geometry.viewport) {
+            map.fitBounds(place.geometry.viewport);
+          } else {
+            map.setCenter(place.geometry.location);
+            //set zoom level after completed search
+            map.setZoom(15);  
+          }
+        });
+        
+        //creates Map module 
         map = new google.maps.Map(document.getElementById('map'), {
         zoom: 15
         });
 
-        var contentString = '<div id="content">'+
+            var directionsService = new google.maps.DirectionsService;
+            var directionsDisplay = new google.maps.DirectionsRenderer;
+
+        var contentString = 
             '<h1 id="firstHeading" class="firstHeading">Select Car Type</h1>'+
             '<p><b>Select Car Type</b>'+ '<br>'+
             '<a href="Car Type 1">CAR TYPE ONE</a>'+'<br>'+
             '<a href="Car Type 2">CAR TYPE TWO</a>'+'<br>'+
             '</p>';
+        
+            for(var i = 0; i < markers.length; i++){
+            marks[i] = addMarkerToMap(markers[i]);
+        }
+
+        function addMarkerToMap(marker){
+
+        var location = new google.maps.LatLng(marker.lat,marker.lng);
+
+        marker = new google.maps.Marker({
+            position: location,
+            map: map,
+            });
+        }
 
 
+        var myLatLng = {lat: -37.809277, lng: 144.960712};
+        
+        for (i = 0; i < markers.length; i++) {
+                var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
+                
+                marker = new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    title: markers[i][0]
+                });
 
+                google.maps.event.addListener(marker, 'click', (function(marker, i) {
+                    return function() {
+                        infoWindow.setContent(infoWindowContent[i][0]);
+                        infoWindow.open(map, marker);
+                        latit = marker.getPosition().lat();
+                        longit = marker.getPosition().lng();
+                        // console.log("lat: " + latit);
+                        // console.log("lng: " + longit);
+                    }
+                })(marker, i));
+
+                marker.addListener('click', function() {
+                    directionsService.route({
+                        // origin: document.getElementById('start').value,
+                        origin: myLatLng,
+                        // destination: marker.getPosition(),
+                        destination: {
+                            lat: latit,
+                            lng: longit
+                        },
+                        travelMode: 'DRIVING'
+                    }, function(response, status) {
+                        if (status === 'OK') {
+                            directionsDisplay.setDirections(response);
+                        } else {
+                            window.alert('Directions request failed due to ' + status);
+                        }
+                    });
+                  });
+
+              }
+                
 
         var infowindow = new google.maps.InfoWindow({
           content: contentString
@@ -88,5 +175,5 @@
 
     </script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQMzhiINq0pfDHofIycq6m_V2dRFULbPc&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQMzhiINq0pfDHofIycq6m_V2dRFULbPc&libraries=places&callback=initMap">
     </script>

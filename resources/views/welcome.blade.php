@@ -1,7 +1,7 @@
 @extends('layouts.app')
-
 @section('content')
     <!-- Masthead -->
+    
     <header class="masthead text-white text-center" style="position:relative;background-color:#343a40;background:url(../img/bg-masthead.jpg) no-repeat center center;-webkit-background-size:cover;-moz-background-size:cover;-o-background-size:cover;background-size:cover;">
             <div class="overlay" style="position:absolute;background-color:#212529;height:100%;width:100%;top:0;left:0;opacity:.3"></div>
               <div class="row" style="width: 100%; height: 520px; position: relative;">
@@ -11,6 +11,9 @@
                 </video>
                 <!-- overlay content to the video -->
                 <div class="content">
+                    <div id="">
+                        <card-component></card-component>
+                    </div>
                     <div class="col-xl-9 mx-auto">
                         <h1 class="mb-5" style="font-size:2rem">Slogan here!</h1>
                     </div>
@@ -20,7 +23,7 @@
                 </div>
             </div>
           </header>
-
+          
           <!-- Icons Grid -->
           <section class="features-icons bg-light text-center">
             <div class="container">
@@ -96,8 +99,11 @@
                     </div>
                 </div>
                 </div>
-            </section>
-
+            </section>  
+            <div id="app"> 
+            <location-search-component></location-search-component> 
+            <map-component></map-component>
+            </div>
 @endsection
 
 

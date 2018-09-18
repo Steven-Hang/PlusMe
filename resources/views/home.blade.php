@@ -53,7 +53,7 @@ sth {
 
         <div class="search-container">
           <form action="/action_page.php">
-            <input type="text" placeholder="Please enter a location....." name="search">
+            <input id="pac-input" type="text" placeholder="Please enter a location....." name="search">
             <input type="text" placeholder="Start Time....." name="Stime">
             <input type="text" placeholder="End Time......" name="Etime">
         </div>
@@ -61,7 +61,7 @@ sth {
 
 <div class='main-container'>
     <div class="row">
-        <div class="col-2">
+        <div class="col-3">
             <div id="boarder">
                         <p style="color:black;">BOOKING ID:12345678</p>
                         <p style="color:gray;">CAR TYPE</p>
@@ -79,7 +79,8 @@ sth {
                         <P>Car ID:3456782765</p>
                 </div>
         </div>
-        <div class="col-10">
+        
+        <div class="col-9">
             <!-- display the google map -->
             @include('layouts.partials.map')
         </div>

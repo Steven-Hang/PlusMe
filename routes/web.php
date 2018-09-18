@@ -10,12 +10,24 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+use App\Location;
+
+Route::post('/nearest-shops', function () {
+   $center=request('center');
+
+    // Search the rows in the markers table
+    $nearestShops=Location::selectRaw("SELECT id, ( 3959 * acos( cos( radians(37) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(-122) ) + sin( radians(37) ) * sin( radians( lat ) ) ) ) AS distance")
+        ->where('distance','<',25)->orderBy('distance');
+   return response(request()->all());
+});
+
+
+
+
 Route::get('/map', 'MapController@index');
 
 //function Route to customise The Look of the Dashboard page google map API
-Route::get('/home', function () {
-    return view('home');
-});
+Route::get('/home', 'HomeController@index');
 
 //return Index (welcome) page
 Route::get('/', function () {
@@ -81,3 +93,6 @@ Route::post('send-message', 'MessageController@sendMessage');
 //Locations
 Route::get('location/add', 'LocationController@add')->name('Location-add');
 Route::post('location/save', 'LocationController@add')->name('Location-post');
+
+//Change password route
+Route::post('/changePassword','UserController@changePassword')->name('changePassword');

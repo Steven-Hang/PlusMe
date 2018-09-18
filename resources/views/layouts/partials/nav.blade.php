@@ -15,9 +15,6 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="#">CAR TYPE</a>
-                </li>
 
                 <!-- Authentication Links -->
                 @guest
@@ -30,6 +27,7 @@
                 </li>
 
                 @else
+        
                 <!-- First Name of the user -->
                 <li class="nav-item">
                     <a class="nav-link" href="/home" >
@@ -46,6 +44,7 @@
             <form class="form-inline" id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
             </form>
+
             <a class="nav-link" href="{{ route('user.show', Auth::user()->id) }}">Profile</a>
             <a class="nav-link" href="{{ route('booking/step2')}}">BOOK!</a>
             @endguest
