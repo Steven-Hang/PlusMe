@@ -105,7 +105,7 @@
 
             <!-- Terms and Condition Checkbox -->
             <div class="contact-form-checkbox">
-                <input type="checkbox" name="terms" id="terms" class="input-checkbox form-control{{ $errors->has('terms') ? ' has-error' : '' }}" value="{{ old('terms') ? 'checked' : '' }}" />
+                <input type="checkbox" name="terms" id="terms" class="input-checkbox form-control{{ $errors->has('terms') ? ' has-error' : '' }}" value="1" />
                 <label class="label-checkbox" for="terms">
                         I agree to the <a href="#" id="termslink" data-toggle="modal" data-target="#TermsModalLong"> terms of service</a>
                     </label>

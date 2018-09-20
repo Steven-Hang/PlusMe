@@ -5,7 +5,7 @@
   </div>
 </template>
 <script>
-import mockData from '../_mockData'
+
 
 export default {
   data: () => ({

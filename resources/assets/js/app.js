@@ -50,7 +50,7 @@ Vue.component('card-component', require('./components/partials/cardHomeComponent
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('loading-component', require('./components/partials/LoadingComponent.vue'));
 Vue.component('sidebar-component', require('./components/partials/SidebarComponent.vue'));
-Vue.component('map-component', require('./components/MessageInbox/InboxComponent.vue').default);
+
 Vue.component('welcome-button', require('./components/partials/WelcomeButton.vue'));
 Vue.component('datatable-componenet', require('./components/partials/DatatableComponent.vue'));
 
