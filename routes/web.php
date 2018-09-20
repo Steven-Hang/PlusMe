@@ -38,6 +38,9 @@ Route::get('/', function () {
 Route::get('/user/activate/{token}', 'Auth\RegisterController@activateUser');
 Auth::routes();
 
+Route::get('calc', 'BookingController@showPriceBasedOnHours');
+
+
 //Page Routes
 Route::get('/user/{id}', 'UserController@show')->name('user.show');
 Route::get('/about', 'PagesController@about')->name('about');

@@ -100,10 +100,7 @@
                 </div>
                 </div>
             </section>  
-            <div id="app"> 
-            <location-search-component></location-search-component> 
-            <map-component></map-component>
-            </div>
+          
 @endsection
 
 

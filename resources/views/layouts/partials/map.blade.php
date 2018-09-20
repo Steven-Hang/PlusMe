@@ -80,7 +80,6 @@
             });
         }
 
-
         var myLatLng = {lat: -37.809277, lng: 144.960712};
         
         for (i = 0; i < markers.length; i++) {
