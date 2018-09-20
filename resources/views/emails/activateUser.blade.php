@@ -289,7 +289,7 @@
                                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 14px; text-align: left;">
                                         <tr>
                                             <td style="text-align: center; padding: 0 10px;">
-                                                <img src="http://placehold.it/200" width="200" height="" alt="alt_text" border="0" style="width: 100%; max-width: 200px; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
+                                                <img src="./css/images/email1.svg" width="200" height="" alt="alt_text" border="0" style="width: 100%; max-width: 200px; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
                                             </td>
                                         </tr>
                                         <tr>
@@ -303,7 +303,7 @@
                                     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size: 14px; text-align: left;">
                                         <tr>
                                             <td style="text-align: center; padding: 0 10px;">
-                                                <img src="http://placehold.it/200" width="200" height="" alt="alt_text" border="0" style="width: 100%; max-width: 200px; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
+                                                <img src="./css/images/email2.svg" width="200" height="" alt="alt_text" border="0" style="width: 100%; max-width: 200px; background: #dddddd; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
                                             </td>
                                         </tr>
                                         <tr>

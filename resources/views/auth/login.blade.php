@@ -3,7 +3,7 @@
 @section('content')
 <div class="container-login">
     <div class="wrap-login">
-        <div class="login-form-title" style="background-image: url(./css/images/userlogin.jpg);">
+        <div class="login-form-title" >
             <span class="login-form-title-1">
                 Login to Plus Me
             </span>
@@ -30,8 +30,8 @@
                         <span class="invalid-feedback" role="alert">
                             <strong>{{ $errors->first('email') }}</strong>
                         </span>
-                        <span class="focus-input"></span>
                     @endif
+                    <span class="focus-input"></span>
             </div>
 
             <div class="wrap-input validate-inputs" data-validate = "Password is required">
@@ -42,12 +42,12 @@
                     <span class="invalid-feedback" role="alert">
                         <strong>{{ $errors->first('password') }}</strong>
                     </span>
-                    <span class="focus-input"></span>
                 @endif
+                <span class="focus-input"></span>
             </div>
 
                 <div class="contact-form-checkbox">
-                    <input class="input-checkbox" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
+                    <input class="input-checkbox" type="checkbox" name="remember" id="remember" value="{{ old('remember') ? 'checked' : '' }}">
                     <label class="label-checkbox" for="remember">
                         {{ __('Remember Me') }}
                     </label>
@@ -63,7 +63,7 @@
                 </button>
             </div>
         </form>
-        <div style="margin-bottom: 10px;">
+        <div class="mb-3">
             <span class="noaccount">
                 Don’t have an account?
             </span>

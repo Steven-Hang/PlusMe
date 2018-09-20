@@ -1,5 +1,6 @@
-
-
+/* ---------------------------------------------------
+    Restyle
+----------------------------------------------------- */
 body {
     height: 100%;
     background-color: white;
@@ -8,80 +9,108 @@ body {
     background-size: cover;
     margin: 0;
     padding: 0;
-    font-family: "Lucida Grande", "Helvetica Neue", Roboto, "Droid Sans", Prelude, Helvetica, Arial, sans-serif;
     font-size: 100%;
     color: #334;
     text-align:center;
+}
+
+input {
+    outline: none;
+    border: none;
+}
+input:focus{
+    border: none;
+    box-shadow: none !important;
+}
+
+input:focus::-webkit-input-placeholder { color:transparent; }
+input:focus:-moz-placeholder { color:transparent; }
+input:focus::-moz-placeholder { color:transparent; }
+input:focus:-ms-input-placeholder { color:transparent; }
+
+input::-webkit-input-placeholder {color: #999999;}
+input:-moz-placeholder {color: #999999;}
+input::-moz-placeholder {color: #999999;}
+input:-ms-input-placeholder {color: #999999;}
+
+label {
+    display: block;
+    margin: 5px;
+}
+
+button {
+    outline: none !important;
+    border: none;
+    background: transparent;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+/* ---------------------------------------------------
+    nav.blade.php custom style
+----------------------------------------------------- */
+
+.navbar{
+    background: url('./images/footer-bg.svg');
+}
+.nav-link{
+    font-size: 18px;
+    border-bottom: 1px solid white !important;
+}
+
+.nav-link:hover{
+    color:rgb(255, 145, 0) !important;
+    border-bottom: 1px solid #ff8b3d !important;
+}
+
+/* ---------------------------------------------------
+    footer.blade.php custom style
+----------------------------------------------------- */
+
+footer.footer {
+    background: url('./images/footer-bg.svg');
+    padding-top: 2.5rem;
+    padding-bottom: 2.5rem;
+  }
+
+.footer-link{
+    color:#555c63;
+}
+
+.footer-link:hover{
+    color:orange;
+}
+
+.footer-img{
+    border-bottom: solid white;
+}
+
+.footer-img:hover{
+    border-bottom: solid orange;
 }
 
 /* ---------------------------------------------------
     welcome.blade.php custom style
 ----------------------------------------------------- */
 
-.full-height {
-    height: 100vh;
-}
-
-.flex-center {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-}
-
-.position-ref {
+.container-video{
+    width: 100%;
+    height: 100%;
     position: relative;
 }
 
-.top-right {
-    position: absolute;
-    right: 10px;
-    top: 18px;
-}
-
-.content {
-    text-align: center;
-}
-
-.title {
-    padding: 10px;
-    font-size: 56px;
-}
-
-.links > a {
-    color: #636b6f;
-    padding: 0 25px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: .1rem;
-    text-decoration: none;
-    text-transform: uppercase;
-}
-
-.button {
-    background-color: #ddd;
-    border: none;
-    color: black;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    cursor: pointer;
-    border-radius: 6px;
-    height: 40px;
-
-}
-
-
-#myVideo {
+#bg-video {
     width: 100%;
     height:100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    object-fit: inherit;
+    object-fit: cover;
 }
 
-/* Add some content at the bottom of the video/page */
-.content {
+.overlay-video {
     width: 100%;
     position: absolute;
     top: 25%;
@@ -118,151 +147,10 @@ body {
     padding-bottom: 7rem;
   }
 
-  .call-to-action .overlay {
-    position: absolute;
-    background-color: #212529;
-    height: 100%;
-    width: 100%;
-    top: 0;
-    left: 0;
-    opacity: 0.3;
-  }
-
-/* ---------------------------------------------------
-    footer.blade.php custom style
------------------------------------------------------ */
-
-footer {
-    background-color:white;
-    align-content: center;
-    text-decoration:none;
-    padding-top: 2%;
-    font-family: "Nunito",sans-serif;
-    position: sticky;
-    left: 0;
-    bottom: 0;
-    width: 100%;
-    height: 60px;
-}
-
-.footer-link:hover,
-.footer-link:active{
-    color:#ff9100;
-    text-decoration: underline;
-}
-
-
-@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
-
-
-
-p {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.1em;
-    font-weight: 300;
-    line-height: 1.7em;
-    color: #999;
-}
-
-a, a:hover, a:focus {
-    color: orange;
-    text-decoration: underline;
-    transition: all 0.3s;
-}
-
-.navbar {
-    padding: 15px 10px;
-    background: #fff;
-    border: none;
-    border-radius: 0;
-    margin-bottom: 0;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.navbar-btn {
-    box-shadow: none;
-    outline: none !important;
-    border: none;
-}
-
-.line {
-    width: 100%;
-    height: 1px;
-    border-bottom: 1px dashed #ddd;
-    margin: 40px 0;
-}
-
-/* ---------------------------------------------------
-    SIDEBAR STYLE
------------------------------------------------------ */
-
- .sidebar {
-    position: initial;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    z-index: -1; /* Behind the navbar */
-    padding: 0;
-    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
-  }
-
-  .sidebar-sticky {
-    position: -webkit-sticky;
-    position: sticky;
-    top: 54px; /* Height of navbar */
-    height: calc(100vh - 54px);
-    padding-top: .5rem;
-    overflow-x: hidden;
-    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
-  }
-
-  .sidebar .nav-link {
-    font-weight: 500;
-    color: #333;
-  }
-
-  .sidebar .nav-item.active {
-    background-color:orange;
-  }
-
-  .sidebar-heading {
-    font-size: .75rem;
-    text-transform: uppercase;
-  }
-
-  .sidebar .nav-item:hover,
-  .sidebar .nav-item:active {
-      background-color: #ff9100;
-  }
-
-
-/* ---------------------------------------------------
-    CONTENT STYLE
------------------------------------------------------ */
-#content {
-    padding: 20px;
-    min-height: 100vh;
-    transition: all 0.3s;
-}
-
-/* ---------------------------------------------------
-    MEDIAQUERIES
------------------------------------------------------ */
-@media (max-width: 768px) {
-    #sidebar {
-        margin-left: -250px;
-    }
-    #sidebar.active {
-        margin-left: 0;
-    }
-    #sidebarCollapse span {
-        display: none;
-    }
-}
 
 /* ---------------------------------------------------
     login.blade.php custom style
------------------------------------------------------ */
+---------------------------------------------*/
 
 .container-login {
     width: 100%;
@@ -276,56 +164,25 @@ a, a:hover, a:focus {
     justify-content: center;
     align-items: center;
     padding: 15px;
-    background: #ebeeef;
-  }
+    background: url('./images/userlogin.jpg');
+}
 
-  input:focus {
-    border-color: transparent !important;
-  }
-
-  input:focus::-webkit-input-placeholder { color:transparent; }
-  input:focus:-moz-placeholder { color:transparent; }
-  input:focus::-moz-placeholder { color:transparent; }
-  input:focus:-ms-input-placeholder { color:transparent; }
-
-  input::-webkit-input-placeholder {color: #999999;}
-  input:-moz-placeholder {color: #999999;}
-  input::-moz-placeholder {color: #999999;}
-  input:-ms-input-placeholder {color: #999999;}
-
-  label {
-    display: block;
-    margin: 5px;
-  }
-
-  button {
-      outline: none !important;
-      border: none;
-      background: transparent;
-  }
-
-  button:hover {
-      cursor: pointer;
-  }
-
-  .forgetpwd {
-    font-family: Poppins-Regular;
+.forgetpwd {
     font-size: 13px;
     line-height: 1.4;
     color: #999999;
     margin-left: 10%;
-  }
+}
 
-  .wrap-login {
+.wrap-login {
     width: 600px;
     background: #fff;
-    border-radius: 10px;
     overflow: hidden;
     position: relative;
-  }
+}
 
-  /*---- Title form ----*/
-  .login-form-title {
+/*---- Title ----*/
+.login-form-title {
     width: 100%;
     position: relative;
     z-index: 1;
@@ -338,6 +195,7 @@ a, a:hover, a:focus {
     flex-direction: column;
     align-items: center;
 
+    background-image: url(./images/userlogin.jpg);
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -345,16 +203,15 @@ a, a:hover, a:focus {
     padding: 70px 15px 74px 15px;
   }
 
-  .login-form-title-1 {
-    font-family: Poppins-Bold;
+.login-form-title-1 {
     font-size: 30px;
     color: #fff;
     text-transform: uppercase;
     line-height: 1.2;
     text-align: center;
-  }
+}
 
-  .login-form-title::before {
+.login-form-title::before {
     content: "";
     display: block;
     position: absolute;
@@ -364,12 +221,11 @@ a, a:hover, a:focus {
     top: 0;
     left: 0;
     background-color: rgba(54,84,99,0.7);
-  }
+}
 
 
-  /*---- Form ----*/
-
-  .login-form {
+ /*---- Form ----*/
+.login-form {
     width: 100%;
     display: -webkit-box;
     display: -webkit-flex;
@@ -379,25 +235,22 @@ a, a:hover, a:focus {
     flex-wrap: wrap;
     justify-content: space-between;
     padding: 43px 88px 20px 190px;
-  }
-
+}
 
   /*---- Input ----*/
-  .input{
-      margin-top: 15px;
-      border:0 !important;
-  }
+.input{
+    margin-top: 15px;
+    border:0 !important;
+}
 
-  .wrap-input {
+.wrap-input {
     width: 100%;
     position: relative;
     border-bottom: 1px solid #b2b2b2;
     margin-top:10px;
-  }
+}
 
-
-  .label-input {
-    font-family: Poppins-Regular;
+.label-input {
     font-size: 15px;
     color: #808080;
     line-height: 1.2;
@@ -410,11 +263,9 @@ a, a:hover, a:focus {
 
     padding-top:10px;
 
-  }
+}
 
-
-  .label-input {
-    font-family: Poppins-Regular;
+.label-input {
     font-size: 15px;
     color: #808080;
     line-height: 1.2;
@@ -422,13 +273,12 @@ a, a:hover, a:focus {
 
     position: absolute;
     top: 14px;
-    left: -105px;
-    width: 80px;
+    left: -145px;
+    width: 130px;
 
-  }
+}
 
-  .input {
-    font-family: Poppins-Regular;
+.input {
     font-size: 15px;
     color: #555555;
     line-height: 1.2;
@@ -437,9 +287,10 @@ a, a:hover, a:focus {
     width: 100%;
     background: transparent;
     padding: 0 5px;
-  }
+}
 
-  .focus-input {
+/*---- Focus Input ----*/
+.focus-input {
     position: absolute;
     display: block;
     width: 100%;
@@ -447,9 +298,9 @@ a, a:hover, a:focus {
     top: 0;
     left: 0;
     pointer-events: none;
-  }
+}
 
-  .focus-input::before {
+.focus-input::before {
     content: "";
     display: block;
     position: absolute;
@@ -464,24 +315,51 @@ a, a:hover, a:focus {
     transition: all 0.6s;
 
     background: #ff8b3d;
+}
+
+
+.focus-input::after {
+    font-size: 18px;
+    color: #999999;
+    line-height: 1.2;
+
+    content: attr(data-placeholder);
+    display: block;
+    width: 100%;
+    position: absolute;
+    top: 15px;
+    left: 0px;
+    padding-left: 5px;
+
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
   }
 
   input.input {
     height: 35px;
   }
 
-
-
   input.login {
     height: 45px;
   }
 
+  .input:focus + .focus-input::after {
+    top: -20px;
+    font-size: 15px;
+  }
 
-  .login:focus + .focus-input::before {
+  .input:focus + .focus-input::before {
     width: 100%;
   }
 
-  .has-val.login + .focus-input::before {
+  .has-val.input + .focus-input::after {
+    top: -20px;
+    font-size: 15px;
+  }
+
+  .has-val.input + .focus-input::before {
     width: 100%;
   }
 
@@ -492,8 +370,7 @@ a, a:hover, a:focus {
   }
 
   .label-checkbox {
-    font-family: Poppins-Regular;
-    font-size: 13px;
+    font-size: 14px;
     color: #999999;
     line-height: 1.4;
 
@@ -504,9 +381,8 @@ a, a:hover, a:focus {
   }
 
   .label-checkbox::before {
-    content: "\f00c";
-    font-family: FontAwesome;
-    font-size: 13px;
+    content:"O";
+    font-size: 16px;
     color: transparent;
 
     display: -webkit-box;
@@ -559,9 +435,7 @@ a, a:hover, a:focus {
     min-width: 160px;
     height: 50px;
     background-color: #ff9d41;
-    border-radius: 25px;
 
-    font-family: Poppins-Regular;
     font-size: 16px;
     color: #fff;
     line-height: 1.2;
@@ -606,7 +480,6 @@ a, a:hover, a:focus {
 
 
   /*---- Alert validate ----*/
-
   .validate-input {
     position: relative;
   }
@@ -628,7 +501,6 @@ a, a:hover, a:focus {
     right: 2px;
     pointer-events: none;
 
-    font-family: Poppins-Medium;
     color: #c80000;
     font-size: 13px;
     line-height: 1.4;
@@ -644,8 +516,7 @@ a, a:hover, a:focus {
   }
 
   .alert-validate::after {
-    content: "\f06a";
-    font-family: FontAwesome;
+    content: "!";
     display: block;
     position: absolute;
     color: #c80000;
@@ -672,19 +543,313 @@ a, a:hover, a:focus {
   }
 
   .noaccount {
-    font-family: Poppins-Regular;
     font-size: 15px;
     color: #999999;
     line-height: 1.5;
   }
 
   .tosignup {
-    font-family: Poppins-Regular;
     font-size: 15px;
     color:rgb(255, 130, 58);
     line-height: 1.5;
   }
 
 
+/* --------------------------------------------
+    register.blade.php custom style
+---------------------------------------------*/
+
+.container-register {
+    width: 100%;
+    min-height: 100vh;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background:url('./images/userregister.jpg');
+}
+
+.wrap-register {
+    width: 600px;
+    background: #fff;
+    overflow: hidden;
+    position: relative;
+}
+
+  /*---- Title ----*/
+.register-form-title {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+
+    background-image: url(./images/userregister.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
+    padding: 70px 15px 74px 15px;
+}
+
+.register-form-title-1 {
+    font-size: 30px;
+    color: #fff;
+    text-transform: uppercase;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.register-form-title::before {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(54,84,99,0.7);
+  }
+
+ /*---- Form ----*/
+.register-form {
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding:30px 88px 20px 190px;
+}
+
+input.register {
+    height: 45px;
+}
+
+  /*----Register Button ----*/
+.container-register-form-btn {
+    width: 60%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .register-form-btn {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    min-width: 160px;
+    height: 50px;
+    background-color: #ff9d41;
+
+    font-size: 16px;
+    color: #fff;
+    line-height: 1.2;
+
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+.register-form-btn:hover {
+    background-color: #333333;
+}
+
+#termslink{
+    color:rgb(255, 179, 58);
+    line-height: 1.5;
+}
+
+@media (max-width: 576px) {
+    .register-form {
+        padding: 30px 15px 20px 117px;
+    }
+
+    .container-register-form-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-form {
+      padding: 30px 15px 20px 15px;
+    }
+
+    .container-register-form-btn {
+        width: 100%;
+    }
+}
+
+/* ---------------------------------------------------
+    faq.blade.php custom style
+----------------------------------------------------- */
+
+header.faq-masthead {
+    margin-bottom: 10px;
+    background: no-repeat center center;
+    background-color: #ff822e;
+    background-attachment: scroll;
+    position: relative;
+    background-size: cover;
+    padding: 80px 0;
+    color: white;
+    text-align: center;
+
+}
+
+header.faq-masthead h1 {
+    font-size: 48px;
+    margin-top: 0;
+}
+
+@media only screen and (max-width: 768px) {
+    header.faq-masthead h1 {
+      font-size: 24px;
+    }
+}
+
+.faq-part{
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.faq-question{
+    color:#ff9d41;
+}
+
+.faq-answer{
+    text-align: justify;
+}
+
+/* ---------------------------------------------------
+    admin dashboard custom style
+----------------------------------------------------- */
+
+#wrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  #wrapper #content-wrapper {
+    overflow-x: hidden;
+    width: 100%;
+    padding-top: 1rem;
+    padding-bottom: 80px;
+  }
+
+  @media(max-width: 768px){
+  #adminid{
+      display: none;
+  }
+
+  #profilepic{
+      width: 30px;
+      height: 30px;
+      margin:5px;
+  }
+
+}
+
+  .smaller {
+    font-size: 0.7rem;
+  }
+
+  .sidebar {
+    width: 90px !important;
+    background-color: #fcfcfc;
+    min-height: calc(100vh - 80px);
+  }
+
+  .sidebar .nav-item{
+      height: 50px;
+  }
+
+  .sidebar .nav-item .nav-link {
+    text-align: center;
+    padding: 0.75rem 1rem;
+    width: 90px;
+    color:#343a40;
+    border:none !important;
+  }
+
+  .sidebar .nav-item .nav-link span {
+    font-size: 0.65rem;
+    display: block;
+  }
+
+  .sidebar .nav-item .nav-link {
+    color: grey;
+  }
+
+  .sidebar .nav-item .nav-link:active,
+  .sidebar .nav-item .nav-link:focus,
+  .sidebar .nav-item .nav-link:hover {
+    background-color: #ffd0a0;
+    border:none !important;
+    color:#343a40 !important;
+  }
+
+  .sidebar .nav-item .nav-link.active{
+      background-color: #ffb970;
+      color:black;
+  }
+
+  @media (min-width: 768px) {
+    .sidebar {
+      width: 200px !important;
+    }
+    .sidebar .nav-item .nav-link {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 0.5rem 1rem;
+      width: 200px;
+    }
+    .sidebar .nav-item .nav-link span {
+      font-size: 1rem;
+      display: inline;
+    }
+  }
+
+  .card-body-icon {
+    position: absolute;
+    z-index: 0;
+    top: -1.25rem;
+    right: 0.5rem;
+    opacity: 0.4;
+    font-size: 5rem;
+    -webkit-transform: rotate(15deg);
+    transform: rotate(15deg);
+  }
+
+  @media (max-width: 768px) {
+    .download{
+        display:none;
+    }
+  }
 
 

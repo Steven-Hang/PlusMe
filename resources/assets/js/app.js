@@ -16,32 +16,28 @@ import 'vuesax/dist/vuesax.css' //Vuesax styles
 Vue.use(Vuesax)
 import Vue from 'vue'
 
-import * as VueGoogleMaps from 'vue2-google-maps'
- 
-Vue.use(VueGoogleMaps, {
-  load: {
-    key: 'AIzaSyDQMzhiINq0pfDHofIycq6m_V2dRFULbPc',
-    libraries: 'places', // This is required if you use the Autocomplete plugin
-    // OR: libraries: 'places,drawing'
-    // OR: libraries: 'places,drawing,visualization'
-    // (as you require)
- 
-    //// If you want to set the version, you can do so:
-    // v: '3.26',
-  },
- 
-  //// If you intend to programmatically custom event listener code
-  //// (e.g. `this.$refs.gmap.$on('zoom_changed', someFunc)`)
-  //// instead of going through Vue templates (e.g. `<GmapMap @zoom_changed="someFunc">`)
-  //// you might need to turn this on.
-  // autobindAllEvents: false,
- 
-  //// If you want to manually install components, e.g.
-  //// import {GmapMarker} from 'vue2-google-maps/src/components/marker'
-  //// Vue.component('GmapMarker', GmapMarker)
-  //// then disable the following:
-  // installComponents: true,
-})
+
+// entirely import
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+Vue.use(ElementUI)
+
+import { DataTables, DataTablesServer } from 'vue-data-tables'
+Vue.use(DataTables)
+Vue.use(DataTablesServer)
+
+import VueDataTables from 'vue-data-tables'
+Vue.use(VueDataTables)
+
+// set language to EN
+import lang from 'element-ui/lib/locale/lang/en'
+import locale from 'element-ui/lib/locale'
+
+locale.use(lang)
+
+import Datatable from 'vue2-datatable-component'
+
+Vue.use(Datatable)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -54,8 +50,9 @@ Vue.component('card-component', require('./components/partials/cardHomeComponent
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('loading-component', require('./components/partials/LoadingComponent.vue'));
 Vue.component('sidebar-component', require('./components/partials/SidebarComponent.vue'));
-Vue.component('map-component', require('./components/BookingLocation/BookingMapComponent.vue'));
-Vue.component('location-search-component', require('./components/BookingLocation/PlaceSearchComponent.vue'));
+Vue.component('map-component', require('./components/MessageInbox/InboxComponent.vue').default);
+Vue.component('welcome-button', require('./components/partials/WelcomeButton.vue'));
+Vue.component('datatable-componenet', require('./components/partials/DatatableComponent.vue'));
 
 const app = new Vue({
     el: '#app'

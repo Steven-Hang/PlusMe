@@ -1,194 +1,255 @@
-@extends('layouts.app')
+@include('layouts.partials.head')
+<style>
 
-@section('content')
-    <div class="container-fluid" >
-      <div class="row">
-        <nav class="col-md-2 bg-light sidebar">
-          <div class="sidebar-sticky">
-            <ul class="nav flex-column" style="align-items: flex-start">
-                <div class="account" style="position: inherit;height:120px;padding:15px;margin-bottom:5px;border-bottom: 1px solid rgb(222,226,230);">
-                    <img class="rounded-circle" src="./css/images/profileimg.png" width="50px" height="50px">
-                    <div id="adminid" style="margin-top:15px;margin-bottom:8px;"><h6>admin001@plusme.com</h6></div>
-                </div>
-              <li class="nav-item active">
-                <a class="nav-link " href="#">
-                    <span><img src="./css/icons/table.png" width="24px"></span>
-                  Dashboard <span class="sr-only">(current)</span>
-                </a>
-              </li>
-                <li class="nav-item">
-                    <a class="nav-link" >
-                        <img src="./css/icons/car.png" width="24px" href="{{ route('policy') }}">
-                        Vehicles
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link" href="#">
-                        <span><img src="./css/icons/users.png" width="24px"></span>
-                        Users
-                    </a>
-                </li>
+#wrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
 
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <span><img src="./css/icons/carpark.png" width="24px"></span>
-                        Parking lot
-                    </a>
-                </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <span><img src="./css/icons/notification.png" width="24px"></span>
-                    Notifications
-                </a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">
-                    <span><img src="./css/icons/profile.png" width="24px"></span>
-                  My Profile
-                </a>
-              </li>
-            </ul>
-          </div>
-        </nav>
+#wrapper #content-wrapper {
+  overflow-x: hidden;
+  width: 100%;
+  padding-top: 1rem;
+  padding-bottom: 30px;
+}
 
-        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom border-dark">
-                <h1 class="h1">Dashboard</h1>
-                <div class="input-group col-md-6 mb-3">
-                    <input type="text" class="form-control" placeholder="Search" aria-label="search" aria-describedby="basic-addon2">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button">Search</button>
-                    </div>
+@media(max-width: 768px){
+
+#adminid{
+    display: none;
+}
+
+#profilepic{
+    width: 30px;
+    height: 30px;
+    margin:5px;
+}
+
+}
+
+.smaller {
+  font-size: 0.7rem;
+}
+
+.o-hidden {
+  overflow: hidden !important;
+}
+
+.z-1 {
+  z-index: 1;
+}
+
+.sidebar {
+  width: 90px !important;
+  background-color: #fcfcfc;
+  min-height: calc(100vh - 80px);
+}
+
+.sidebar .nav-item{
+    height: 50px;
+}
+
+.sidebar .nav-item .nav-link {
+  text-align: center;
+  padding: 0.75rem 1rem;
+  width: 90px;
+  color:#343a40;
+  border:none !important;
+}
+
+.sidebar .nav-item .nav-link span {
+  font-size: 0.65rem;
+  display: block;
+}
+
+.sidebar .nav-item .nav-link {
+  color: grey;
+}
+
+.sidebar .nav-item .nav-link:active,
+.sidebar .nav-item .nav-link:focus,
+.sidebar .nav-item .nav-link:hover {
+  background-color: #ffd0a0;
+  border:none !important;
+  color:#343a40 !important;
+}
+
+.sidebar .nav-item .nav-link.active{
+    background-color: #ffb970;
+    color:black;
+}
+
+@media (min-width: 768px) {
+
+.container{
+    padding-top: 5%;
+    padding-left: 8%;
+}
+  .sidebar {
+    width: 200px !important;
+  }
+  .sidebar .nav-item .nav-link {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 0.5rem 1rem;
+    width: 200px;
+  }
+  .sidebar .nav-item .nav-link span {
+    font-size: 1rem;
+    display: inline;
+  }
+}
+
+.card-body-icon {
+  position: absolute;
+  z-index: 0;
+  top: -1.25rem;
+  right: 0.5rem;
+  opacity: 0.4;
+  font-size: 5rem;
+  -webkit-transform: rotate(15deg);
+  transform: rotate(15deg);
+}
+
+</style>
+<body id="page-top">
+    @include('layouts.partials.nav')
+    <div id="wrapper">
+
+      <!-- Sidebar -->
+      <ul class="sidebar navbar-nav navbar-light bg-white">
+        <li style="border-bottom: 1px solid rgb(222,226,230);">
+            <img class="rounded-circle mt-2" id="profilepic" src="./css/images/profileimg.png" width="50px" height="50px">
+            <div id="adminid" class="my-3"><h6>admin001@plusme.com</h6></div>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active" href="{{ route('admindashboard') }}">
+            <span><img src="./css/icons/table.png" width="24px"></span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item ">
+          <a class="nav-link" href="{{ route('abookings') }}">
+            <span><img src="./css/icons/bookings.png" width="24px"></span>
+            <span>Bookings</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('ausers') }}">
+            <span><img src="./css/icons/users.png" width="24px"></span>
+            <span>Users</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{{ route('avehicles') }}">
+                <span><img src="./css/icons/car.png" width="24px"></span>
+            <span>Vehicles</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('aparkinglot') }}">
+                <span><img src="./css/icons/carpark.png" width="24px"></span>
+                <span>Parking lots</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('anotifications') }}">
+                <span><img src="./css/icons/notification.png" width="24px"></span>
+                <span>Notifications</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('adminprofile') }}">
+                <span><img src="./css/icons/profile.png" width="24px"></span>
+                <span>My Profile</span>
+            </a>
+        </li>
+      </ul>
+
+      <div id="content-wrapper">
+        <div class="container">
+          <!-- Icon Cards-->
+          <div class="row">
+            <div class="col-xl-4 col-sm-6 mb-4">
+              <div class="card text-dark bg-warning o-hidden h-100">
+                <div class="card-body">
+                  <div class="card-body-icon">
+                        <img src="./css/icons/bookings.png" width="80px">
+                   <!--toLearn <i class="fas fa-fw fa-comments"></i>-->
+                  </div>
+                  <div class="mr-5">20 new Bookings</div>
                 </div>
-                <div class="btn-toolbar" style="margin-bottom: 16px;">
-                    <div class="btn-group mr-2">
-                        <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="./css/icons/download.png" width="24px"></button>
-                        <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="./css/icons/print.png" width="24px"></button>
-                    </div>
-                </div>
+                <a class="card-footer text-dark clearfix small z-1" href="{{ route('abookings') }}">
+                  <span class="float-left">View Details</span>
+                  <span class="float-right">
+                        <img src="./css/icons/angle-right.svg" width="20px">
+                  </span>
+                </a>
+              </div>
             </div>
-            <div class="table-responsive" style="background-color:white;opacity:0.98;">
-            <table class="table table-sm">
-              <thead>
-                <tr>
-                  <th>Booking ID</th>
-                  <th>User ID</th>
-                  <th>Car ID</th>
-                  <th>Booking time</th>
-                  <th>Return time</th>
-                  <th>Confirm return</th>
-                  <th>Cancel booking</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>0000002</td>
-                  <td>u000002</td>
-                  <td>suv000002</td>
-                  <td>20:00 24/08/2020</td>
-                  <td>N/A</td>
-                  <td><button class="btn btn-sm btn-outline-danger">Confirm</button></td>
-                  <td><button class="btn btn-sm btn-light"><img src="./css/icons/cancel.png" width="20px"></button></td>
-                </tr>
-                <tr>
-                    <td>0000001</td>
-                    <td>u000001</td>
-                    <td>suv000002</td>
-                    <td>19:00 20/08/2020</td>
-                    <td>14:00 25/08/2020</td>
-                    <td>Returned</td>
-                    <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-            <div id="pageno" style="margin:15px;">
-                <span>1</span> of  <span>1</span>
+            <div class="col-xl-4 col-sm-6 mb-4">
+              <div class="card text-dark bg-success o-hidden h-100">
+                <div class="card-body">
+                  <div class="card-body-icon">
+                        <img src="./css/icons/users.png" width="80px">
+                  </div>
+                  <div class="mr-5">11 New Users!</div>
+                </div>
+                <a class="card-footer text-dark clearfix small z-1" href="{{ route('ausers') }}">
+                  <span class="float-left">View Details</span>
+                  <span class="float-right">
+                        <img src="./css/icons/angle-right.svg" width="20px">
+                  </span>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-xl-4 col-sm-6 mb-3">
+              <div class="card text-dark bg-info o-hidden h-100">
+                <div class="card-body">
+                  <div class="card-body-icon">
+                        <img src="./css/icons/car.png" width="80px">
+                  </div>
+                  <div class="mr-5">Vehicles</div>
+                </div>
+                <a class="card-footer text-dark clearfix small z-1" href="{{ route('avehicles') }}">
+                  <span class="float-left">View Details</span>
+                  <span class="float-right">
+                        <img src="./css/icons/angle-right.svg" width="20px">
+                  </span>
+                </a>
+              </div>
+            </div>
+            <div class="col-xl-4 col-sm-6 mb-3">
+              <div class="card text-dark bg-light o-hidden h-100">
+                <div class="card-body">
+                  <div class="card-body-icon">
+                        <img src="./css/icons/carpark.png" width="80px">
+                  </div>
+                  <div class="mr-5">Parking lot</div>
+                </div>
+                <a class="card-footer text-dark clearfix small z-1" href="{{ route('aparkinglot') }}">
+                  <span class="float-left">View Details</span>
+                  <span class="float-right">
+                        <img src="./css/icons/angle-right.svg" width="20px">
+                  </span>
+                </a>
+              </div>
             </div>
           </div>
 
-        </main>
+
+        </div>
+        <!-- /.container-fluid -->
+
       </div>
+      <!-- /.content-wrapper -->
+
     </div>
-</div>
-@endsection
+    <!-- /#wrapper -->
+
+
+  </body>
+
+</html>
