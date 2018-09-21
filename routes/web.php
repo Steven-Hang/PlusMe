@@ -11,7 +11,8 @@
 |
 */
 use App\Location;
-
+use App\Events\SendLocation;
+use Illuminate\Http\Request;
 Route::post('/nearest-shops', function () {
    $center=request('center');
 
@@ -21,10 +22,18 @@ Route::post('/nearest-shops', function () {
    return response(request()->all());
 });
 
+Route::post('/map', function(Request $request){
+    $lat = $request->input('lat');
+    $lng = $request->input('lng');
 
+    $location = ["lat" => $lat, "lng" => $lng];
 
+    event(new SendLocation($location));
 
-Route::get('/map', 'MapController@index');
+    return response()->json(['status' => 'success', 'data' => $location]);
+
+});
+
 
 //function Route to customise The Look of the Dashboard page google map API
 Route::get('/home', 'HomeController@index');
