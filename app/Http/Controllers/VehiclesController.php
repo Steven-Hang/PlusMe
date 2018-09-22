@@ -17,7 +17,7 @@ class VehiclesController extends Controller
     {
         //
         $vehicles = Vehicles::latest()->paginate(5);
-        return view('vehicles.index', compact('vehicles'))->with('i',(request()->input('page',1) -1) *5);
+        return view('admin.vehicles', compact('vehicles'))->with('i',(request()->input('page',1) -1) *5);
     }
 
     /**

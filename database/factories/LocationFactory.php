@@ -9,7 +9,7 @@ $factory->define(App\Location::class, function (Faker $faker) {
        'state'=>$faker->state,
        'zip'=>$faker->postcode,
        'address'=>$faker->address,
-       'lat'=>$faker->latitude(19.5,64.5),
-       'lng' => $faker->longitude(-161.75583, -68.01197)
+       'lat'=>$faker->latitude(-37.814,-37.915047),
+       'lng' => $faker->longitude(144.96332,145.129272)
     ];
 });

@@ -68,138 +68,44 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive" style="background-color:white;opacity:0.98;">
-            <table class="table table-sm">
-              <thead>
-                <tr>
-                  <th>User ID</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Driver licence</th>
-                  <th>DOB</th>
-                  <th>Phone number</th>
-                  <th>Status</th>
-                  <th>Delete</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>0000002</td>
-                  <td>Tony Barrett</td>
-                  <td>tsjkakk@gmail.com</td>
-                  <td>1234567890</td>
-                  <td>18/08/1987</td>
-                  <td>0412312345</td>
-                  <td>Active</td>
-                  <td><button class="btn btn-sm btn-light"><img src="./css/icons/cancel.png" width="20px"></button></td>
-                </tr>
-                <tr>
-                    <td>0000001</td>
-                    <td>John Ajlsd</td>
-                    <td>asdjkhl@gmail.com</td>
-                    <td>0987654321</td>
-                    <td>19/08/1990</td>
-                    <td>0532154321</td>
-                    <td>Active</td>
-                    <td><button class="btn btn-sm btn-light"><img src="./css/icons/cancel.png" width="20px"></button></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>N/A</td>
-                    <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-            <div id="pageno" style="margin:15px;">
-                <span>1</span> of  <span>1</span>
-            </div>
-          </div>
-
+            <table class="table table-striped">
+    <thead>
+    {{ $users->links() }}
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>DOB</th>
+        <th>Cpntact Number</th>
+        <th>Email</th>
+        <th>Licence Number</th>
+        <th colspan="2">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      @foreach($users as $user)
+    <tr>
+        <td>{{$user['id']}}</td>
+        <td>{{$user['first_name']}}</td>
+        <td>{{$user['last_name']}}</td>
+        <td>{{$user['date_of_birth']}}</td>
+        <td>{{$user['contact_number']}}</td>
+        <td>{{$user['email']}}</td>
+        <td>{{$user['licence_number']}}</td>
+        
+        <td><a href="{{action('UserController@edit', $user['id'])}}" class="btn btn-warning">Edit</a></td>
+        <td>
+          <form action="{{action('UserController@destroy', $user['id'])}}" method="post">
+            @csrf
+            <input name="_method" type="hidden" value="DELETE">
+            <button class="btn btn-danger" type="submit">Delete</button>
+          </form>
+        </td>
+      </tr>
+      @endforeach
+    </tbody>
+  </table>
         </main>
 
     </div>

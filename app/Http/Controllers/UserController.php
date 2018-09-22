@@ -8,6 +8,26 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
+
+    //Show All Users 
+    public function index()
+    {
+        $users = User::paginate(15);;
+        return view('admin.users', compact('users'));
+    }
+    //Edit 
+    public function edit()
+    {
+        $users = User::all();
+        return view('admin.users', compact('users'));
+    }
+    public function update()
+    {
+        $users = User::all();
+        return view('admin.users', compact('users'));
+    }
+
+
     public function __construct()
     {
         $this->middleware('auth');

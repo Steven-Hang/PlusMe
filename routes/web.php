@@ -11,29 +11,15 @@
 |
 */
 use App\Location;
-use App\Events\SendLocation;
-use Illuminate\Http\Request;
+
 Route::post('/nearest-shops', function () {
    $center=request('center');
 
-    // Search the rows in the markers table
+// Search the rows in the markers table
     $nearestShops=Location::selectRaw("SELECT id, ( 3959 * acos( cos( radians(37) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(-122) ) + sin( radians(37) ) * sin( radians( lat ) ) ) ) AS distance")
         ->where('distance','<',25)->orderBy('distance');
    return response(request()->all());
 });
-
-Route::post('/map', function(Request $request){
-    $lat = $request->input('lat');
-    $lng = $request->input('lng');
-
-    $location = ["lat" => $lat, "lng" => $lng];
-
-    event(new SendLocation($location));
-
-    return response()->json(['status' => 'success', 'data' => $location]);
-
-});
-
 
 //function Route to customise The Look of the Dashboard page google map API
 Route::get('/home', 'HomeController@index');
@@ -48,7 +34,6 @@ Route::get('/user/activate/{token}', 'Auth\RegisterController@activateUser');
 Auth::routes();
 
 Route::get('calc', 'BookingController@showPriceBasedOnHours');
-
 
 //Page Routes
 Route::get('/user/{id}', 'UserController@show')->name('user.show');
@@ -85,16 +70,16 @@ Route::resource('vehicles','VehiclesController');
 Route::get('404',['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']);
 Route::get('403',['as' => 'forbidden', 'uses' => 'PagesController@forbidden']);
 
-
 //test use only will delete later
 Route::get('admindashboard','PagesController@admindashboard')->name('admindashboard');
 Route::get('abooking','PagesController@bookings')->name('abookings');
-Route::get('avehicles','PagesController@vehicles')->name('avehicles');
-Route::get('ausers','PagesController@users')->name('ausers');
-Route::get('aparkinglot','PagesController@parkinglot')->name('aparkinglot');
+Route::get('avehicles','VehiclesController@index')->name('avehicles');
+Route::get('ausers','UserController@index')->name('ausers');
+Route::get('aparkinglot','LocationsController@index')->name('aparkinglot');
 Route::get('anotifications','PagesController@notification')->name('anotifications');
 Route::get('adminprofile','PagesController@adminprofile')->name('adminprofile');
 
+Route::resource('users','UserController');
 
 /* Private Message urls */
 Route::post('get-message-notifications', 'MessageController@getUserMessagesNotifications');

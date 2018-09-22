@@ -82,6 +82,23 @@
                 </tr>
               </thead>
               <tbody>
+              @foreach($vehicles as $vehicle)
+                <tr>
+                  <td>{{$vehicle['id']}}</td>
+                  <td>{{$vehicle['name_of_car']}}</td>
+                  <td>{{$vehicle['type']}}</td>
+                  <td>{{$vehicle['no_of_seats']}}</td>
+                  <td>{{$vehicle['isAvailable']}}</td>
+                  <td><a href="" class="btn btn-warning">Edit</a></td>
+                  <td>
+                    <form action="" method="post">
+                      @csrf
+                      <input name="_method" type="hidden" value="DELETE">
+                      <button class="btn btn-sm btn-light" type="submit">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                @endforeach
                 <tr>
                   <td>suv0000001</td>
                   <td>SUV</td>
@@ -100,87 +117,7 @@
                     <td>Returned</td>
                     <td><button class="btn btn-sm btn-light"><img src="./css/icons/cancel.png" width="20px"></button></td>
                 </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>N/A</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                </tr>
+                
               </tbody>
             </table>
             <div id="pageno" style="margin:15px;">

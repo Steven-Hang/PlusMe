@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::post('/map', function(Request $request){
+    
     $lat = $request->input('lat');
     $lng = $request->input('lng');
 

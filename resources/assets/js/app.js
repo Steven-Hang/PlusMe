@@ -22,12 +22,9 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 
-import { DataTables, DataTablesServer } from 'vue-data-tables'
-Vue.use(DataTables)
-Vue.use(DataTablesServer)
+import Datatable from 'vue2-datatable-component'
+Vue.use(Datatable)
 
-import VueDataTables from 'vue-data-tables'
-Vue.use(VueDataTables)
 
 // set language to EN
 import lang from 'element-ui/lib/locale/lang/en'
@@ -35,9 +32,7 @@ import locale from 'element-ui/lib/locale'
 
 locale.use(lang)
 
-import Datatable from 'vue2-datatable-component'
 
-Vue.use(Datatable)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -50,7 +45,6 @@ Vue.component('card-component', require('./components/partials/cardHomeComponent
 Vue.component('example-component', require('./components/ExampleComponent.vue'));
 Vue.component('loading-component', require('./components/partials/LoadingComponent.vue'));
 Vue.component('sidebar-component', require('./components/partials/SidebarComponent.vue'));
-
 Vue.component('welcome-button', require('./components/partials/WelcomeButton.vue'));
 Vue.component('datatable-componenet', require('./components/partials/DatatableComponent.vue'));
 

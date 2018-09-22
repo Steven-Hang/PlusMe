@@ -56,77 +56,47 @@
         zoom: 15
         });
 
-            var directionsService = new google.maps.DirectionsService;
-            var directionsDisplay = new google.maps.DirectionsRenderer;
+        var directionsService = new google.maps.DirectionsService;
+        var directionsDisplay = new google.maps.DirectionsRenderer;
 
+        infoWindow = new google.maps.InfoWindow;
+       
+        //Creates Markers to be added from database
+        for(var i = 0; i < markers.length; i++){
+        marks[i] = addMarkerToMap(markers[i]);
+
+        }//END INIT MAP
+
+        function addMarkerToMap(marker){
+         
         var contentString = 
             '<h1 id="firstHeading" class="firstHeading">Select Car Type</h1>'+
             '<p><b>Select Car Type</b>'+ '<br>'+
             '<a href="Car Type 1">CAR TYPE ONE</a>'+'<br>'+
             '<a href="Car Type 2">CAR TYPE TWO</a>'+'<br>'+
             '</p>';
-        
-            for(var i = 0; i < markers.length; i++){
-            marks[i] = addMarkerToMap(markers[i]);
-        }
-
-        function addMarkerToMap(marker){
-
+         
         var location = new google.maps.LatLng(marker.lat,marker.lng);
 
-        marker = new google.maps.Marker({
+        var marker = new google.maps.Marker({
             position: location,
             map: map,
             });
-        }
+
+        var infoWindow = new google.maps.InfoWindow;
+        
+        google.maps.event.addListener(marker, 'click', function(){
+            infoWindow.setContent(contentString);
+            infoWindow.open(map, marker);
+        });
+        
+        return marker;
+        
+        }//END addMarkerToMapFu
+
 
         var myLatLng = {lat: -37.809277, lng: 144.960712};
-        
-        for (i = 0; i < markers.length; i++) {
-                var position = new google.maps.LatLng(markers[i][1], markers[i][2]);
-                
-                marker = new google.maps.Marker({
-                    position: position,
-                    map: map,
-                    title: markers[i][0]
-                });
 
-                google.maps.event.addListener(marker, 'click', (function(marker, i) {
-                    return function() {
-                        infoWindow.setContent(infoWindowContent[i][0]);
-                        infoWindow.open(map, marker);
-                        latit = marker.getPosition().lat();
-                        longit = marker.getPosition().lng();
-                        // console.log("lat: " + latit);
-                        // console.log("lng: " + longit);
-                    }
-                })(marker, i));
-
-                marker.addListener('click', function() {
-                    directionsService.route({
-                        // origin: document.getElementById('start').value,
-                        origin: myLatLng,
-                        // destination: marker.getPosition(),
-                        destination: {
-                            lat: latit,
-                            lng: longit
-                        },
-                        travelMode: 'DRIVING'
-                    }, function(response, status) {
-                        if (status === 'OK') {
-                            directionsDisplay.setDirections(response);
-                        } else {
-                            window.alert('Directions request failed due to ' + status);
-                        }
-                    });
-                  });
-
-              }
-                
-
-        var infowindow = new google.maps.InfoWindow({
-          content: contentString
-        });
         var marker = new google.maps.Marker({
           position: myLatLng,
           map: map,
@@ -138,7 +108,11 @@
         infowindow.open(map, marker);
         });
 
-        infoWindow = new google.maps.InfoWindow;
+        var userLocation = new google.maps.Marker({
+          
+         
+          title: 'Location Here!'
+        });
 
         // Try HTML5 geolocation.
         if (navigator.geolocation) {
@@ -149,7 +123,7 @@
             };
 
             infoWindow.setPosition(pos);
-            infoWindow.setContent('Location found.');
+            infoWindow.setContent(userLocation);
             infoWindow.open(map);
             map.setCenter(pos);
           }, function() {

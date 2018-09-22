@@ -72,105 +72,38 @@
             <table class="table table-sm">
               <thead>
                 <tr>
-                  <th>Parking lot ID</th>
-                  <th>Suburb</th>
+                  {{ $locations->links() }}   
+                  <th>ID</th>
+                  <th>Description</th>
                   <th>Address</th>
-                  <th>Num of cars</th>
-                  <th>Delete</th>
+                  <th>City</th>
+                  <th>State</th>
+                  <th>Postcode</th>
                 </tr>
               </thead>
               <tbody>
+                @foreach($locations as $location)
                 <tr>
-                  <td>0000002</td>
-                  <td>Richmond</td>
-                  <td>415 Church St, Richmond VIC 3121</td>
-                  <td>3</td>
-                  <td><button class="btn btn-sm btn-light"><img src="./css/icons/cancel.png" width="20px"></button></td>
-                </tr>
-                <tr>
-                    <td>0000001</td>
-                    <td>Oakleigh</td>
-                    <td>148 Drummond St, Oakleigh VIC 3166</td>
-                    <td>4</td>
-                    <td><button class="btn btn-sm btn-light"><img src="./css/icons/cancel.png" width="20px"></button></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>N/A</td>
-                    <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td>N/A</td>
-                  <td></td>
-                </tr>
+                    <td>{{$location->id}}</td>
+                    <td>{{$location->description}}</td>
+                    <td>{{$location->address}}</td>
+                    <td>{{$location->city}}</td>
+                    <td>{{$location->state}}</td>
+                    <td>{{$location->zip}}</td>
+
+                    <td><a href="" class="btn btn-warning">Edit</a></td>
+                    <td>
+                      <form action="" method="post">
+                        @csrf
+                        <input name="_method" type="hidden" value="DELETE">
+                        <button class="btn btn-danger" type="submit">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                  @endforeach
               </tbody>
             </table>
-
-            <ul class="pagination justify-content-center">
-                <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">Previous</a>
-                </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
-                <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
-                </li>
-            </ul>
+        
       </div>
       <!-- table -->
 
