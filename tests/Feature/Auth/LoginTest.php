@@ -89,6 +89,19 @@ class LoginTest extends TestCase
         $this->assertAuthenticatedAs($user);    //  Asserting if the user is Authenticated
     }
 
+    public function test_User_Cannot_Login_With_Email_That_Does_Not_Exist()
+    {
+        $response = $this->from('login')->post('login', [   //  Using email and password that doesnt exist
+            'email' => 'nobody@example.com',
+            'password' => 'invalid-password',
+        ]);
+        $response->assertRedirect('login');    //  redirecting back the user to login
+        $response->assertSessionHasErrors('email'); //  Asserting there's an error in the seesion
+        $this->assertTrue(session()->hasOldInput('email')); //  Asserting email field has old input
+        $this->assertFalse(session()->hasOldInput('password')); //  Asserting password field doesn't have old input
+        $this->assertGuest();   //  Asserting user is still a guest
+    }
+
     public function test_User_Can_Logout()
     {
         $this->be(factory(User::class)->create());  // Creates a user and inserts him into the database and uses it as already logged on
