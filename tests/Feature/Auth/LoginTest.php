@@ -95,7 +95,7 @@ class LoginTest extends TestCase
             'email' => 'nobody@example.com',
             'password' => 'invalid-password',
         ]);
-        $response->assertRedirect('login');    //  redirecting back the user to login
+        $response->assertRedirect('/login');    //  redirecting back the user to login
         $response->assertSessionHasErrors('email'); //  Asserting there's an error in the seesion
         $this->assertTrue(session()->hasOldInput('email')); //  Asserting email field has old input
         $this->assertFalse(session()->hasOldInput('password')); //  Asserting password field doesn't have old input
