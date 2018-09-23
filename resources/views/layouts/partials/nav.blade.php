@@ -23,7 +23,12 @@
                     <a class="nav-link mx-2" href="{{ route('register') }}">Register</a>
                 </li>
                 @else
-        
+              
+                <li class="nav-item" >
+                    <a class="nav-link mx-2" href="/messages">
+                        Messages @include('messenger.unread-count')
+                    </a>
+                </li>
                 <!-- First Name of the user -->
                 <li class="nav-item">
                     <a class="nav-link mx-2" href="/home" >
