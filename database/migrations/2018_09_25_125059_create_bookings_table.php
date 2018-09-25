@@ -15,11 +15,17 @@ class CreateBookingsTable extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->increments('id');
-            $table->datetime('start_date');
-            $table->datetime('end_date');
-            $table->integer('days');
-            $table->integer('cost');
+            $table->date('start_date');
+            $table->date('end_date');
+            $table->double('price');
+            $table->boolean('is_Active')->default(false);
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('location_id');
             $table->timestamps();
+
+
+            $table->index('user_id');
+            $table->index('location_id');
         });
     }
 

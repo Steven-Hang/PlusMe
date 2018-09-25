@@ -8,7 +8,6 @@
         <textarea name="message" class="form-control">{{ old('message') }}</textarea>
     </div>
 
-
     <!-- Submit Form Input -->
     <div class="form-group">
         <button type="submit" class="btn btn-primary form-control">Submit</button>

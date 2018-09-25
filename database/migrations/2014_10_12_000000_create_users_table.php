@@ -26,6 +26,8 @@ class CreateUsersTable extends Migration
             $table->string('avatar')->default('user.jpg');
             $table->boolean('is_activated')->default(false);
             $table->boolean('is_admin')->default(false);
+            $table->boolean('is_Warning')->default(false);
+            $table->boolean('is_Banned')->default(false);
             $table->rememberToken();
             $table->timestamps();
         });
