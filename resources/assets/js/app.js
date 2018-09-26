@@ -22,9 +22,6 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 Vue.use(ElementUI)
 
-import Datatable from 'vue2-datatable-component'
-Vue.use(Datatable)
-
 
 // set language to EN
 import lang from 'element-ui/lib/locale/lang/en'
@@ -46,7 +43,6 @@ Vue.component('example-component', require('./components/ExampleComponent.vue'))
 Vue.component('loading-component', require('./components/partials/LoadingComponent.vue'));
 Vue.component('sidebar-component', require('./components/partials/SidebarComponent.vue'));
 Vue.component('welcome-button', require('./components/partials/WelcomeButton.vue'));
-Vue.component('datatable-componenet', require('./components/partials/DatatableComponent.vue'));
 
 const app = new Vue({
     el: '#app'
