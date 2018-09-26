@@ -15,5 +15,5 @@ $factory->define(App\User::class, function (Faker $faker) {
        'is_activated' => '1',
        'terms' => '1',
        'is_admin' => '0'
-    ];   
+    ];
 });
