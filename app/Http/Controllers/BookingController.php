@@ -22,11 +22,32 @@ class BookingController extends Controller
         public function view(){
 
             //show active booking
-            $activeBooking = Booking::where('is_Active','=','1');
+            $activeBooking = Booking::where('is_Active','=','1')->get();
             
-            $pastBookings = Booking::where('is_Active', '=', '0'); 
+            $pastBookings = Booking::where('is_Active','=','0')->get(); 
     
-            return view('')->with('activeBooking', $activeBooking)->with('pastBooking');
+            return view('user.uhistory')
+                    ->with('activeBooking', $activeBooking)
+                    ->with('pastBooking', $pastBookings);
+        }
+
+        public function store(Request $request){
+            $validator = Validator::make($request->all(), [
+                'start_date' => 'required',
+                'end_date' => 'required',
+                'price' =>' required'
+
+
+            ]);
+            
+            Booking::create([
+                'start_date' => $data['start_date'],
+                'end_date' => $data['end_date'],
+                'price' 
+            ]);
+
+
+
         }
     
 

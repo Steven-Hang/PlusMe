@@ -19,11 +19,7 @@
         mounted() {
             console.log('Component mounted.')
         },
-        created(){
-            Echo.channel('location')
-                .listen('SendPosition', (e) => {
-                console.log(e);
-    });
+       
         }
     }
 </script>

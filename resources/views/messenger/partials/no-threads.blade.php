@@ -1,1 +1,6 @@
-<p>Sorry, no threads.</p>
+
+
+
+
+
+<p>Sorry, No News Messages </p>

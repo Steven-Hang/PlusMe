@@ -49,18 +49,19 @@ sth {
 
 </style>
 @section('content')
-<div class="topnav">
 
+<div class="topnav">
         <div class="search-container">
+          <input id="pac-input" type="text" placeholder="Please enter a location....." name="search">
           <form action="/action_page.php">
-            <input id="pac-input" type="text" placeholder="Please enter a location....." name="search">
-            <input type="text" placeholder="Start Time....." name="Stime">
-            <input type="text" placeholder="End Time......" name="Etime">
+            Start Date: <input type="date" placeholder="Start Time....." name="Stime">
+            End Date:<input type="date" placeholder="End Time......" name="Etime">
         </div>
       </div>
    
 <div class='main-container'>
     <div class="row">
+    
         <div class="col-3">
             <div id="boarder">
                         <p style="color:black;">BOOKING ID:12345678</p>
@@ -79,7 +80,6 @@ sth {
                         <P>Car ID:3456782765</p>
                 </div>
         </div>
-        
         <div class="col-9">
             <!-- display the google map -->
             @include('layouts.partials.map')

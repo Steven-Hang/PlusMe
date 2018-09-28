@@ -23,7 +23,7 @@ class SendLocation implements ShouldBroadcast
 
     public function __construct($location)
     {
-        $this->location = $location;
+        $this->location=$location;
     }
 
     /**
