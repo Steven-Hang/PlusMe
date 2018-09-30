@@ -69,7 +69,7 @@ class LoginTest extends TestCase
     {
         $user = factory(User::class)->create([  // Creates a user and inserts him into the database with a new password and a Random id
             'id' => random_int(1, 100),
-            'password' => bcrypt($password = 'i-love-laravel'),
+            'password' => bcrypt($password = 'I-love-laravel'),
         ]);
         
         $response = $this->post('/login', [ //  Attempting to login with the newly created user with correct password and remember on
