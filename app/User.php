@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Cmgmyr\Messenger\Traits\Messagable;
-
+use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -40,5 +40,17 @@ class User extends Authenticatable
         return ReferralProgram::all()->map(function ($program) {
             return ReferralLink::getReferral($this, $program);
         });
+    }
+
+     /**
+     * Send the password reset notification.
+     * @note: This override Authenticatable methodology
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

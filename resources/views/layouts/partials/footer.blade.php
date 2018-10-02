@@ -9,10 +9,6 @@
                 </li>
                 <li class="list-inline-item">&sdot;</li>
                 <li class="list-inline-item">
-                    <a class="footer-link" href="policy">Payment&policy</a>
-                </li>
-                <li class="list-inline-item">&sdot;</li>
-                <li class="list-inline-item">
                     <a class="footer-link" href="{{ route('faq') }}">FAQ</a>
                 </li>
                 <li class="list-inline-item">&sdot;</li>
