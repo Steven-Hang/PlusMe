@@ -13,12 +13,11 @@
     </style>
   </head>
     <div id="map"></div>
-    <script>
-     
+<script>
       var map, infoWindow;
 
       function initMap() {
-
+            
             var markers= @json($locations);
             var marks = [];
 
@@ -64,14 +63,18 @@
         //Creates Markers to be added from database
         for(var i = 0; i < markers.length; i++){
         marks[i] = addMarkerToMap(markers[i]);
+        }
 
-        }//END INIT MAP
-
+        //Creates Location Markers 
         function addMarkerToMap(marker){
-         
+
+          var address = marker.address;
+          var state = marker.state;
+          var zip = marker.zip;
+
         var contentString = 
-            '<h1 id="firstHeading" class="firstHeading">Select Car Type</h1>'+
-            '<p><b>Select Car Type</b>'+ '<br>'+
+            '<h5 id="firstHeading" class="firstHeading">'+ address +'</h1>'+
+            '<p><b>' + state + '</b>'+ '<br>'+
             '<a href="Car Type 1">CAR TYPE ONE</a>'+'<br>'+
             '<a href="Car Type 2">CAR TYPE TWO</a>'+'<br>'+
             '</p>';
@@ -94,38 +97,49 @@
         
         }//END addMarkerToMapFu
 
-
         var myLatLng = {lat: -37.809277, lng: 144.960712};
-
+        
+        //Marker for Near RMIT 
         var marker = new google.maps.Marker({
           position: myLatLng,
           map: map,
           title: 'Location Here!'
         });
 
-
         marker.addListener('click', function() {
         infowindow.open(map, marker);
         });
-
-        var userLocation = new google.maps.Marker({
-          
-         
-          title: 'Location Here!'
+         //User Location Marker 
+         var userLocation = new google.maps.Marker({
+          map: map,
+          animation: google.maps.Animation.DROP,
         });
+        
+        //Add a Sweet Bounce Animation To User Marker 
+        function toggleBounce() {
+        if (userLocation.getAnimation() !== null) {
+          userLocation.setAnimation(null);
+        } else {
+          userLocation.setAnimation(google.maps.Animation.BOUNCE);
+        }
+      }
 
-        // Try HTML5 geolocation.
+        //geolocation FIND USER LOCATION and Track.
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(function(position) {
+          navigator.geolocation.watchPosition(function(position) {
+            
             var pos = {
               lat: position.coords.latitude,
               lng: position.coords.longitude
             };
 
-            infoWindow.setPosition(pos);
-            infoWindow.setContent(userLocation);
-            infoWindow.open(map);
+            userLocation.setPosition({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            });
+            userLocation.addListener('click', toggleBounce);
             map.setCenter(pos);
+
           }, function() {
             handleLocationError(true, infoWindow, map.getCenter());
           });
@@ -133,8 +147,11 @@
           // Browser doesn't support Geolocation
           handleLocationError(false, infoWindow, map.getCenter());
         }
-      }
-
+        addYourLocationButton(map, userLocation);
+ 
+      }//END MAPINIT
+        
+      //Handle Geolocation Errors
       function handleLocationError(browserHasGeolocation, infoWindow, pos) {
         infoWindow.setPosition(pos);
         infoWindow.setContent(browserHasGeolocation ?
@@ -142,11 +159,9 @@
                               'Error: Your browser doesn\'t support geolocation.');
         infoWindow.open(map);
       }
-
-
-// To add the marker to the map, call setMap();
-
-    </script>
-    <script async defer
+    
+   
+</script>
+<script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQMzhiINq0pfDHofIycq6m_V2dRFULbPc&libraries=places&callback=initMap">
-    </script>
+</script>

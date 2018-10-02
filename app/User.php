@@ -11,10 +11,17 @@ class User extends Authenticatable
 {
     use Notifiable;
     use Messagable;
+
+    
     //create one-to-one relationship between User and Activate User
     public function activateUser()
     {
         return $this->hasOne('App\ActivateUser');
+    }
+     //create relationship between User and booking
+    public function UserBooking()
+    {
+        return $this->hasMany(Booking::class);
     }
 
     /**

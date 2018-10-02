@@ -54,7 +54,7 @@ Route::get('/dashboard', 'PagesController@dashboard')->name('dashboard');
 //User routes
 Route::get('/profile', 'PagesController@profile')->name('profile');
 Route::post('profile', 'UserController@update_avatar');
-Route::get('/bookinghistory', 'PagesController@bookinghistory')->name('bookinghistory');
+Route::get('/bookinghistory', 'BookingController@view')->name('bookinghistory');
 Route::get('/messagebox', 'PagesController@messagebox')->name('messagebox');
 
 //Booking routes
