@@ -5,14 +5,14 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Cmgmyr\Messenger\Traits\Messagable;
-
+use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
     use Notifiable;
     use Messagable;
 
-    
+
     //create one-to-one relationship between User and Activate User
     public function activateUser()
     {
@@ -51,5 +51,16 @@ class User extends Authenticatable
 
     public function isAdmin(){
         return $this->is_admin;
+    }
+     /**
+     * Send the password reset notification.
+     * @note: This override Authenticatable methodology
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new ResetPasswordNotification($token));
     }
 }

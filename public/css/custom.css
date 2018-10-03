@@ -726,9 +726,19 @@ header.faq-masthead h1 {
 }
 
 @media only screen and (max-width: 768px) {
-    header.faq-masthead h1 {
+    header.faq-masthead h1{
       font-size: 24px;
     }
+    #about h3{
+        font-size: 18px;
+    }
+}
+
+#about h3::first-letter,
+#team p::first-letter,
+#feedback p::first-letter
+{
+    font-size: 200%;
 }
 
 .faq-part{
