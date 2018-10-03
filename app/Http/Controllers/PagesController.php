@@ -19,24 +19,8 @@ class PagesController extends Controller
         return view('general.faq');
     }
 
-    public function policy(){
-        return view('general.policy');
-    }
-
     public function admin(){
         return view('admin.dashboard');
-    }
-
-    public function profile(){
-        return view('user.profile');
-    }
-
-    public function bookinghistory(){
-        return view('user.uhistory');
-    }
-
-    public function messagebox(){
-        return view('user.umessagebox');
     }
 
     public function step2(){
@@ -63,7 +47,6 @@ class PagesController extends Controller
         return view('errors.403');
     }
 
-    //test use only will delete later
     public function admindashboard(){
         return view('admin.dashboard');
     }

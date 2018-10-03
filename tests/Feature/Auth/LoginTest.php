@@ -65,11 +65,11 @@ class LoginTest extends TestCase
         $this->assertGuest();   //  Asserting user is still a guest
     }
 
-    public function test_remember_me_functionality()
+   /* public function test_remember_me_functionality()
     {
         $user = factory(User::class)->create([  // Creates a user and inserts him into the database with a new password and a Random id
             'id' => random_int(1, 100),
-            'password' => bcrypt($password = 'i-love-laravel'),
+            'password' => bcrypt($password = 'I-love-laravel'),
         ]);
         
         $response = $this->post('/login', [ //  Attempting to login with the newly created user with correct password and remember on
@@ -77,6 +77,7 @@ class LoginTest extends TestCase
             'password' => $password,
             'remember' => 'on',
         ]);
+     
         
         $response->assertRedirect('/home'); //  redirecting the user to home
 
@@ -88,7 +89,7 @@ class LoginTest extends TestCase
         ]));
         $this->assertAuthenticatedAs($user);    //  Asserting if the user is Authenticated
     }
-
+    */
     // public function test_User_Cannot_Login_With_Email_That_Does_Not_Exist()
     // {
     //     $response = $this->from('login')->post('login', [   //  Using email and password that doesnt exist

@@ -1,5 +1,5 @@
 <?php
-
+use App\Location;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,6 +11,7 @@
 |
 */
 
+//ROUTES FOR MESSAGING SYSTEM
 Route::group(['prefix' => 'messages'], function () {
     Route::get('/', ['as' => 'messages', 'uses' => 'MessagesController@index']);
     Route::get('create', ['as' => 'messages.create', 'uses' => 'MessagesController@create']);
@@ -18,7 +19,7 @@ Route::group(['prefix' => 'messages'], function () {
     Route::get('{id}', ['as' => 'messages.show', 'uses' => 'MessagesController@show']);
     Route::put('{id}', ['as' => 'messages.update', 'uses' => 'MessagesController@update']);
 });
-use App\Location;
+
 
 Route::post('/nearest-shops', function () {
    $center=request('center');
@@ -32,30 +33,23 @@ Route::post('/nearest-shops', function () {
 //function Route to customise The Look of the Dashboard page google map API
 Route::get('/home', 'HomeController@index');
 
-//return Index (welcome) page
 Route::get('/', function () {
     return view('welcome');
 });
 
+//GUEST USER ROUTES
+Route::get('/about', 'PagesController@about')->name('about');
+Route::get('/faq', 'PagesController@faq')->name('faq');
 //Authentication Routes
 Route::get('/user/activate/{token}', 'Auth\RegisterController@activateUser');
 Auth::routes();
 
-Route::get('calc', 'BookingController@showPriceBasedOnHours');
-
-//Page Routes
-Route::get('/user/{id}', 'UserController@show')->name('user.show');
-Route::get('/about', 'PagesController@about')->name('about');
-Route::get('/faq', 'PagesController@faq')->name('faq');
-Route::get('/policy', 'PagesController@policy')->name('policy');
-Route::get('/admin', 'PagesController@admin')->name('admin');
-Route::get('/dashboard', 'PagesController@dashboard')->name('dashboard');
-
-//User routes
-Route::get('/profile', 'PagesController@profile')->name('profile');
-Route::post('profile', 'UserController@update_avatar');
-Route::get('/bookinghistory', 'BookingController@view')->name('bookinghistory');
-Route::get('/messagebox', 'PagesController@messagebox')->name('messagebox');
+//USER ROUTES
+    //PROFILE ROUTES
+    Route::get('/user/{id}', 'UserController@show')->name('user.show');
+    //
+    Route::post('profile', 'UserController@update_avatar');
+    Route::post('/changePassword','UserController@changePassword')->name('changePassword');
 
 //Booking routes
 Route::get('/booking', 'PagesController@booking')->name('booking');
@@ -64,21 +58,12 @@ Route::get('/booking/step3', 'PagesController@step3')->name('booking/step3');
 Route::get('/booking/step3/checkout', 'PagesController@checkout')->name('checkout');
 Route::get('/booking/step3/checkout/payment/process', 'PaymentsController@process')->name('payment.process');
 
-//Admin Route
+//ADMIN ROUTES
+Route::group(['middleware' => ['auth', 'admin']], function(){
 Route::match(['get','post'],'/admin','AdminController@login')->name('adminLogin');
-
-//Protected Admin routes(soon)
+Route::get('/admin', 'PagesController@admin')->name('admin');
 Route::get('/admin/panel','AdminController@panel')->name('admin.panel');
 Route::get('/logout','AdminController@logout')->name('adminLogout');
-
-//Resource routes
-Route::resource('vehicles','VehiclesController');
-
-//errors route
-Route::get('404',['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']);
-Route::get('403',['as' => 'forbidden', 'uses' => 'PagesController@forbidden']);
-
-//test use only will delete later
 Route::get('admindashboard','PagesController@admindashboard')->name('admindashboard');
 Route::get('abooking','PagesController@bookings')->name('abookings');
 Route::get('avehicles','VehiclesController@index')->name('avehicles');
@@ -86,19 +71,27 @@ Route::get('ausers','UserController@index')->name('ausers');
 Route::get('aparkinglot','LocationsController@index')->name('aparkinglot');
 Route::get('anotifications','PagesController@notification')->name('anotifications');
 Route::get('adminprofile','PagesController@adminprofile')->name('adminprofile');
+Route::get('location/add', 'LocationController@add')->name('Location-add');
+Route::post('location/save', 'LocationController@add')->name('Location-post');
+});
 
+
+//Resource routes
+Route::resource('vehicles','VehiclesController');
 Route::resource('users','UserController');
 
-/* Private Message urls */
+
+//errors route
+Route::get('404',['as' => 'notfound', 'uses' => 'PagesController@pagenotfound']);
+Route::get('403',['as' => 'forbidden', 'uses' => 'PagesController@forbidden']);
+
+
+
+/* Private Message urls
 Route::post('get-message-notifications', 'MessageController@getUserMessagesNotifications');
 Route::post('get-messages', 'MessageController@getMessages');
 Route::post('get-message', 'MessageController@getMessagesById');
 Route::post('get-messages-sent', 'MessageController@getMessagesBySent');
 Route::post('send-message', 'MessageController@sendMessage');
+*/
 
-//Locations
-Route::get('location/add', 'LocationController@add')->name('Location-add');
-Route::post('location/save', 'LocationController@add')->name('Location-post');
-
-//Change password route
-Route::post('/changePassword','UserController@changePassword')->name('changePassword');
