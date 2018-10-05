@@ -73,6 +73,9 @@ footer.footer {
     background: url('./images/footer-bg.svg');
     padding-top: 2.5rem;
     padding-bottom: 2.5rem;
+    position: relative;
+    bottom: 0;
+    height: 140px;
   }
 
 .footer-link{
@@ -699,6 +702,151 @@ input.register {
     }
 
     .container-register-form-btn {
+        width: 100%;
+    }
+}
+
+
+/* --------------------------------------------
+    email.blade.php reset.blade.php custom style
+---------------------------------------------*/
+
+.container-reset {
+    width: 100%;
+    min-height: 100vh;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    background:url('./images/resetpwd.jpg');
+}
+
+.wrap-reset {
+    width: 600px;
+    background: #fff;
+    overflow: hidden;
+    position: relative;
+}
+
+  /*---- Title ----*/
+.reset-form-title {
+    width: 100%;
+    position: relative;
+    z-index: 1;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+
+    background-image: url(./images/resetpwd.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+
+    padding: 70px 15px 74px 15px;
+}
+
+.reset-form-title-1 {
+    font-size: 30px;
+    color: #fff;
+    text-transform: uppercase;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.reset-form-title::before {
+    content: "";
+    display: block;
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(54,84,99,0.7);
+  }
+
+ /*---- Form ----*/
+.reset-form {
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding:30px 88px 50px 190px;
+}
+
+input.reset {
+    height: 45px;
+}
+
+  /*----Reset Button ----*/
+.container-reset-form-btn {
+    width: 60%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .reset-form-btn {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 20px;
+    min-width: 160px;
+    height: 50px;
+    background-color: #ff9d41;
+
+    font-size: 16px;
+    color: #fff;
+    line-height: 1.2;
+
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+}
+
+.reset-form-btn:hover {
+    background-color: #333333;
+}
+
+
+@media (max-width: 576px) {
+    .reset-form {
+        padding: 30px 15px 20px 117px;
+    }
+
+    .container-reset-form-btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .reset-form {
+      padding: 30px 15px 20px 15px;
+    }
+
+    .container-reset-form-btn {
         width: 100%;
     }
 }
