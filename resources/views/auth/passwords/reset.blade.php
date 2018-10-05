@@ -1,14 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-resetpwd">
-    <div class="wrap-resetpwd">
-        <div class="resetpwd-form-title" >
-            <span class="resetpwd-form-title-1">
+<div class="container-reset">
+    <div class="wrap-reset">
+        <div class="reset-form-title" >
+            <span class="reset-form-title-1">
                 Reset Your Password
             </span>
         </div>
-        <form method="POST" class="resetpwd-form validate-form" action="{{ route('password.request') }}" aria-label="{{ __('Reset Password') }}">
+        <form method="POST" class="reset-form validate-form" action="{{ route('password.request') }}" aria-label="{{ __('Reset Password') }}">
             @csrf
             <div class="wrap-input validate-input" data-validate="Username is required">
                 <input type="hidden" name="token" value="{{ $token }}">
@@ -41,8 +41,8 @@
                 <span class="focus-input"></span>
             </div>
 
-            <div class="container-resetpwd-form-btn">
-                <button type="submit" class="resetpwd-form-btn">
+            <div class="container-reset-form-btn pt-4">
+                <button type="submit" class="reset-form-btn">
                     {{ __('Reset Password') }}
                 </button>
             </div>
