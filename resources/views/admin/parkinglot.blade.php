@@ -63,6 +63,7 @@
                 </div>
                 <div class="btn-toolbar mb-2">
                     <div class="download btn-group mr-2">
+                        <a href="{{ route('Location.add') }}">Add Location</a>
                         <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="./css/icons/download.png" width="24px"></button>
                         <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="./css/icons/print.png" width="24px"></button>
                     </div>
@@ -91,12 +92,12 @@
                     <td>{{$location->state}}</td>
                     <td>{{$location->zip}}</td>
 
-                    <td><a href="" class="btn btn-warning">Edit</a></td>
+                    <td><a href="" class="btn">Edit</a></td>
                     <td>
                       <form action="" method="post">
                         @csrf
                         <input name="_method" type="hidden" value="DELETE">
-                        <button class="btn btn-danger" type="submit">Delete</button>
+                        <button class="btn" type="submit">Delete</button>
                       </form>
                     </td>
                   </tr>

@@ -68,13 +68,40 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive">
-                <div id="app" class="col-md-12">
-                    <!-- vuesax file found assets/js/partials/DatatableComponent -->
-                    <datatable-componenet></datatable-componenet>
-                </div>
-              </div>
               <!-- table -->
+              <div class="table-responsive" style="background-color:white;opacity:0.98;">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  {{ $bookings->links() }}   
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Cost</th>
+                  <th>Active?</th>
+                  <th>User ID</th>
+                  <th>Location ID</th>
+                </tr>
+              </thead>
+              <tbody>
+                @foreach($bookings as $booking)
+                <tr>
+                    <td>{{$booking->start_date}}</td>
+                    <td>{{$booking->end_date}}</td>
+                    <td>${{$booking->price}}</td>
+                    <td>{{$booking->is_Active}}</td>
+                    <td>{{$booking->user_id}}</td>
+                    <td>{{$booking->location_id}}</td>
+
+                    <td><a href="" class="btn">Edit</a></td>
+                    <td>
+                      <form action="" method="post">
+                        @csrf
+                        <input name="_method" type="hidden" value="DELETE">
+                        <button class="btn" type="submit">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                  @endforeach
 
             </main>
 

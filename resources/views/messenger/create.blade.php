@@ -18,15 +18,6 @@
                 <textarea name="message" class="form-control">{{ old('message') }}</textarea>
             </div>
 
-            @if($users->count() > 0)
-                <div class="checkbox">
-                    @foreach($users as $user)
-                        <label title="{{ $user->name }}"><input type="checkbox" name="recipients[]"
-                                                                value="{{ $user->id }}">{!!$user->email!!}</label>
-                    @endforeach
-                </div>
-            @endif
-    
             <!-- Submit Form Input -->
             <div class="form-group">
                 <button type="submit" class="btn btn-primary form-control">Submit</button>
