@@ -95,3 +95,6 @@ Route::post('get-messages-sent', 'MessageController@getMessagesBySent');
 Route::post('send-message', 'MessageController@sendMessage');
 */
 
+//Locations
+Route::get('location/add', 'LocationController@add')->name('Location-add');
+Route::post('location/save', 'LocationController@add')->name('Location-post');

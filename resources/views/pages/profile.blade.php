@@ -1,6 +1,16 @@
 
 @extends('layouts.app')
 @section('content')
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = 'https://connect.facebook.net/en_GB/sdk.js#xfbml=1&version=v3.1&appId=491429864669717&autoLogAppEvents=1';
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
 <!--warning/success message (can delete if you want) -->
 <div id="app">
     <sidebar-component></sidebar-component></div>
@@ -36,28 +46,13 @@
                     </div>
                 </div>
             </div>
-
-     <!-- Output Referral Link -->
-     @forelse(auth()->user()->getReferrals() as $referral)
-          <h4>
-              {{ $referral->program->name }}
-          </h4>
-          <code>
-              {{ $referral->link }}
-          </code>
-          <p>
-              Number of referred users: {{ $referral->relationships()->count() }}
-          </p>
-        @empty
-            No referrals
-        @endforelse
-    </div>
+        </div>
+        
 
     <div class="col-md-12">
     <h1>User settings</h1>
     <!-- Profile Picture (fix me thanks) -->
 
-    <br><br>
     <!-- show profile info -->
     <div>
     <ul>Full Name: {{ $user -> first_name }} {{ $user -> last_name }} </ul>
@@ -72,7 +67,37 @@
 </button>
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changeProfileAvaModal">
   Change your profile picture
-</button>
+</button><br><br>
+
+<!-- <div class="col-md-12"> -->
+    <div class="referral">
+        <!-- Output Referral Link -->
+        
+        @forelse(auth()->user()->getReferrals() as $referral)
+        <?php
+
+        $referrallink = "$referral->link"; 
+        ?>
+            <br>
+            <h1>Referrals</h1>
+            <h4>{{ $referral->program->name }}</h4>
+            <code id="referrallink">{{ $referral->link }}</code>
+            <br><br>
+
+            <!-- The button used to copy the text -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" onclick="copyToClipboard('#referrallink')">
+                Copy Link
+            </button>
+            <div class="fb-share-button" data-href="<?php echo $referrallink ?>" data-layout="button" data-size="large" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2F127.0.0.1%3A8000%2Fregister%3Fref%3De350934e-c09e-11e8-a5eb-f832e43def64&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div> 
+            <br> 
+            
+            
+            <br><p>Number of referred users: {{ $referral->relationships()->count() }}</p>
+        @empty
+            No referrals
+        @endforelse
+    </div>
+<!-- </div> -->
 
 <!-- Change Password Modal -->
 <div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -178,6 +203,16 @@
 </div>
 </div>
 </div>
+<script>
+function copyToClipboard(element) {
+  var $temp = $("<input>");
+  $("body").append($temp);
+  $temp.val($(element).text()).select();
+  document.execCommand("copy");
+  $temp.remove();
+}
+
+</script>
 @endsection
 
 

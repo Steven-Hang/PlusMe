@@ -1009,5 +1009,20 @@ header.faq-masthead h1 {
         display:none;
     }
   }
+  /* ---------------------------------------------------
+    Referal custom style
+----------------------------------------------------- */
 
+.referral {
+    position: absolute;
+    width: 60%;
+    height: 300px;
+    border-width: 8px;
+    border-style: solid;
+    border-color: grey;
+    border-image: initial;
+    margin: 0px 18%;
+    }
+
+  
 
