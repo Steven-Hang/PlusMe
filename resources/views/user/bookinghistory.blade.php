@@ -105,28 +105,70 @@
           </a>
         </li>
         <li class="nav-item ">
-          <a class="nav-link" href="{{ route('faq') }}">
+          <a class="nav-link active" href="{{ route('faq') }}">
             <span><img src="./css/icons/bookings.png" width="24px"></span>
             <span>Booking History</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link active" href="{{ route('faq') }}">
+          <a class="nav-link" href="{{ route('messages') }}">
             <span><img src="./css/icons/users.png" width="24px"></span>
             <span>Message Box</span></a>
         </li>
       </ul>
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            @include('messenger.partials.flash')
+            <h2>My Booking History</h2>
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h2> Active Booking </h2>
+                                <h4 class="panel-title">
+                                @foreach($activeBooking as $activeBooking)
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">{{$activeBooking->id}}</a>
+                                </h4>
+                            </div>
+                            <div id="collapse1" class="panel-collapse collapse in">
+                                <div class="panel-body">
+                        <p><strong>car</strong><br>type:<br>pick up:<br>return: Not returned yet<br>Payment:</p>
 
-            @each('messenger.partials.thread', $threads, 'thread', 'messenger.partials.no-threads')
+                    </div>
+                    @endforeach
+
+            <h2> Booking History </h2>
+
+            @foreach($pastBooking as $pastBookings)
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                        <h4 class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">{{$pastBookings->id}}</a>
+                        </h4>
+                    </div>
+            @endforeach
+            <div id="collapse2" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <p><strong>car</strong><br>type:{{$pastBookings->start_date}}<br>pick up:<br>return:{{$pastBookings->end_date}}<br>Payment:</p>
+                </div>
+            </div>
+
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">06/07/2018 booking id:aksjdhiy12</a>
+                    </h4>
+            </div>
+            <div id="collapse3" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <p><strong>car</strong><br>type:<br>pick up:<br>return: <br>Payment:</p>
+            </div>
 
         </main>
 
     </div>
     <!-- /#wrapper -->
 
-    </body>
+</body>
 
 </html>
+

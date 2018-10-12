@@ -11,7 +11,7 @@ class BookingController extends Controller
     public function showPriceBasedOnHours(){
     $to = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', '2015-5-5 3:30:34');
     $from = \Carbon\Carbon::createFromFormat('Y-m-d H:s:i', '2015-5-5 9:30:34');
-    
+
     $diff_in_hours = $to->diffInHours($from);
 
     return view('home')
@@ -23,10 +23,10 @@ class BookingController extends Controller
 
             //show active booking
             $activeBooking = Booking::where('is_Active','=','1')->get();
-            
-            $pastBookings = Booking::where('is_Active','=','0')->get(); 
-    
-            return view('user.uhistory')
+
+            $pastBookings = Booking::where('is_Active','=','0')->get();
+
+            return view('user.bookinghistory')
                     ->with('activeBooking', $activeBooking)
                     ->with('pastBooking', $pastBookings);
         }
@@ -39,17 +39,17 @@ class BookingController extends Controller
 
 
             ]);
-            
+
             Booking::create([
                 'start_date' => $data['start_date'],
                 'end_date' => $data['end_date'],
-                'price' 
+                'price'
             ]);
 
 
 
         }
-    
 
-    
+
+
 }

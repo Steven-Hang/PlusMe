@@ -58,6 +58,8 @@ Route::get('/booking/step3', 'PagesController@step3')->name('booking/step3');
 Route::get('/booking/step3/checkout', 'PagesController@checkout')->name('checkout');
 Route::get('/booking/step3/checkout/payment/process', 'PaymentsController@process')->name('payment.process');
 
+Route::get('/bookinghistory', 'BookingController@view')->name('bookinghistory');
+
 //ADMIN ROUTES
 Route::group(['middleware' => ['auth', 'admin']], function(){
 Route::match(['get','post'],'/admin','AdminController@login')->name('adminLogin');
