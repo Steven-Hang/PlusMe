@@ -24,6 +24,29 @@ class LocationsController extends Controller
 
     public function store(Request $request){
 
+        //Validate
+        $request->validate([
+            'description' => 'required|min:3',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'zip' => 'required',
+            'lat' => 'required',
+            'lng' => 'required',
+        ]);
+        
+        $task = Task::create([
+            'description' => $data['description'],
+            'address' => $data['address'],
+            'city' => $data['city'],
+            'state' => $data['state'],
+            'zip' => $data['zip'],
+            'lat' => $data['lat'],
+            'lng' => $data['lng'],
+            
+            ]);
+
+        return redirect()->back();
 
     }
 

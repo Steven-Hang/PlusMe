@@ -65,14 +65,14 @@ Route::get('/admin', 'PagesController@admin')->name('admin');
 Route::get('/admin/panel','AdminController@panel')->name('admin.panel');
 Route::get('/logout','AdminController@logout')->name('adminLogout');
 Route::get('admindashboard','PagesController@admindashboard')->name('admindashboard');
-Route::get('abooking','PagesController@bookings')->name('abookings');
+Route::get('abooking','BookingController@index')->name('abookings');
 Route::get('avehicles','VehiclesController@index')->name('avehicles');
 Route::get('ausers','UserController@index')->name('ausers');
 Route::get('aparkinglot','LocationsController@index')->name('aparkinglot');
 Route::get('anotifications','PagesController@notification')->name('anotifications');
 Route::get('adminprofile','PagesController@adminprofile')->name('adminprofile');
-Route::get('location/add', 'LocationController@add')->name('Location-add');
-Route::post('location/save', 'LocationController@add')->name('Location-post');
+Route::get('location/add', 'LocationsController@add')->name('Location.add');
+Route::post('location/save', 'LocationsController@store')->name('Location.store');
 });
 
 
