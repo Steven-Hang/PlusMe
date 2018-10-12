@@ -71,8 +71,8 @@ button:hover {
 
 footer.footer {
     background: url('./images/footer-bg.svg');
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
     position: relative;
     bottom: 0;
     height: 140px;

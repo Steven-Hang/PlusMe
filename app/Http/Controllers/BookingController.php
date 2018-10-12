@@ -27,7 +27,7 @@ class BookingController extends Controller
 
             $pastBookings = Booking::where('is_Active','=','0')->get();
 
-            return view('user.uhistory')
+            return view('user.bookinghistory')
                     ->with('activeBooking', $activeBooking)
                     ->with('pastBooking', $pastBookings);
         }
