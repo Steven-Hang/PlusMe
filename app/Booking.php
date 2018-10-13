@@ -9,13 +9,8 @@ use App\Location;
 class Booking extends Model
 {
     //
-    protected $fillable = ['start_date','end_date','date_of_birth','price','user_id','location_id'];
+    protected $fillable = ['start_date','end_date','price','user_id','location_id'];
     
-    
-
-
-
-
     //Create Model Relationships 
     public function bookingUser(){
         return $this->belongsTo(User::class, 'user_id');

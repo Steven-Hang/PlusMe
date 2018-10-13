@@ -49,9 +49,7 @@
                 <li class="nav-item">
                     <a class="nav-link mx-2" href="{{ route('user.show', Auth::user()->id) }}">Profile</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link mx-2" href="{{ route('booking/step2')}}">Book</a>
-                </li>
+                
                 @endguest
             </ul>
         </div>

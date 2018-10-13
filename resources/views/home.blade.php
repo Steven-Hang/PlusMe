@@ -186,26 +186,41 @@ sth {
 }
 
 </style>
+
 @section('content')
 <div id="wrapper">
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav navbar-light bg-white">
-        <li  class="mb-2" style="border-bottom: 1px solid rgb(222,226,230);">
+        <li  style="border-bottom: 1px solid rgb(222,226,230);">
             <img class="rounded-circle my-2" id="profilepic" src="./css/images/profileimg.png" width="50px" height="50px">
         </li>
-       
-
+        <li>
+        <p>Price of Your Total Trip: <p id="hoursField" name=""></p></p>
+        </li>
+        <li>
+        <p> Selected Car Type: </p><p id="carType" name=""></p>
+        </li>
+        <p> Selected Location: </p><p id="info" class="info"></p>
+        <p>Nearest Parking Locations</p>
     </ul>
+    
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
         <div class="row mb-2">
+        
             <div class="col-md-4 search-container ">
                 <input class="border py-2 px-1" id="pac-input" type="text" placeholder="Please enter a location....." name="search" size=30px;>
+               
+                <input type="hidden" id="startDateField" name="">
+                <input type="hidden" id="endDateField" name="">
+
             </div>
             <div class="col-md-8">
-                <form action="/action_page.php">
-                        Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." name="Stime">
-                        End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" name="Etime">
-
+                <form method="POST" action="{{ route('booking.process')}}" >
+                    @csrf
+                        Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" requried>
+                        End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" requried>
+                        <input type="hidden" id="location_id" name="location_id"/>
+                        <button type="submit" class="btn btn-success">Book</button>
                 </form>
             </div>
         </div>

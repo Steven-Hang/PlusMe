@@ -1,3 +1,4 @@
+
 <style>
       /* Always set the map height explicitly to define the size of the div
        * element that contains the map. */
@@ -14,10 +15,12 @@
   </head>
     <div id="map"></div>
 <script>
+      //https://risan.io/track-user-location-google-maps.html
+
       var map, infoWindow;
 
       function initMap() {
-            
+            const $info = document.getElementById('info');
             var markers= @json($locations);
             var marks = [];
 
@@ -71,14 +74,18 @@
           var address = marker.address;
           var state = marker.state;
           var zip = marker.zip;
+          var id = marker.id;
 
         var contentString = 
             '<h5 id="firstHeading" class="firstHeading">'+ address +'</h1>'+
             '<p><b>' + state + '</b>'+ '<br>'+
-            '<a href="Car Type 1">CAR TYPE ONE</a>'+'<br>'+
-            '<a href="Car Type 2">CAR TYPE TWO</a>'+'<br>'+
+            '<p><b>' + "Please Select Your Car Type" + '</b><br>' +
+            '<button onclick="selectSUV()"> SUV </button>'+ "(Available)" +'<br>'+
+            '<button onclick="selectSedan()"> Sedan </button>'+ "(Available)" +'<br>'+
+            '<button onclick="selectHatchback()"> Hatchback </button>'+ "(Available)" +'<br>'+
             '</p>';
          
+            
         var location = new google.maps.LatLng(marker.lat,marker.lng);
 
         var marker = new google.maps.Marker({
@@ -91,6 +98,8 @@
         google.maps.event.addListener(marker, 'click', function(){
             infoWindow.setContent(contentString);
             infoWindow.open(map, marker);
+            document.getElementById('info').innerHTML = address;
+            document.getElementById('location_id').value = id;
         });
         
         return marker;
@@ -160,6 +169,48 @@
         infoWindow.open(map);
       }
     
+      function selectSUV(){
+        document.getElementById('carType').innerHTML = "SUV";
+        document.getElementById('carType').value = "SUV";
+      }
+      function selectSedan(){
+        document.getElementById('carType').innerHTML = "Sedan";
+        document.getElementById('carType').value = "Sedan";
+      }
+      function selectHatchback(){
+        document.getElementById('carType').innerHTML = "Hatchback";
+        document.getElementById('carType').value = "Hatchback";
+      }
+     
+      function updateStartDate(){
+        var getStartDate = document.getElementById('startDate').value;
+        
+        document.getElementById("startDateField").innerHTML = getStartDate;
+	      document.getElementById("startDateField").value = getStartDate;
+    
+    }
+
+    function calcHours(){
+        
+        var getEndDate = document.getElementById('endDate').value;
+
+          document.getElementById("endDateField").innerHTML = getEndDate;
+          document.getElementById("endDateField").value = getEndDate;
+        
+        var start = document.getElementById("startDateField").value;
+        var end = document.getElementById("endDateField").value;
+        var startDate = new Date(start);
+        var endDate = new Date(end);
+        var diff = Math.abs(startDate.getTime() - endDate.getTime()) / 3600000;
+
+        document.getElementById("hoursField").innerHTML = diff;
+	    document.getElementById("hoursField").value = diff;
+        
+        //Calc Price Based on Hours 
+        var totalCost = diff * 5; 
+        document.getElementById("hoursField").innerHTML = "$"+totalCost;
+        document.getElementById("Pricefield").value = "$"+totalCost;
+    }
    
 </script>
 <script async defer

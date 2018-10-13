@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Booking;
 use Auth;
+use App\Location;
 use Validator;
-use App\Event;
+use Carbon\Carbon;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Redirect;
 
 class BookingController extends Controller
 {
@@ -35,24 +38,6 @@ class BookingController extends Controller
                     ->with('pastBooking', $pastBookings);
         }
 
-        public function store(Request $request){
-            $validator = Validator::make($request->all(), [
-                'start_date' => 'required',
-                'end_date' => 'required',
-                'price' =>' required'
-
-
-            ]);
-
-            Booking::create([
-                'start_date' => $data['start_date'],
-                'end_date' => $data['end_date'],
-                'price'
-            ]);
-
-
-
-        }
 
     //show bookings (for admin page)
     public function Index(){
@@ -62,23 +47,29 @@ class BookingController extends Controller
 
     //creates bookings for customer 
     public function createBooking(Request $request){
-         
-        $request->validate([
-            'start_date' => 'required',
-            'end_date' => 'required',
-            'price' => 'required',
-            'location_id' => 'required'
-        ]);
-        
-        $task = booking::create([
-            'start_date' => $data['start_date'],
-            'end_date' => $data['end_date'],
-            'price' => $data['price'],
-            'location_id' => $data['1']
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $locationId = $request->input('location_id');
+        $sDate = Carbon::createFromFormat('Y-m-d', $start_date);
+        $eDate = Carbon::createFromFormat('Y-m-d', $end_date);
+       
+        $locationAddress = DB::table('locations')->where('id', $locationId)->first();
+        //calculates price for a booking 
+        $totalDuration = $sDate->diffInHours($eDate); 
+        $price  = $totalDuration * 5; 
+
+        $bookings = Booking::create([
+            'user_id' => Auth::id(),
+            'start_date' => $request->input('start_date'),
+            'end_date' => $request->input('end_date'),
+            'price' => $price,
+            'location_id' => $request->input('location_id')
             ]);
 
-
-
-
+        return view('booking.addons', compact('price', 'locationAddress', 'totalDuration', 'start_date', 'end_date'));
+    }
+    public function process(){
+        
+        return view('booking.checkout');
     }
 }

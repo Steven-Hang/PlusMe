@@ -1,10 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
-
 use Illuminate\Http\Request;
-
 use Braintree_Transaction;
 
 class PaymentsController extends Controller
@@ -25,5 +22,6 @@ class PaymentsController extends Controller
     
         
         return view('home');
-    }
+}
+    
 }

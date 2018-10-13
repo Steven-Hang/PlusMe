@@ -18,7 +18,7 @@ export default {
       
       setTimeout( ()=> {
         this.$vs.loading.close()
-      }, 5000);
+      }, 7000);
     },
   }
 }

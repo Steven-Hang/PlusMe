@@ -52,11 +52,11 @@ Auth::routes();
     Route::post('/changePassword','UserController@changePassword')->name('changePassword');
 
 //Booking routes
-Route::get('/booking', 'PagesController@booking')->name('booking');
-Route::get('/booking/step2', 'PagesController@step2')->name('booking/step2');
+Route::post('/booking', 'BookingController@createBooking')->name('booking.process');
+Route::get('/booking/checkout', 'BookingController@process')->name('booking.payment');
 Route::get('/booking/step3', 'PagesController@step3')->name('booking/step3');
 Route::get('/booking/step3/checkout', 'PagesController@checkout')->name('checkout');
-Route::get('/booking/step3/checkout/payment/process', 'PaymentsController@process')->name('payment.process');
+Route::get('/booking/checkout/payment/process', 'PaymentsController@process')->name('payment.process');
 
 Route::get('/bookinghistory', 'BookingController@view')->name('bookinghistory');
 
@@ -81,6 +81,7 @@ Route::post('location/save', 'LocationsController@store')->name('Location.store'
 //Resource routes
 Route::resource('vehicles','VehiclesController');
 Route::resource('users','UserController');
+Route::resource('bookings','BookingController');
 
 
 //errors route

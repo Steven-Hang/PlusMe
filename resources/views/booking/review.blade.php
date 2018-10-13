@@ -17,7 +17,7 @@
                 <label>Return Date: </label>
                 <p> Output </p>
             </div>
-            <a href="{{ route('booking') }}" class="btn btn-primary" style="height: 40px;">Edit</a>
+            <a href="{{ route('booking.process')}}" class="btn btn-primary" style="height: 40px;">Edit</a>
     </div>
     <div class="card">
             <h5 class="card-header">car type</h5>

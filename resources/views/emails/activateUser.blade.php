@@ -201,7 +201,7 @@
 
         <!-- Visually Hidden Preheader Text : BEGIN -->
         <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
-            (Optional) This text will appear in the inbox preview, but not the email body. It can be used to supplement the email subject line or even summarize the email's contents. Extended text preheaders (~490 characters) seems like a better UX for anyone using a screenreader or voice-command apps like Siri to dictate the contents of an email. If this text is not included, email clients will automatically populate it using the text (including image alt text) at the start of the email's body.
+            Hello, Welcome to the easiest and greatest car sharing platform
         </div>
         <!-- Visually Hidden Preheader Text : END -->
 
@@ -229,8 +229,8 @@
 		        <!-- Email Header : BEGIN -->
 	            <tr>
 	                <td style="padding: 20px 0; text-align: center">
-	                    <img src="{{URL::asset('/css/images/orangelogo.png')}}" width="50" height="50" alt="alt_text" border="0" style="height: auto; background: #ffffff; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
-                        <img src="{{URL::asset('/css/images/plusme.png')}}" width="200" height="50" alt="alt_text" border="0" style="height: auto; background: #ffffff; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
+	                    <img src="{{URL::asset('../css/images/orangelogo.png')}}" width="50" height="50" alt="alt_text" border="0" style="height: auto; background: #ffffff; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
+                        <img src="{{URL::asset('../css/images/plusme.png')}}" width="200" height="50" alt="alt_text" border="0" style="height: auto; background: #ffffff; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
 	                </td>
 	            </tr>
 		        <!-- Email Header : END -->

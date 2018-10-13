@@ -238,7 +238,7 @@
                     </div>
                     <!-- END referral -->
                 </div>
-                <!-- Profile Picture (fix me thanks) -->
+                <!-- Profile Picture -->
             <div class="col-sm-9 container-profile">
                 <form method="POST" class="editprofile-form validate-form" action="{{ route('register') }}" aria-label="{{ __('Register') }}">
                     @csrf
