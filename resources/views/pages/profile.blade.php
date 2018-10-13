@@ -157,7 +157,7 @@
         <!-- Sidebar -->
         <ul class="sidebar navbar-nav navbar-light bg-white">
             <li style="border-bottom: 1px solid rgb(222,226,230);">
-                <img class="rounded-circle mt-2" id="profilepic" src="./css/images/profileimg.png" width="50px" height="50px">
+                <img class="rounded-circle mt-2" id="profilepic" src="/storage/avatars/{{ $user->avatar }}" width="50px" height="50px">
                 <div id="adminid" class="my-3"><h6>{{ $user -> email }}</h6></div>
             </li>
             <li class="nav-item">

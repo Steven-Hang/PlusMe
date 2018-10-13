@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Booking;
+use Auth;
+use Validator;
+use App\Event;
 use Illuminate\Pagination\Paginator;
 
 class BookingController extends Controller
@@ -51,9 +54,31 @@ class BookingController extends Controller
 
         }
 
-
+    //show bookings (for admin page)
     public function Index(){
         $bookings = Booking::paginate(35);
         return view('admin.bookings', compact('bookings'));
+    }
+
+    //creates bookings for customer 
+    public function createBooking(Request $request){
+         
+        $request->validate([
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'price' => 'required',
+            'location_id' => 'required'
+        ]);
+        
+        $task = booking::create([
+            'start_date' => $data['start_date'],
+            'end_date' => $data['end_date'],
+            'price' => $data['price'],
+            'location_id' => $data['1']
+            ]);
+
+
+
+
     }
 }

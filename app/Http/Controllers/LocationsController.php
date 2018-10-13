@@ -35,7 +35,7 @@ class LocationsController extends Controller
             'lng' => 'required',
         ]);
         
-        $task = Task::create([
+        $locations = Location::create([
             'description' => $data['description'],
             'address' => $data['address'],
             'city' => $data['city'],

@@ -193,17 +193,7 @@ sth {
         <li  class="mb-2" style="border-bottom: 1px solid rgb(222,226,230);">
             <img class="rounded-circle my-2" id="profilepic" src="./css/images/profileimg.png" width="50px" height="50px">
         </li>
-        <p style="color:black;"> BOOKING ID:12345678</p>
-        <p style="color:gray;">CAR TYPE</p>
-        <img src="css/images/sedan.jpg" class="img" alt="Car Share" width="200" height="150">
-        <sth>Economy</sth><p></p>
-        <sth>Start time: 2:30pm</sth>
-        <p>05/09/2018</p>
-        <sth>End time: 5:30pm</sth>
-        <p>05/09/2018</p>
-        <sth>Return location:</p>
-        <sth>400 Collin Street</p>
-        <P>Car ID:3456782765</p>
+       
 
     </ul>
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
