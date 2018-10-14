@@ -17,6 +17,7 @@
       <p>First Name: </p> 
       <P>Last Name:</p>
       <P>Price: $</p>
+      <a href="{{route('booking.complete')}}">Complete Booking Route</a>
        </div>
        <div class="col">
        <div id="dropin-container"></div>

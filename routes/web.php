@@ -31,7 +31,7 @@ Route::post('/nearest-shops', function () {
 });
 
 //function Route to customise The Look of the Dashboard page google map API
-Route::get('/home', 'HomeController@index');
+Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/', function () {
     return view('welcome');
@@ -54,10 +54,9 @@ Auth::routes();
 //Booking routes
 Route::post('/booking', 'BookingController@createBooking')->name('booking.process');
 Route::get('/booking/checkout', 'BookingController@process')->name('booking.payment');
-Route::get('/booking/step3', 'PagesController@step3')->name('booking/step3');
-Route::get('/booking/step3/checkout', 'PagesController@checkout')->name('checkout');
+Route::get('/booking/checkout/complete', 'BookingController@completeBooking')->name('booking.complete');
 Route::get('/booking/checkout/payment/process', 'PaymentsController@process')->name('payment.process');
-
+Route::get('/booking/checkout/payment/process', 'PaymentsController@process')->name('booking.end');
 Route::get('/bookinghistory', 'BookingController@view')->name('bookinghistory');
 
 //ADMIN ROUTES

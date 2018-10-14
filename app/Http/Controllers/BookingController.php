@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Booking;
 use Auth;
+use Mail;
 use App\Location;
 use Validator;
 use Carbon\Carbon;
@@ -47,6 +48,7 @@ class BookingController extends Controller
 
     //creates bookings for customer 
     public function createBooking(Request $request){
+
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
         $locationId = $request->input('location_id');
@@ -57,6 +59,12 @@ class BookingController extends Controller
         //calculates price for a booking 
         $totalDuration = $sDate->diffInHours($eDate); 
         $price  = $totalDuration * 5; 
+
+         $validator = Validator::make($request->all(), [
+            'start_date' => 'required',
+            'end_date' => 'required',
+            'location_id' => 'required'
+        ]);
 
         $bookings = Booking::create([
             'user_id' => Auth::id(),
@@ -72,4 +80,21 @@ class BookingController extends Controller
         
         return view('booking.checkout');
     }
+
+    public function completeBooking(){
+
+        Booking::where('user_id', Auth::id())->latest()->limit(1)->update(array('is_Active' => '1'));
+
+        return Redirect::to('home');
+    }
+
+    public function finishBooking(){
+
+    }
+
+    public function extendBooking(){
+        
+    }
+    
+    
 }

@@ -192,7 +192,7 @@ sth {
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav navbar-light bg-white">
         <li  style="border-bottom: 1px solid rgb(222,226,230);">
-            <img class="rounded-circle my-2" id="profilepic" src="./css/images/profileimg.png" width="50px" height="50px">
+            <img class="rounded-circle my-2" id="profilepic" src="/storage/avatars/{{$userprofile}}" width="50px" height="50px">
         </li>
         <li>
         <p>Price of Your Total Trip: <p id="hoursField" name=""></p></p>
@@ -224,6 +224,15 @@ sth {
                 </form>
             </div>
         </div>
+        @if($UserActiveBooking)
+        <form method="POST" action="{{ route('booking.process')}}" >
+            <button type="submit" class="btn btn-success">Extend Your Booking</button>
+        </form> 
+        <form method="POST" action="{{ route('booking.end')}}" >
+            <button type="submit" class="btn btn-success">End Your Booking</button>
+        </form>
+
+        @endif
         <div>
             <!-- display the google map -->
             @include('layouts.partials.map')

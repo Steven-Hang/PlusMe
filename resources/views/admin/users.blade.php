@@ -94,12 +94,11 @@
         <td>{{$user['email']}}</td>
         <td>{{$user['licence_number']}}</td>
         
-        <td><a href="{{action('UserController@edit', $user['id'])}}" class="btn btn-warning">Edit</a></td>
+        <td><a href="{{action('UserController@edit', $user['id'])}}" class="">Edit</a></td>
         <td>
           <form action="{{action('UserController@destroy', $user['id'])}}" method="post">
             @csrf
             <input name="_method" type="hidden" value="DELETE">
-            <button class="btn btn-danger" type="submit">Delete</button>
           </form>
         </td>
       </tr>

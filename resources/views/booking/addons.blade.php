@@ -45,7 +45,7 @@
                 <li>ADD TOLL PASS</li>
                 <li>need to use the fast lane? add a toll pass at a discounted price</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-outline-primary" onclick="location.href='{{ route('booking/step3') }}';">Add</button>
+                <button type="button" class="btn btn-lg btn-block btn-outline-primary">Add</button>
             </div>
         </div>
         <div class="card mb-4 box-shadow">
@@ -59,7 +59,7 @@
                     <li>ADD INSURANCE</li>
                     <li>Drive Safe, if not? we got you covered</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-outline-primary" onclick="location.href='{{ route('booking/step3') }}';">Add</button>
+                <button type="button" class="btn btn-lg btn-block btn-outline-primary">Add</button>
             </div>
         </div>
         <div class="card mb-4 box-shadow">
@@ -73,7 +73,7 @@
                     <li></li>
                     <li>Baby on Board, We're on board!</li>
                 </ul>
-                <button type="button" class="btn btn-lg btn-block btn-outline-primary" onclick="location.href='{{ route('booking/step3') }}';">Add</button>
+                <button type="button" class="btn btn-lg btn-block btn-outline-primary" onclick="">Add</button>
             </div>
         </div>
     </div>
