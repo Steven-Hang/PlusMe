@@ -55,8 +55,9 @@ Auth::routes();
 Route::post('/booking', 'BookingController@createBooking')->name('booking.process');
 Route::get('/booking/checkout', 'BookingController@process')->name('booking.payment');
 Route::get('/booking/checkout/complete', 'BookingController@completeBooking')->name('booking.complete');
-Route::get('/booking/checkout/payment/process', 'PaymentsController@process')->name('payment.process');
-Route::get('/booking/checkout/payment/process', 'PaymentsController@process')->name('booking.end');
+Route::get('/booking/checkout/payment', 'PaymentsController@process')->name('payment.process');
+Route::get('/booking/extend', 'BookingController@extendBooking')->name('booking.extend');
+Route::get('/booking/checkout/payment/process', 'BookingController@finishBooking')->name('booking.end');
 Route::get('/bookinghistory', 'BookingController@view')->name('bookinghistory');
 
 //ADMIN ROUTES

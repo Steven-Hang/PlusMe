@@ -105,7 +105,7 @@
           </a>
         </li>
         <li class="nav-item ">
-          <a class="nav-link" href="{{ route('faq') }}">
+          <a class="nav-link" href="{{ route('bookinghistory') }}">
             <span><img src="./css/icons/bookings.png" width="24px"></span>
             <span>Booking History</span>
           </a>

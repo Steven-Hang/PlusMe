@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Location;
+use App\Booking;
+use Auth;
 use Illuminate\Pagination\Paginator;
 
 class LocationsController extends Controller
@@ -42,8 +44,7 @@ class LocationsController extends Controller
             'state' => $data['state'],
             'zip' => $data['zip'],
             'lat' => $data['lat'],
-            'lng' => $data['lng'],
-            
+            'lng' => $data['lng']
             ]);
 
         return redirect()->back();

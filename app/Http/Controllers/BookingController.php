@@ -30,9 +30,11 @@ class BookingController extends Controller
         public function view(){
 
             //show active booking
-            $activeBooking = Booking::where('is_Active','=','1')->get();
+            $activeBooking = Booking::where(['user_id' => Auth::id(),
+            'is_Active' => '1'])->get();
 
-            $pastBookings = Booking::where('is_Active','=','0')->get();
+            $pastBookings = Booking::where(['user_id' => Auth::id(),
+            'is_Active' => '0'])->get();
 
             return view('user.bookinghistory')
                     ->with('activeBooking', $activeBooking)
@@ -89,10 +91,28 @@ class BookingController extends Controller
     }
 
     public function finishBooking(){
+        //Get Active Booking
+        //Set Active Booking to 0
+        Booking::where([
+            'user_id' => Auth::id(),
+            'is_Active' => '1'
+        ])->latest()->limit(1)->update(array('is_Active' => '0'));
+
+        //Redirect and Send Mail 
+        return Redirect::to('home');
 
     }
 
-    public function extendBooking(){
+    public function extendBooking(Request $request){
+        
+        $newEndDate = $end_date = $request->input('New_end_date');
+
+
+        $activeBooking = Booking::where([
+            'user_id' => Auth::id(),
+            'is_Active' => '1'
+        ]);
+
         
     }
     

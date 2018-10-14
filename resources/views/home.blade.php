@@ -224,14 +224,10 @@ sth {
                 </form>
             </div>
         </div>
+         <!-- Show if User Has Active Booking -->
         @if($UserActiveBooking)
-        <form method="POST" action="{{ route('booking.process')}}" >
-            <button type="submit" class="btn btn-success">Extend Your Booking</button>
-        </form> 
-        <form method="POST" action="{{ route('booking.end')}}" >
-            <button type="submit" class="btn btn-success">End Your Booking</button>
-        </form>
-
+            <a href="{{ route('booking.extend')}}" class="btn btn-default">Extend Your Booking</a>
+            <a href="{{ route('booking.end')}}" class="btn btn-default">End Your Booking</a>
         @endif
         <div>
             <!-- display the google map -->

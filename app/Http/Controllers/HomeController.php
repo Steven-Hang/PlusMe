@@ -36,6 +36,8 @@ class HomeController extends Controller
         $UserActiveBooking = DB::table('bookings')->where([
             'is_Active' => 1 ,
             'user_id' => Auth::id()])->first();
+        
+            
         return view('home', compact('users','locations','userprofile', 'UserActiveBooking'));
     }
 }

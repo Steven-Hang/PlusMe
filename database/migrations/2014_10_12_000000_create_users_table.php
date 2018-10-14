@@ -24,6 +24,7 @@ class CreateUsersTable extends Migration
             $table->integer('licence_number');
             $table->boolean('terms');
             $table->string('avatar')->default('profile.png');
+            $table->string('rating')->default('Good Standing');
             $table->boolean('is_activated')->default(false);
             $table->boolean('is_admin')->default(false);
             $table->boolean('is_Warning')->default(false);
