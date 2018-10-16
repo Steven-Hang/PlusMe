@@ -92,7 +92,15 @@
                     </h5>
                 </div>
                 <hr>
-
+                <hr>
+                <div class="faq-part">
+                    <h3 class="faq-question">
+                       How much will PlusMe services charge me for renting a vehicle?
+                    </h3>
+                    <h5 class="faq-answer">
+                       PlusMe services are very cheap! We only charge users $5 dollars AUD per hour for renting a vehcile!
+                    </h5>
+                </div>
 
                 <div class="faq-part">
                     <h3 class="faq-question">

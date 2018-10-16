@@ -63,7 +63,7 @@
                 </div>
                 <div class="btn-toolbar mb-2">
                     <div class="download btn-group mr-2">
-                        <a href="{{ route('Location.add') }}">Add Location</a>
+                        <a href="#">Add Location</a>
                         <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="./css/icons/download.png" width="24px"></button>
                         <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="./css/icons/print.png" width="24px"></button>
                     </div>
@@ -73,7 +73,7 @@
             <table class="table table-sm">
               <thead>
                 <tr>
-                  {{ $locations->links() }}   
+                  {{ $locations->links() }}
                   <th>ID</th>
                   <th>Description</th>
                   <th>Address</th>
@@ -104,7 +104,7 @@
                   @endforeach
               </tbody>
             </table>
-        
+
       </div>
       <!-- table -->
 
