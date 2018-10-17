@@ -11,7 +11,7 @@
             <!-- overlay content to the video -->
             <div class="overlay-video">
                 <div class="col-xl-9 mx-auto">
-                    <h1 class="mb-5" style="font-size:2rem">PlusMe, anywhere.</h1>
+                    <h1 class="mb-5" style="font-size:2rem">Welcome to the easiest and greatest car sharing system.</h1>
                 </div>
                 <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
                         <div id="app" class="col-md-12">
