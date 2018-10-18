@@ -35,7 +35,7 @@ div.left {
   <a href="#Refund">Refund</a>
 </div>
 <div class="buttonchart">
-        <button class="div.left" onclick="openchart()">☰</button>
+        <button class="div.left" onclick="openchart()" style="margin-right:1400px;">☰</button>
       </div>
 <!-- <div class='wrapper'>
         <div class="sidenav">
