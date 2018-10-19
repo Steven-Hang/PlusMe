@@ -1,50 +1,54 @@
 @extends('layouts.app')
 
 @section('content')
-
-
+<!-- Page Header -->
 <header class="faq-masthead">
     <h1>PlusMe CarShare FAQ</h1>
-
-<style>
-div.left {
-    width: 120px;
+    <style>
+    .sidenav {
+    width: 160px;
     position: fixed;
     z-index: 1;
-    top: 298px;
+    top: 330px;
     left: 10px;
     background: #ffffff;
     overflow-x: hidden;
-    padding: 8px 0;
-    }
+    padding: 8px 20px;
+    border-right: 1px solid #ff822e;
+}
+li {
+    display: inline;
+}
 
-</style>
+.sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 20px;
+    color: #000000;
+    display: block;
+}
 
+.sidenav a:hover{
+    color: #ff822e;
+}
+
+
+@media screen and (max-height: 700px) {
+    .sidenav {float:none;width: 100%;position:unset  }
+    .sidenav a { float: none;width:100%;}
+}
+    </style>
 </header>
-<div class="left" style="display:none" id="Sidebar">
-  <button onclick="closechart()" class="closing">Close &times;</button>
-  <br>
-  <a href="#SignUp">Sign Up</a>
-  <br>
-  <a href="#Password">Password</a>
-  <br>
-  <a href="#BookingProcess">Booking</a>
-  <br>
-  <a href="#Payment">Payment</a>
-  <br>
-  <a href="#Refund">Refund</a>
-</div>
-<div class="buttonchart">
-        <button class="div.left" onclick="openchart()" style="margin-right:1400px;">☰</button>
-      </div>
-<!-- <div class='wrapper'>
+
+<div class='wrapper'>
         <div class="sidenav">
-                <a href="#SignUp">Sign Up</a>
-                <a href="#Password">Password</a>
-                <a href="#BookingProcess">Booking</a>
-                <a href="#Payment">Payment</a>
-                <a href="#Refund">Refund</a>
-              </div> -->
+            <ul>
+                <li><a href="#SignUp">Sign Up</a></li>
+                <li><a href="#Password">Password</a></li>
+                <li><a href="#BookingProcess">Booking</a></li>
+                <li><a href="#Payment">Payment</a></li>
+                <li><a href="#Refund">Refund</a></li>
+              </div>
 
     <section class="faq-account">
         <div class="row">
@@ -164,12 +168,4 @@ div.left {
 
 </div>
 
-<script>
-        function openchart() {
-            document.getElementById("Sidebar").style.display = "block";
-        }
-        function closechart() {
-            document.getElementById("Sidebar").style.display = "none";
-        }
-        </script>
 @endsection
