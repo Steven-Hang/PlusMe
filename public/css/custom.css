@@ -1264,6 +1264,27 @@ header.faq-masthead h1 {
     }
   }
 
+  .showMessage{
+    justify-content:center;
+  }
+
+    #msgContent{
+        width: 60%;
+        text-align: justify;
+        align-content: center;
+    }
+  #replyMsg{
+    width: 60%;
+    align-content: center;
+  }
+  #thread{
+    color: #46423f;
+  }
+
+  #thread:hover{
+    color: #ff822e;
+  }
+
   /* ---------------------------------------------------
     Referal custom style
 ----------------------------------------------------- */
