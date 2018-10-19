@@ -73,7 +73,7 @@
             <table class="table table-sm">
               <thead>
                 <tr>
-                  {{ $locations->links() }}   
+                  {{ $locations->links() }}
                   <th>ID</th>
                   <th>Description</th>
                   <th>Address</th>
@@ -104,7 +104,7 @@
                   @endforeach
               </tbody>
             </table>
-        
+
       </div>
       <!-- table -->
 

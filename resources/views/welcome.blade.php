@@ -11,7 +11,7 @@
             <!-- overlay content to the video -->
             <div class="overlay-video">
                 <div class="col-xl-9 mx-auto">
-                    <h1 class="mb-5" style="font-size:2rem">Slogan here!</h1>
+                    <h1 class="mb-5" style="font-size:2rem">Welcome to the easiest and greatest car sharing system.</h1>
                 </div>
                 <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
                         <div id="app" class="col-md-12">
@@ -22,7 +22,7 @@
             </div>
         </div>
     </header>
-   
+
     <!-- Icons Grid -->
     <section class="features-icons bg-light text-center">
         <div class="container">
@@ -33,7 +33,7 @@
                     <img src="./css/images/maps.PNG" width=100px height=100px>
                 </div>
                 <h3>Real time tracking</h3>
-                <p class="lead mb-0">Google maps joasd hjds ajkasd jklasd jka jksd. asdhjl!</p>
+                <p class="lead mb-0">No matter where you are, we can keep in touch!</p>
                 </div>
             </div>
             <div class="col-lg-4">
@@ -51,7 +51,7 @@
                         <img src="./css/images/creditcard.png" width=100px height=100px>
                 </div>
                 <h3>Easy payment</h3>
-                <p class="lead mb-0">Master card, credit card, visa hajlshd asjkdl jkdfkks ads asd!</p>
+                <p class="lead mb-0">Master card, credit card, anything you want!</p>
                 </div>
             </div>
             </div>
@@ -65,21 +65,21 @@
                 <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('./css/images/mapcapture.PNG');"></div>
                 <div class="col-lg-6 order-lg-1 my-auto showcase-text">
                     <h2>Real time tracking</h2>
-                    <p class="lead mb-0">Google maps joasd hjds ajkasd jklasd jka jksd. asdhjl!</p>
+                    <p class="lead mb-0">PlusMe is using Google maps to provide a perfect map for customer!</p>
                 </div>
             </div>
             <div class="row no-gutters">
                 <div class="col-lg-6 text-white showcase-img" style="background-image: url('./css/images/devices.jpg');"></div>
                 <div class="col-lg-6 my-auto showcase-text">
                     <h2>Fully Responsive Design</h2>
-                    <p class="lead mb-0">When you use a theme created by Start Bootstrap, you know that the theme will look great on any device, whether it's a phone, tablet, or desktop the page will behave responsively!</p>
+                    <p class="lead mb-0">Our theme looks great on any device, whether it's a phone, tablet, or desktop the page will behave responsively!</p>
                 </div>
             </div>
                 <div class="row no-gutters">
                 <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('./css/images/cards.jpg');"></div>
                 <div class="col-lg-6 order-lg-1 my-auto showcase-text">
                     <h2>Easy payment</h2>
-                    <p class="lead mb-0">Master card, credit card, visa hajlshd asjkdl jkdfkks ads asd!</p>
+                    <p class="lead mb-0">Master card, credit card, anything you feel comfort with!</p>
                 </div>
             </div>
         </div>
@@ -98,7 +98,7 @@
             </div>
         </div>
     </section>
-    
+
 @endsection
 
 
