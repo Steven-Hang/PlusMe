@@ -113,6 +113,10 @@ footer.footer {
     object-fit: cover;
 }
 
+/* make keyframes that tell the start state and the end state of our object */
+@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
 .overlay-video {
     width: 100%;
     position: absolute;
@@ -121,7 +125,47 @@ footer.footer {
     padding:0.4em;
     margin:0;
 
+    opacity:0;  /* make things invisible upon start */
+    -webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+    -moz-animation:fadeIn ease-in 1;
+    animation:fadeIn ease-in 1;
+
+    -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+    -moz-animation-fill-mode:forwards;
+    animation-fill-mode:forwards;
+
+    -webkit-animation-duration:2s;
+    -moz-animation-duration:2s;
+    animation-duration:2s;
 }
+#gotonext{
+    margin-top:160px;
+}
+
+@media (max-width: 768px) {
+    .overlay-video {
+        width: 100%;
+        position: absolute;
+        top: 10%;
+        left: 0;
+        padding:0.4em;
+        margin:0;
+    }
+
+    #welcome-btn,#gotonext{
+        display:none;
+    }
+  }
+
+  #backtotop {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    z-index: 99;
+    cursor: pointer;
+    padding: 15px;
+  }
 
 .showcase .showcase-text {
     padding: 3rem;
@@ -487,6 +531,20 @@ footer.footer {
     position: relative;
   }
 
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
   .alert-validate::before {
     content: attr(data-validate);
     position: absolute;
@@ -531,7 +589,17 @@ footer.footer {
     -o-transform: translateY(-50%);
     transform: translateY(-50%);
     right: 8px;
+
   }
+
+.invalid-feedback{
+
+        /* Start the shake animation and make the animation last for 0.5 seconds */
+        animation: shake 0.5s;
+        /* When the animation is finished, start again */
+        animation-iteration-count: initial;
+
+}
 
   .alert-validate:hover:before {
     visibility: visible;
@@ -1024,5 +1092,5 @@ header.faq-masthead h1 {
     margin: 0px 18%;
     }
 
-  
+
 

@@ -13,18 +13,19 @@
                 <div class="col-xl-9 mx-auto">
                     <h1 class="mb-5" style="font-size:2rem">Slogan here!</h1>
                 </div>
-                <div class="col-md-10 col-lg-8 col-xl-7 mx-auto">
+                <div id="welcome-btn" class="col-md-10 col-lg-8 col-xl-7 mx-auto">
                         <div id="app" class="col-md-12">
                             <!-- vuesax file found assets/js/partials/Loading -->
                             <Welcome-Button></Welcome-Button>
                         </div>
                 </div>
+                <a href="#iconsGrid"><img id="gotonext" src="./css/icons/godown.png" width=40px></a>
             </div>
         </div>
     </header>
-   
+    <a href="#" id="backtotop"><img src="./css/icons/backtotop.png" width=40px></a>
     <!-- Icons Grid -->
-    <section class="features-icons bg-light text-center">
+    <section class="features-icons bg-light text-center" id="iconsGrid">
         <div class="container">
             <div class="row">
             <div class="col-lg-4">
@@ -98,7 +99,19 @@
             </div>
         </div>
     </section>
-    
+    <script>
+        // When the user scrolls down 20px from the top of the document, show the button
+        window.onscroll = function() {scrollFunction()};
+
+        function scrollFunction() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                document.getElementById("backtotop").style.display = "block";
+            } else {
+                document.getElementById("backtotop").style.display = "none";
+            }
+        }
+    </script>
+
 @endsection
 
 
