@@ -17,7 +17,7 @@
                     <div class="message-label pb-3 ">
                             Subject
                     </div>
-                    <div class="wrap-message validate-input m-b-36" data-validate = "Username is required">
+                    <div class="wrap-message">
                         <input class="message" type="text" name="subject" placeholder="Subject" value="{{ old('subject') }}" >
                         <span class="focus-message"></span>
                     </div>
@@ -26,7 +26,7 @@
                     <div class="message-label pb-3 ">
                         Message
                     </div>
-                    <div class="wrap-message validate-input m-b-12" data-validate = "Password is required">
+                    <div class="wrap-message">
                         <textarea name="message"  class="message" height="400px">{{ old('message') }}</textarea>
                         <span class="focus-message"></span>
                     </div>

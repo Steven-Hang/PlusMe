@@ -1,15 +1,18 @@
-<h2>Add a new message</h2>
+<p>Add a reply</p>
 <form action="{{ route('messages.update', $thread->id) }}" method="post">
     {{ method_field('put') }}
     {{ csrf_field() }}
-        
+
     <!-- Message Form Input -->
-    <div class="form-group">
-        <textarea name="message" class="form-control">{{ old('message') }}</textarea>
+    <div class="wrap-message">
+        <textarea name="message" class="message py-2">{{ old('message') }}</textarea>
     </div>
 
     <!-- Submit Form Input -->
-    <div class="form-group">
-        <button type="submit" class="btn btn-primary form-control">Submit</button>
+    <div class="container-createmsg-form-btn">
+        <button class="createmsg-form-btn mt-3">
+            Send
+        </button>
     </div>
+
 </form>
