@@ -23,7 +23,7 @@
                     <a class="nav-link mx-2" href="{{ route('register') }}">Register</a>
                 </li>
                 @else
-              
+
                 <li class="nav-item" >
                     <a class="nav-link mx-2" href="/messages">
                         Messages @include('messenger.unread-count')
@@ -35,8 +35,12 @@
                         {{ Auth::user()->first_name }} <span class="caret"></span>
                     </a>
                 </li>
-                <!-- Logout of the user -->
+
                 <li class="nav-item">
+                    <a class="nav-link mx-2" href="{{ route('user.show', Auth::user()->id) }}">Profile</a>
+                </li>
+                 <!-- Logout of the user -->
+                 <li class="nav-item">
                     <a class="nav-link mx-2" href="{{ route('logout') }}"
                         onclick="event.preventDefault();
                                         document.getElementById('logout-form').submit();">
@@ -46,10 +50,7 @@
                 <form class="form-inline" id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                     @csrf
                 </form>
-                <li class="nav-item">
-                    <a class="nav-link mx-2" href="{{ route('user.show', Auth::user()->id) }}">Profile</a>
-                </li>
-                
+
                 @endguest
             </ul>
         </div>
