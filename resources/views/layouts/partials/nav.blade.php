@@ -31,7 +31,7 @@
                 </li>
                 <!-- First Name of the user -->
                 <li class="nav-item">
-                    <a class="nav-link mx-2" href="/dashboard" >
+                    <a class="nav-link mx-2" href="/home" >
                         {{ Auth::user()->first_name }} <span class="caret"></span>
                     </a>
                 </li>

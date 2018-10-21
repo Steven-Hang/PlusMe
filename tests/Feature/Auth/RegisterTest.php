@@ -29,7 +29,7 @@ class RegisterTest extends TestCase
     {
         $user = factory(User::class)->make();   // Creates a user object
         $response = $this->actingAs($user)->get('register');  // Using the newly created user object as a variable and requesting register 
-        $response->assertRedirect('dashboard'); // asserting that the user was redirected to the homepage
+        $response->assertRedirect('home'); // asserting that the user was redirected to the homepage
     }
 
     public function testUserCanRegister()

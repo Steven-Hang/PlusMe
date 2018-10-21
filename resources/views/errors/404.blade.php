@@ -1,27 +1,27 @@
 
-@include('layouts.partials.head')
+<link rel="stylesheet" href="/css/style404.css">
+<div class="container-fluid a404666">
 
+    	<div class="txtBox1">
+		<p> <span style="color:#ffb222">Oops!</span> <span style="color:#bbb"> You can’t reach the page you are looking for.</span></p>
+  </div>
 
-<div class="container-fluid">
+	<div class="txtBox2">
+		<p>How did you get there? Click <a href="/" style="color:#ffb222">homepage</a> to get back to earth.</p>
+  </div>
 
-    <br><br>
+		<div class="imgBox">
+			<img src="./storage/images/error.png" alt="">
+		</div>
 
-    <div class="h-100 row align-items-center">
-
-        <div class="col">
-            <img src="./css/images/404.gif" width="44%">
-            <div class="mt-2">
-                <h2>oOops, page not found 404</h2>
-                <p>Back <a href="/">home, you go now.</a></p>
-            </div>
-        </div>
-
-    </div>
 </div>
 
+<style>
+    .a404666{
+        font-family: sans-serif;
 
+    }
+    .txtBox2{
 
-    </body>
-</html>
-
-
+    }
+</style>

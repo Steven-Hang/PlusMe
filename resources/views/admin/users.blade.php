@@ -15,13 +15,12 @@
                 </div>
                 <div class="btn-toolbar mb-2">
                     <div class="download btn-group mr-2">
-                        <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="./css/icons/download.png" width="24px"></button>
-                        <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="./css/icons/print.png" width="24px"></button>
+                        <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="/css/icons/download.png" width="24px"></button>
+                        <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="/css/icons/print.png" width="24px"></button>
                     </div>
                 </div>
             </div>
-
-<table class="table table-sm">
+            <table class="table table-striped">
     <thead>
     {{ $users->links() }}
       <tr>

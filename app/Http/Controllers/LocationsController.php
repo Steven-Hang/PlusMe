@@ -23,21 +23,32 @@ class LocationsController extends Controller
 
     }
 
-    //creates location for admin 
+
     public function store(Request $request){
-        $locations = Location::paginate(35);
+
         //Validate
-        $location = Location::create([
-            'description' => $request->input('description'),
-            'address' => $request->input('address'),
-            'city' => $request->input('city'),
-            'state' => $request->input('state'),
-            'zip' => $request->input('zip'),
-            'lat' => $request->input('lat'),
-            'lng' => $request->input('lng')
+        $request->validate([
+            'description' => 'required|min:3',
+            'address' => 'required',
+            'city' => 'required',
+            'state' => 'required',
+            'zip' => 'required',
+            'lat' => 'required',
+            'lng' => 'required',
+        ]);
+        
+        $locations = Location::create([
+            'description' => $data['description'],
+            'address' => $data['address'],
+            'city' => $data['city'],
+            'state' => $data['state'],
+            'zip' => $data['zip'],
+            'lat' => $data['lat'],
+            'lng' => $data['lng']
             ]);
 
-            return back();
+        return redirect()->back();
+
     }
 
 

@@ -4,28 +4,26 @@
 <div class="container">
     <h1> Review and Add-on </h1>
     <div class="form-group col-md-12">
-     
             <div class="col pickup-location-same">
                 <label class="row">Pickup Location</label>
                 <label class="row">{{$locationAddress->address}}</label>
                 <label class="row"></label>
             </div>
             <div class="col pickup-date-same">
-                <label class="row">Start Date</label>
+                <label class="row">Car Type</label>
+                <label class="row">{{$start_date}}</label>       
+            </div>
+            <div class="col pickup-date-same">
+                <label class="row">Pickup Date</label>
                 <label class="row">{{$start_date}}</label>       
             </div>
             <div class="col return-date-same">
                 <label class="row">Return Date</label>
                 <label class="row"> {{$end_date}}</label>
-                <label class="row">Price</label>
                 <label class="row">${{$price}}</label>
+                <input type="hidden" value="" />
             </div>
-   
-    <form  action="{{ route('booking.payment')}}">
-    <input type="hidden" name="price" value="{{$price}}"/>
-    
-    <button type="submit" class="btn btn-primary" style="height: 40px;">Proceed to Payment</button>
-    </form>
+            <a href="{{ route('booking.payment')}}" class="btn btn-primary" style="height: 40px;">Proceed to Payment</a>
     </div>
     <br />
     <br />
@@ -39,7 +37,7 @@
         <div class="card mb-4 box-shadow">
             <div class="card-header">
                 <h4 class="my-0 font-weight-normal">TOLL PASS</h4>
-                <img src="./images/sedan.jpg" class="img" >
+                <!-- <img src="./images/sedan.jpg" class="img" > nopic -->
             </div>
             <div class="card-body">
                 <h1 class="card-title pricing-card-title">$50</h1>
@@ -53,7 +51,7 @@
         <div class="card mb-4 box-shadow">
             <div class="card-header">
                 <h4 class="my-0 font-weight-normal">INSURANCE</h4>
-                <img src="./images/car.jpg" class="img" >
+                <!-- <img src="./images/car.jpg" class="img" > nopic -->
             </div>
             <div class="card-body">
                 <h1 class="card-title pricing-card-title">$60</h1>
@@ -67,7 +65,7 @@
         <div class="card mb-4 box-shadow">
             <div class="card-header">
                 <h4 class="my-0 font-weight-normal">TOLL PASS</h4>
-                <img src="./images/suv.jpg" class="img" >
+                <!-- <img src="./images/suv.jpg" class="img" > nopic -->
             </div>
             <div class="card-body">
                 <h1 class="card-title pricing-card-title">$70</h1>
@@ -80,4 +78,12 @@
         </div>
     </div>
 </div>
+<style>
+    .container{
+        padding-top: 0;
+    }
+    .list-unstyled{
+        min-height: 124px;
+    }
+</style>
 @endsection

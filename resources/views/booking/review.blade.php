@@ -38,6 +38,5 @@
     <!-- end form -->
         <a href="{{ route('checkout') }}" class="btn btn-primary">Checkout</a>
 
-    @include('layouts.partials.footer');
 </div>
 @endsection
