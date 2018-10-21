@@ -31,7 +31,7 @@ class LoginTest extends TestCase
     {
         $user = factory(User::class)->make();   // Creates a user object
         $response = $this->actingAs($user)->get('/login');  // Using the newly created user object as a variable and requesting to see login 
-        $response->assertRedirect('/home'); // asserting that the user was redirected to the homepage
+        $response->assertRedirect('/dashboard'); // asserting that the user was redirected to the homepage
     }
 
     public function test_user_can_login_with_correct_credentials()
@@ -43,7 +43,7 @@ class LoginTest extends TestCase
             'email' => $user->email,
             'password' => $password,
         ]);
-        $response->assertRedirect('/home'); //  redirecting the user to home
+        $response->assertRedirect('/dashboard'); //  redirecting the user to home
         $this->assertAuthenticatedAs($user);    //  Asserting if the user is Authenticated
     }
 

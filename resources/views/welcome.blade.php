@@ -6,7 +6,7 @@
         <div class="container-video">
             <!-- The background video -->
             <video autoplay muted loop id="bg-video">
-                <source src="./css/images/plusme.mp4" type="video/mp4">
+                <source src="../css/images/plusme.mp4" type="video/mp4">
             </video>
             <!-- overlay content to the video -->
             <div class="overlay-video">
@@ -23,7 +23,7 @@
             </div>
         </div>
     </header>
-    <a href="#" id="backtotop"><img src="./css/icons/backtotop.png" width=40px></a>
+    <a href="" id="backtotop"><img src="./css/icons/backtotop.png" width=40px></a>
     <!-- Icons Grid -->
     <section class="features-icons bg-light text-center" id="iconsGrid">
         <div class="container">
