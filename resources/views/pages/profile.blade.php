@@ -167,13 +167,13 @@
             </a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="{{ route("bookinghistory")}}">
+            <a class="nav-link" href="{{ route('bookinghistory')}}">
                 <span><img src="./css/icons/bookings.png" width="24px"></span>
                 <span>Booking History</span>
             </a>
             </li>
             <li class="nav-item">
-            <a class="nav-link" href="{{ route("messages")}}">
+            <a class="nav-link" href="{{ route('messages')}}">
                     <span><img src="./css/icons/car.png" width="24px"></span>
                 <span>Messages</span></a>
             </li>
