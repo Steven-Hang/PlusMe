@@ -26,18 +26,27 @@
             <table class="table table-sm">
               <thead>
                 <tr>
+<<<<<<< HEAD
                   {{ $bookings->links() }}
+=======
+                  {{ $bookings->links() }}  
+                  <th>ID</th> 
+>>>>>>> minorFixes
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Cost</th>
                   <th>Active?</th>
+                  <th>Booking Hours Left</th>
                   <th>User ID</th>
-                  <th>Location ID</th>
+                  <th>Action</th>
+                  <th>Location ID</th>                
+                  <th>Location Confirmed</th>
                 </tr>
               </thead>
               <tbody>
                 @foreach($bookings as $booking)
                 <tr>
+                    <td>{{$booking->id}}</td>
                     <td>{{$booking->start_date}}</td>
                     <td>{{$booking->end_date}}</td>
                     <td>${{$booking->price}}</td>
@@ -50,7 +59,7 @@
                       <form action="" method="post">
                         @csrf
                         <input name="_method" type="hidden" value="DELETE">
-                        <button class="btn" type="submit">Delete</button>
+                        
                       </form>
                     </td>
                   </tr>

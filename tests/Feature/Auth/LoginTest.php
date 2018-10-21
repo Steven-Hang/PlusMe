@@ -79,7 +79,7 @@ class LoginTest extends TestCase
         ]);
      
         
-        $response->assertRedirect('/home'); //  redirecting the user to home
+        $response->assertRedirect('/dashboard'); //  redirecting the user to home
 
         // asserting that the response contains the given cookie using assertCookie command
         $response->assertCookie(Auth::guard()->getRecallerName(), vsprintf('%s|%s|%s', [    //  Using Auth::guard()->getRecallerName() to find the name of the cookie

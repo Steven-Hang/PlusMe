@@ -22,7 +22,7 @@ class BookingController extends Controller
 
     $diff_in_hours = $to->diffInHours($from);
 
-    return view('home')
+    return view('dashboard')
         ->with($diff_in_hours);
     }
 
@@ -37,8 +37,7 @@ class BookingController extends Controller
             'is_Active' => '0'])->get();
 
             return view('user.bookinghistory')
-                    ->with('activeBooking', $activeBooking)
-                    ->with('pastBooking', $pastBookings);
+                    ->with('activeBooking', $activeBooking)->with('pastBooking', $pastBookings);
         }
 
 
@@ -87,7 +86,7 @@ class BookingController extends Controller
 
         Booking::where('user_id', Auth::id())->latest()->limit(1)->update(array('is_Active' => '1'));
 
-        return Redirect::to('home');
+        return Redirect::to('dashboard');
     }
 
     public function finishBooking(){
@@ -99,20 +98,27 @@ class BookingController extends Controller
         ])->latest()->limit(1)->update(array('is_Active' => '0'));
 
         //Redirect and Send Mail 
-        return Redirect::to('home');
+        return Redirect::to('dashboard');
 
     }
-
-    public function extendBooking(Request $request){
+    public function extendBooking(Request $request){   
+        $newEndDate  = $request->input('New_end_date');
         
-        $newEndDate = $end_date = $request->input('New_end_date');
-
-
-        $activeBooking = Booking::where([
+        //finds Active Booking and Sets 
+        $updateNewEndDate = Booking::where([
             'user_id' => Auth::id(),
             'is_Active' => '1'
-        ]);
+        ])->latest()->limit(1)->update(array('is_Active' => '0'));
+        
+        /*
+        $getStartDate =  
+        
+        $updateEndDate =
 
+        $getDurationAdded =
+
+        $getNewPrice =
+        */
         
     }
     

@@ -20,7 +20,8 @@
                     </div>
                 </div>
             </div>
-            <table class="table table-striped">
+
+<table class="table table-sm">
     <thead>
     {{ $users->links() }}
       <tr>

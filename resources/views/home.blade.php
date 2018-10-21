@@ -215,12 +215,12 @@ sth {
 
             </div>
             <div class="col-md-8">
-                <form method="POST" action="{{ route('booking.process')}}" >
+                <form method="POST"  name="bookingForm" action="{{ route('booking.process')}}" >
                     @csrf
                         Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" requried>
                         End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" requried>
                         <input type="hidden" id="location_id" name="location_id"/>
-                        <button type="submit" class="btn btn-success">Book</button>
+                        <button type="submit" name="submitBooking" class="btn btn-success" disabled>Book</button>
                 </form>
             </div>
         </div>
@@ -237,3 +237,21 @@ sth {
 </div>
 <!-- /#wrapper -->
 @endsection
+<script>
+function checkform()
+{
+    var f = document.forms["theform"].elements;
+    var cansubmit = true;
+
+    for (var i = 0; i < f.length; i++) {
+        if (f[i].value.length == 0) cansubmit = false;
+    }
+
+    if (cansubmit) {
+        document.getElementById('submitbutton').disabled = false;
+    }
+    else {
+        document.getElementById('submitbutton').disabled = 'disabled';
+    }
+}
+</script>
