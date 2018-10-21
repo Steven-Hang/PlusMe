@@ -4,35 +4,7 @@
 <body id="page-top">
     @include('layouts.partials.nav')
     <div id="wrapper">
-<<<<<<< HEAD
         @include('layouts.partials.sidebar')
-=======
-
-        <!-- Sidebar -->
-        <ul class="sidebar navbar-nav navbar-light bg-white">
-            <li style="border-bottom: 1px solid rgb(222,226,230);">
-                <img class="rounded-circle mt-2" id="profilepic" src="/storage/avatars/{{ $user->avatar }}" width="50px" height="50px">
-                <div id="adminid" class="my-3"><h6>{{ $user -> email }}</h6></div>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link active" href="{{ route('user.show', Auth::user()->id) }}">
-                <span><img src="./css/icons/table.png" width="24px"></span>
-                <span>My Profile</span>
-            </a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" href="{{ route('bookinghistory')}}">
-                <span><img src="./css/icons/bookings.png" width="24px"></span>
-                <span>Booking History</span>
-            </a>
-            </li>
-            <li class="nav-item">
-            <a class="nav-link" href="{{ route('messages')}}">
-                    <span><img src="./css/icons/car.png" width="24px"></span>
-                <span>Messages</span></a>
-            </li>
-        </ul>
->>>>>>> minorFixes
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
             <div id="fb-root"></div>

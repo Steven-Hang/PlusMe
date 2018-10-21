@@ -26,12 +26,8 @@
             <table class="table table-sm">
               <thead>
                 <tr>
-<<<<<<< HEAD
-                  {{ $bookings->links() }}
-=======
                   {{ $bookings->links() }}  
                   <th>ID</th> 
->>>>>>> minorFixes
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Cost</th>

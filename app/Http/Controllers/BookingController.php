@@ -28,7 +28,7 @@ class BookingController extends Controller
 
     //Show booking history (for User)
         public function view(){
-
+            $user = Auth::user();
             //show active booking
             $activeBooking = Booking::where(['user_id' => Auth::id(),
             'is_Active' => '1'])->get();
@@ -36,8 +36,7 @@ class BookingController extends Controller
             $pastBookings = Booking::where(['user_id' => Auth::id(),
             'is_Active' => '0'])->get();
 
-            return view('user.bookinghistory')
-                    ->with('activeBooking', $activeBooking)->with('pastBooking', $pastBookings);
+            return view('user.bookinghistory', compact('user'))->with('activeBooking', $activeBooking)->with('pastBooking', $pastBookings);
         }
 
 
