@@ -76,21 +76,27 @@ class BookingController extends Controller
 
         return view('booking.addons', compact('price', 'locationAddress', 'totalDuration', 'start_date', 'end_date'));
     }
-    public function process(){
+    public function process(Request $request){
         
-        return view('booking.checkout');
+        $user = Auth::user();
+        $fprice = $request->input('price');
+
+
+        return view('booking.checkout', compact('user', 'fprice'));
     }
 
     public function completeBooking(){
 
         Booking::where('user_id', Auth::id())->latest()->limit(1)->update(array('is_Active' => '1'));
-
+       
         return Redirect::to('dashboard');
     }
 
     public function finishBooking(){
         //Get Active Booking
         //Set Active Booking to 0
+
+
         Booking::where([
             'user_id' => Auth::id(),
             'is_Active' => '1'

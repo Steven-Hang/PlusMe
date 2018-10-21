@@ -70,7 +70,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <form action="{{ route('Location.store') }}" method="POST"  >
+        <form action="{{ route('Location.store') }}"  >
           <div class="form-group" >
             <label for="recipient-name" class="col-form-label">Description</label>
             <input type="text" class="form-control" id="description" name="description">

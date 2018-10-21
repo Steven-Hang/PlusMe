@@ -66,21 +66,21 @@
                 <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('./css/images/mapcapture.PNG');"></div>
                 <div class="col-lg-6 order-lg-1 my-auto showcase-text">
                     <h2>Real time tracking</h2>
-                    <p class="lead mb-0">PlusMe is using Google maps to provide a perfect map for customer!</p>
+                    <p class="lead mb-0">Anywhere and everywhere life takes you, let PlusMe take you there! Every step of the way.</p>
                 </div>
             </div>
             <div class="row no-gutters">
                 <div class="col-lg-6 text-white showcase-img" style="background-image: url('./css/images/devices.jpg');"></div>
                 <div class="col-lg-6 my-auto showcase-text">
-                    <h2>Fully Responsive Design</h2>
-                    <p class="lead mb-0">Our theme looks great on any device, whether it's a phone, tablet, or desktop the page will behave responsively!</p>
+                    <h2>We Cater to All Devices</h2>
+                    <p class="lead mb-0">We work on any device, phone, tablet or desktop computer!</p>
                 </div>
             </div>
                 <div class="row no-gutters">
                 <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('./css/images/cards.jpg');"></div>
                 <div class="col-lg-6 order-lg-1 my-auto showcase-text">
                     <h2>Easy payment</h2>
-                    <p class="lead mb-0">Master card, credit card, anything you feel comfort with!</p>
+                    <p class="lead mb-0">Master card, credit card, anything you feel comfortable with!</p>
                 </div>
             </div>
         </div>

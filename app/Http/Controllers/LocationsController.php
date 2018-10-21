@@ -37,9 +37,7 @@ class LocationsController extends Controller
             'lng' => $request->input('lng')
             ]);
 
-        return view('admin.parkinglot', compact('locations'));
-   
-
+            return back();
     }
 
 

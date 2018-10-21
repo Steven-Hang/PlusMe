@@ -4,26 +4,28 @@
 <div class="container">
     <h1> Review and Add-on </h1>
     <div class="form-group col-md-12">
+     
             <div class="col pickup-location-same">
                 <label class="row">Pickup Location</label>
                 <label class="row">{{$locationAddress->address}}</label>
                 <label class="row"></label>
             </div>
             <div class="col pickup-date-same">
-                <label class="row">Car Type</label>
-                <label class="row">{{$start_date}}</label>       
-            </div>
-            <div class="col pickup-date-same">
-                <label class="row">Pickup Date</label>
+                <label class="row">Start Date</label>
                 <label class="row">{{$start_date}}</label>       
             </div>
             <div class="col return-date-same">
                 <label class="row">Return Date</label>
                 <label class="row"> {{$end_date}}</label>
+                <label class="row">Price</label>
                 <label class="row">${{$price}}</label>
-                <input type="hidden" value="" />
             </div>
-            <a href="{{ route('booking.payment')}}" class="btn btn-primary" style="height: 40px;">Proceed to Payment</a>
+   
+    <form  action="{{ route('booking.payment')}}">
+    <input type="hidden" name="price" value="{{$price}}"/>
+    
+    <button type="submit" class="btn btn-primary" style="height: 40px;">Proceed to Payment</button>
+    </form>
     </div>
     <br />
     <br />

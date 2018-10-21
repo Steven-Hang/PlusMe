@@ -220,14 +220,70 @@ sth {
                         Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" requried>
                         End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" requried>
                         <input type="hidden" id="location_id" name="location_id"/>
-                        <button type="submit" name="submitBooking" class="btn btn-success" disabled>Book</button>
+                        <button type="submit" id="submitBooking" name="submitBooking"  class="btn btn-dark" >Book</button>
                 </form>
             </div>
         </div>
          <!-- Show if User Has Active Booking -->
         @if($UserActiveBooking)
-            <a href="{{ route('booking.extend')}}" class="btn btn-default">Extend Your Booking</a>
-            <a href="{{ route('booking.end')}}" class="btn btn-default">End Your Booking</a>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#ExtendModalCenter">Extend Your Booking </button>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#EndModalCenter">End Your Booking </button> 
+
+            
+
+            <!-- ExtendModal -->
+            <div class="modal fade" id="ExtendModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Extend Your Booking</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                <p>Start Date: {{$UserActiveBooking->start_date}} </p>
+                <p>Please enter your new end date</p>
+                    
+                <form  action="{{ route('booking.extend')}}">
+                    <input type="date" value="{{$UserActiveBooking->end_date}}" />
+                </form>
+                   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Thank you</button>
+                    <button type="button" class="btn btn-primary">Yes, Please extend my booking.</button>
+                </div>
+                </div>
+            </div>
+            </div>
+            <!-- End Modal -->
+            <div class="modal fade" id="EndModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Are You Sure</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, I change my mind</button>
+                    <a href="{{ route('booking.end')}}" type="button" class="btn btn-primary">Yes, Please End my Booking.</a>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <p> Booking Duration Left (In-Hours): </p>
+            
+            
+            
+            <script>
+            document.getElementById('submitBooking').disabled = true;
+            </script>
         @endif
         <div>
             <!-- display the google map -->
@@ -237,21 +293,3 @@ sth {
 </div>
 <!-- /#wrapper -->
 @endsection
-<script>
-function checkform()
-{
-    var f = document.forms["theform"].elements;
-    var cansubmit = true;
-
-    for (var i = 0; i < f.length; i++) {
-        if (f[i].value.length == 0) cansubmit = false;
-    }
-
-    if (cansubmit) {
-        document.getElementById('submitbutton').disabled = false;
-    }
-    else {
-        document.getElementById('submitbutton').disabled = 'disabled';
-    }
-}
-</script>
