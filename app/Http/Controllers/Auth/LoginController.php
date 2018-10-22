@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\DB;
 class LoginController extends Controller
 {
     /*
@@ -26,7 +25,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/dashboard';
 
     /**
      * Create a new controller instance.
@@ -44,10 +43,9 @@ class LoginController extends Controller
         if (!$user->is_activated) {
             auth()->logout();
             return back()->with('warning', 'You need to confirm your account. We have sent you an activation code, please check your email.');
+        }elseif($user->is_admin){
+                return redirect('/admin');
         }
         return redirect()->intended($this->redirectPath());
     }
-
-
-
 }

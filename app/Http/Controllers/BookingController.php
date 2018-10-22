@@ -22,13 +22,13 @@ class BookingController extends Controller
 
     $diff_in_hours = $to->diffInHours($from);
 
-    return view('home')
+    return view('dashboard')
         ->with($diff_in_hours);
     }
 
     //Show booking history (for User)
         public function view(){
-
+            $user = Auth::user();
             //show active booking
             $activeBooking = Booking::where(['user_id' => Auth::id(),
             'is_Active' => '1'])->get();
@@ -36,9 +36,7 @@ class BookingController extends Controller
             $pastBookings = Booking::where(['user_id' => Auth::id(),
             'is_Active' => '0'])->get();
 
-            return view('user.bookinghistory')
-                    ->with('activeBooking', $activeBooking)
-                    ->with('pastBooking', $pastBookings);
+            return view('user.bookinghistory', compact('user'))->with('activeBooking', $activeBooking)->with('pastBooking', $pastBookings);
         }
 
 
@@ -78,41 +76,54 @@ class BookingController extends Controller
 
         return view('booking.addons', compact('price', 'locationAddress', 'totalDuration', 'start_date', 'end_date'));
     }
-    public function process(){
+    public function process(Request $request){
         
-        return view('booking.checkout');
+        $user = Auth::user();
+        $fprice = $request->input('price');
+
+
+        return view('booking.checkout', compact('user', 'fprice'));
     }
 
     public function completeBooking(){
 
         Booking::where('user_id', Auth::id())->latest()->limit(1)->update(array('is_Active' => '1'));
-
-        return Redirect::to('home');
+       
+        return Redirect::to('dashboard');
     }
 
     public function finishBooking(){
         //Get Active Booking
         //Set Active Booking to 0
+
+
         Booking::where([
             'user_id' => Auth::id(),
             'is_Active' => '1'
         ])->latest()->limit(1)->update(array('is_Active' => '0'));
 
         //Redirect and Send Mail 
-        return Redirect::to('home');
+        return Redirect::to('dashboard');
 
     }
-
-    public function extendBooking(Request $request){
+    public function extendBooking(Request $request){   
+        $newEndDate  = $request->input('New_end_date');
         
-        $newEndDate = $end_date = $request->input('New_end_date');
-
-
-        $activeBooking = Booking::where([
+        //finds Active Booking and Sets 
+        $updateNewEndDate = Booking::where([
             'user_id' => Auth::id(),
             'is_Active' => '1'
-        ]);
+        ])->latest()->limit(1)->update(array('is_Active' => '0'));
+        
+        /*
+        $getStartDate =  
+        
+        $updateEndDate =
 
+        $getDurationAdded =
+
+        $getNewPrice =
+        */
         
     }
     

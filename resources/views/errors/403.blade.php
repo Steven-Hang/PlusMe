@@ -63,7 +63,7 @@
     </style>
     <body>
         <div class="imgBox">
-                <img src="/css/images/stop.png" alt="">
+                <img src="./css/images/stop.png" alt="">
         </div>
         <div class="txtBox1">
             <p>Oh no! You can’t go further. Are you trying to hack our website?</p>

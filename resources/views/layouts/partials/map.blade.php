@@ -189,6 +189,7 @@
 	      document.getElementById("startDateField").value = getStartDate;
     
     }
+    
 
     function calcHours(){
         
@@ -204,15 +205,22 @@
         var diff = Math.abs(startDate.getTime() - endDate.getTime()) / 3600000;
 
         document.getElementById("hoursField").innerHTML = diff;
-	    document.getElementById("hoursField").value = diff;
+	      document.getElementById("hoursField").value = diff;
         
+        
+
+
         //Calc Price Based on Hours 
         var totalCost = diff * 5; 
         document.getElementById("hoursField").innerHTML = "$"+totalCost;
         document.getElementById("Pricefield").value = "$"+totalCost;
     }
-   
+      //Dates Cannot be Chosen Before Today
+       var today = new Date().toISOString().split('T')[0];
+       document.getElementsByName("start_date")[0].setAttribute('min', today);
+       document.getElementsByName("end_date")[0].setAttribute('min', today);
 </script>
 <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQMzhiINq0pfDHofIycq6m_V2dRFULbPc&libraries=places&callback=initMap">
 </script>
+

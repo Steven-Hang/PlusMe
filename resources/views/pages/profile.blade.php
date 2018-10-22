@@ -66,7 +66,7 @@
                     <!-- END referral -->
                 </div>
                 <!-- Profile Picture -->
-            <div class="col-sm-7 container-profile">
+            <div class="col-sm-9 container-profile">
                 <form method="POST" class="editprofile-form validate-form" action="{{ route('register') }}" aria-label="{{ __('Register') }}">
                     @csrf
                     <!-- First Name -->

@@ -20,13 +20,14 @@ class MessagesController extends Controller
      */
     public function index()
     {
+        $user = Auth::user();
         // All threads, ignore deleted/archived participants
         $threads = Thread::getAllLatest()->get();
         // All threads that user is participating in
         // $threads = Thread::forUser(Auth::id())->latest('updated_at')->get();
         // All threads that user is participating in, with new messages
         // $threads = Thread::forUserWithNewMessages(Auth::id())->latest('updated_at')->get();
-        return view('messenger.index', compact('threads'));
+        return view('messenger.index', compact('threads', 'user'));
     }
     /**
      * Shows a message thread.

@@ -88,25 +88,25 @@
 
         <div class="mySlides">
           <div class="numbertext">1 / 4</div>
-          <img src="/css/images/TrollNew.jpg"  width: 700px height="400px">
+          <img src="./css/images/TrollNew.jpg"  width: 700px height="400px">
           <div class="text">The whole development team</div>
         </div>
 
         <div class="mySlides">
           <div class="numbertext">2 / 4</div>
-          <img src="/css/images/SUV.jpg" width: 700px height="400px">
+          <img src="./css/images/SUV.jpg" width: 700px height="400px">
           <div class="text">SUV</div>
         </div>
 
         <div class="mySlides">
           <div class="numbertext">3 / 4</div>
-          <img src="/css/images/SEDAN.jpg" width: 700px height="400px">
+          <img src="./css/images/SEDAN.jpg" width: 700px height="400px">
           <div class="text">Sedan</div>
         </div>
 
         <div class="mySlides">
                 <div class="numbertext">4 / 4</div>
-                <img src="/css/images/hatchback.jpg" width: 700px height="400px">
+                <img src="./css/images/hatchback.jpg" width: 700px height="400px">
                 <div class="text">Hatchback</div>
               </div>
 
@@ -131,7 +131,7 @@
         <h2 style="color:#ff9d41;">Our Development Team</h2>
         <div class="row mt-5">
             <div class="col-lg-8">
-                <img src="/css/images/team_troll.jpg" width="550" height="400">
+                <img src="./css/images/team_troll.jpg" width="550" height="400">
             </div>
             <div class="col-lg-4 py-auto text-justify">
                 <p>This is our development team, it's a group of five. Its a good team, lots of fun and shout out milk teas from  the guy with the 'V' post.</p>

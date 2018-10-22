@@ -6,7 +6,7 @@
         <div class="container-video">
             <!-- The background video -->
             <video autoplay muted loop id="bg-video">
-                <source src="/css/images/plusme.mp4" type="video/mp4">
+                <source src="../css/images/plusme.mp4" type="video/mp4">
             </video>
             <!-- overlay content to the video -->
             <div class="overlay-video">
@@ -19,11 +19,11 @@
                             <Welcome-Button></Welcome-Button>
                         </div>
                 </div>
-                <a href="#iconsGrid"><img id="gotonext" src="/css/icons/godown.png" width=40px></a>
+                <a href="#iconsGrid"><img id="gotonext" src="./css/icons/godown.png" width=40px></a>
             </div>
         </div>
     </header>
-    <a href="#" id="backtotop"><img src="/css/icons/backtotop.png" width=40px></a>
+    <a href="" id="backtotop"><img src="./css/icons/backtotop.png" width=40px></a>
     <!-- Icons Grid -->
     <section class="features-icons bg-light text-center" id="iconsGrid">
         <div class="container">
@@ -31,7 +31,7 @@
             <div class="col-lg-4">
                 <div class="features-icons-item mx-auto mt-5 mb-5">
                 <div class="features-icons-icon">
-                    <img src="/css/images/maps.PNG" width=100px height=100px>
+                    <img src="./css/images/maps.PNG" width=100px height=100px>
                 </div>
                 <h3>Real time tracking</h3>
                 <p class="lead mb-0">No matter where you are, we can keep in touch!</p>
@@ -40,7 +40,7 @@
             <div class="col-lg-4">
                 <div class="features-icons-item mx-auto mt-5 mb-5">
                 <div class="features-icons-icon">
-                        <img src="/css/images/multipledevices.png" width=100px height=100px>
+                        <img src="./css/images/multipledevices.png" width=100px height=100px>
                 </div>
                 <h3>Platform independent</h3>
                 <p class="lead mb-0">This theme will look great on any device, no matter the size!</p>
@@ -49,7 +49,7 @@
             <div class="col-lg-4">
                 <div class="features-icons-item mx-auto mt-5 mb-5">
                 <div class="features-icons-icon">
-                        <img src="/css/images/creditcard.png" width=100px height=100px>
+                        <img src="./css/images/creditcard.png" width=100px height=100px>
                 </div>
                 <h3>Easy payment</h3>
                 <p class="lead mb-0">Master card, credit card, anything you want!</p>
@@ -63,24 +63,24 @@
     <section class="showcase">
         <div class="container-fluid p-0">
             <div class="row no-gutters">
-                <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('/css/images/mapcapture.PNG');"></div>
+                <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('./css/images/mapcapture.PNG');"></div>
                 <div class="col-lg-6 order-lg-1 my-auto showcase-text">
                     <h2>Real time tracking</h2>
-                    <p class="lead mb-0">PlusMe is using Google maps to provide a perfect map for customer!</p>
+                    <p class="lead mb-0">Anywhere and everywhere life takes you, let PlusMe take you there! Every step of the way.</p>
                 </div>
             </div>
             <div class="row no-gutters">
-                <div class="col-lg-6 text-white showcase-img" style="background-image: url('/css/images/devices.jpg');"></div>
+                <div class="col-lg-6 text-white showcase-img" style="background-image: url('./css/images/devices.jpg');"></div>
                 <div class="col-lg-6 my-auto showcase-text">
-                    <h2>Fully Responsive Design</h2>
-                    <p class="lead mb-0">Our theme looks great on any device, whether it's a phone, tablet, or desktop the page will behave responsively!</p>
+                    <h2>We Cater to All Devices</h2>
+                    <p class="lead mb-0">We work on any device, phone, tablet or desktop computer!</p>
                 </div>
             </div>
                 <div class="row no-gutters">
-                <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('/css/images/cards.jpg');"></div>
+                <div class="col-lg-6 order-lg-2 text-white showcase-img" style="background-image: url('./css/images/cards.jpg');"></div>
                 <div class="col-lg-6 order-lg-1 my-auto showcase-text">
                     <h2>Easy payment</h2>
-                    <p class="lead mb-0">Master card, credit card, anything you feel comfort with!</p>
+                    <p class="lead mb-0">Master card, credit card, anything you feel comfortable with!</p>
                 </div>
             </div>
         </div>

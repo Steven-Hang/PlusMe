@@ -176,14 +176,14 @@ footer.footer {
       padding-left: 8%;
   }
     .sidebar {
-      width: 220px !important;
+      width: 200px !important;
     }
     .sidebar .nav-item .nav-link {
       display: block;
       width: 100%;
       text-align: left;
       padding: 0.5rem 1rem;
-      width: 220px;
+      width: 200px;
     }
     .sidebar .nav-item .nav-link span {
       font-size: 1rem;
@@ -1302,10 +1302,3 @@ header.faq-masthead h1 {
 
 
 
-main{
-    margin-top:6px;
-}
-.container-profile{
-    
-    margin-left: 100px;
-}

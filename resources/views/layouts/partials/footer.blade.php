@@ -22,17 +22,17 @@
                 <ul class="list-inline mb-0">
                 <li class="list-inline-item mr-3">
                     <a href="https://github.com/Steven04H/PlusMe.git">
-                        <img class="footer-img mx-1" src="/css/images/github.svg" width=25px>
+                        <img class="footer-img mx-1" src="./css/images/github.svg" width=25px>
                     </a>
                 </li>
                 <li class="list-inline-item mr-3">
                     <a href="#">
-                        <img class="footer-img mx-1" src="/css/images/trello.svg" width=25px>
+                        <img class="footer-img mx-1" src="./css/images/trello.svg" width=25px>
                     </a>
                 </li>
                 <li class="list-inline-item">
                     <a href="https://drive.google.com/drive/folders/10qbBv8fqLrU2M_WkibvefyBLc6i2tP-p?usp=sharing">
-                        <img class="footer-img mx-1" src="/css/images/googledrive.svg" width=25px>
+                        <img class="footer-img mx-1" src="./css/images/googledrive.svg" width=25px>
                     </a>
                 </li>
                 </ul>

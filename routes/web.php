@@ -31,7 +31,7 @@ Route::post('/nearest-shops', function () {
 });
 
 //function Route to customise The Look of the Dashboard page google map API
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/dashboard', 'HomeController@index')->name('home');
 
 Route::get('/', function () {
     return view('welcome');
@@ -74,7 +74,7 @@ Route::get('aparkinglot','LocationsController@index')->name('aparkinglot');
 Route::get('anotifications','PagesController@notification')->name('anotifications');
 Route::get('adminprofile','PagesController@adminprofile')->name('adminprofile');
 Route::get('location/add', 'LocationsController@add')->name('Location.add');
-Route::post('location/save', 'LocationsController@store')->name('Location.store');
+Route::get('aparkinglot/save', 'LocationsController@store')->name('Location.store');
 });
 
 
@@ -101,5 +101,3 @@ Route::post('send-message', 'MessageController@sendMessage');
 //Locations
 Route::get('location/add', 'LocationController@add')->name('Location-add');
 Route::post('location/save', 'LocationController@add')->name('Location-post');
-
-Route::get('car_type','CarTypeController@index')->name('car_type');

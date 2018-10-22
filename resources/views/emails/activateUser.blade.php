@@ -229,8 +229,8 @@
 		        <!-- Email Header : BEGIN -->
 	            <tr>
 	                <td style="padding: 20px 0; text-align: center">
-	                    <img src="{{URL::asset('/css/images/orangelogo.png')}}" width="50" height="50" alt="alt_text" border="0" style="height: auto; background: #ffffff; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
-                        <img src="{{URL::asset('/css/images/plusme.png')}}" width="200" height="50" alt="alt_text" border="0" style="height: auto; background: #ffffff; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
+	                    <img src="{{URL::asset('../css/images/orangelogo.png')}}" width="50" height="50" alt="alt_text" border="0" style="height: auto; background: #ffffff; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
+                        <img src="{{URL::asset('../css/images/plusme.png')}}" width="200" height="50" alt="alt_text" border="0" style="height: auto; background: #ffffff; font-family: sans-serif; font-size: 15px; line-height: 15px; color: #555555;">
 	                </td>
 	            </tr>
 		        <!-- Email Header : END -->

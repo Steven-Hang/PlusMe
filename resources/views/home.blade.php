@@ -164,7 +164,6 @@ sth {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    margin-left: 100px;
 }
 
 @media (max-width: 576px) {
@@ -204,10 +203,10 @@ sth {
         <p> Selected Location: </p><p id="info" class="info"></p>
         <p>Nearest Parking Locations</p>
     </ul>
-
+    
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-        <div class="row mb-2 mapSerBar">
-
+        <div class="row mb-2">
+        
             <div class="col-md-4 search-container ">
                 <input class="border py-2 px-1" id="pac-input" type="text" placeholder="Please enter a location....." name="search" size=30px;>
                
@@ -215,48 +214,82 @@ sth {
                 <input type="hidden" id="endDateField" name="">
 
             </div>
-            <div class="col-md-8 bookForm">
-                <form method="POST" action="{{ route('booking.process')}}" class="bookForm">
+            <div class="col-md-8">
+                <form method="POST"  name="bookingForm" action="{{ route('booking.process')}}" >
                     @csrf
-                        <span> Start Date:</span> <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" requried>
-                        <span> End Date:</span> <input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" requried>
+                        Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" requried>
+                        End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" requried>
                         <input type="hidden" id="location_id" name="location_id"/>
-                        <button type="submit" class="btn btn-success">Book</button>
+                        <button type="submit" id="submitBooking" name="submitBooking"  class="btn btn-dark" >Book</button>
                 </form>
             </div>
         </div>
          <!-- Show if User Has Active Booking -->
         @if($UserActiveBooking)
-            <a href="{{ route('booking.extend')}}" class="btn btn-default">Extend Your Booking</a>
-            <a href="{{ route('booking.end')}}" class="btn btn-default">End Your Booking</a>
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#ExtendModalCenter">Extend Your Booking </button>
+            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#EndModalCenter">End Your Booking </button> 
+
+            
+
+            <!-- ExtendModal -->
+            <div class="modal fade" id="ExtendModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Extend Your Booking</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                <p>Start Date: {{$UserActiveBooking->start_date}} </p>
+                <p>Please enter your new end date</p>
+                    
+                <form  action="{{ route('booking.extend')}}">
+                    <input type="date" value="{{$UserActiveBooking->end_date}}" />
+                </form>
+                   
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Thank you</button>
+                    <button type="button" class="btn btn-primary">Yes, Please extend my booking.</button>
+                </div>
+                </div>
+            </div>
+            </div>
+            <!-- End Modal -->
+            <div class="modal fade" id="EndModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Are You Sure</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, I change my mind</button>
+                    <a href="{{ route('booking.end')}}" type="button" class="btn btn-primary">Yes, Please End my Booking.</a>
+                </div>
+                </div>
+            </div>
+            </div>
+
+            <p> Booking Duration Left (In-Hours): </p>
+            
+            
+            
+            <script>
+            document.getElementById('submitBooking').disabled = true;
+            </script>
         @endif
         <div>
             <!-- display the google map -->
             @include('layouts.partials.map')
         </div>
     </main>
-
 </div>
-<style>
-    .mapSerBar input{
-        border-radius: 20px !important;
-    }
-    @media screen and (max-width:750px){
-        #wrapper{
-            flex-wrap:wrap;
-        }
-        .sidebar{
-            width:100% !important;
-            min-height:0 !important;
-            margin-bottom: 60px;
-        }
-        .bookForm input{
-            margin-bottom: 10px !important;
-        }
-        .search-container{
-            margin-bottom: 10px;
-        }
-    }
-</style>
 <!-- /#wrapper -->
 @endsection
