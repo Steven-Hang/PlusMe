@@ -25,15 +25,15 @@
             var marks = [];
 
 
-        //Allows User input to Search 
+        //Allows User input to Search
         var input = document.getElementById('pac-input');
 
-        //creates function to auto complete map searches 
+        //creates function to auto complete map searches
         var autocomplete = new google.maps.places.Autocomplete(input);
         // Set the data fields to return when the user selects a place.
         autocomplete.setFields(
             ['address_components', 'geometry', 'icon', 'name']);
-        
+
         autocomplete.addListener('place_changed', function() {
           var place = autocomplete.getPlace();
           if (!place.geometry) {
@@ -49,11 +49,11 @@
           } else {
             map.setCenter(place.geometry.location);
             //set zoom level after completed search
-            map.setZoom(15);  
+            map.setZoom(15);
           }
         });
-        
-        //creates Map module 
+
+        //creates Map module
         map = new google.maps.Map(document.getElementById('map'), {
         zoom: 15
         });
@@ -62,13 +62,13 @@
         var directionsDisplay = new google.maps.DirectionsRenderer;
 
         infoWindow = new google.maps.InfoWindow;
-       
+
         //Creates Markers to be added from database
         for(var i = 0; i < markers.length; i++){
         marks[i] = addMarkerToMap(markers[i]);
         }
 
-        //Creates Location Markers 
+        //Creates Location Markers
         function addMarkerToMap(marker){
 
           var address = marker.address;
@@ -76,7 +76,7 @@
           var zip = marker.zip;
           var id = marker.id;
 
-        var contentString = 
+        var contentString =
             '<h5 id="firstHeading" class="firstHeading">'+ address +'</h1>'+
             '<p><b>' + state + '</b>'+ '<br>'+
             '<p><b>' + "Please Select Your Car Type" + '</b><br>' +
@@ -84,47 +84,74 @@
             '<button onclick="selectSedan()"> Sedan </button>'+ "(Available)" +'<br>'+
             '<button onclick="selectHatchback()"> Hatchback </button>'+ "(Available)" +'<br>'+
             '</p>';
-         
-            
+
+
         var location = new google.maps.LatLng(marker.lat,marker.lng);
 
         var marker = new google.maps.Marker({
             position: location,
+            icon: './css/icons/parkingloticon.png',
             map: map,
             });
 
+
         var infoWindow = new google.maps.InfoWindow;
-        
+
         google.maps.event.addListener(marker, 'click', function(){
             infoWindow.setContent(contentString);
             infoWindow.open(map, marker);
             document.getElementById('info').innerHTML = address;
             document.getElementById('location_id').value = id;
         });
-        
+
         return marker;
-        
+
         }//END addMarkerToMapFu
 
         var myLatLng = {lat: -37.809277, lng: 144.960712};
-        
-        //Marker for Near RMIT 
+
+        var RMITmarkeroptions = {
+            url: './css/icons/RMITicon.png',
+            size: new google.maps.Size(101, 101),
+            origin: new google.maps.Point(0, 0),
+            anchor: new google.maps.Point(17, 34),
+            scaledSize: new google.maps.Size(30, 30)
+        };
+
+        //Marker for Near RMIT
         var marker = new google.maps.Marker({
           position: myLatLng,
+          icon: RMITmarkeroptions,
           map: map,
           title: 'Location Here!'
         });
 
+
+
+
         marker.addListener('click', function() {
         infowindow.open(map, marker);
         });
-         //User Location Marker 
+
+         //Radius around User Location Marker
+         var radiusAroundUser = new google.maps.Circle({
+           strokeColor: '#FF0000',
+           strokeOpacity: 0.8,
+           strokeWeight: 2,
+           fillColor: '#FF0000',
+           fillOpacity: 0.35,
+           map: map,
+           center: userLocation,
+           radius: Math.sqrt(userLocation) * 100
+          });
+         //User Location Marker
          var userLocation = new google.maps.Marker({
           map: map,
+          icon: './css/icons/userlocationicon.png',
           animation: google.maps.Animation.DROP,
         });
-        
-        //Add a Sweet Bounce Animation To User Marker 
+
+        //Add a Sweet Bounce Animation To User Marker
         function toggleBounce() {
         if (userLocation.getAnimation() !== null) {
           userLocation.setAnimation(null);
@@ -136,7 +163,7 @@
         //geolocation FIND USER LOCATION and Track.
         if (navigator.geolocation) {
           navigator.geolocation.watchPosition(function(position) {
-            
+
             var pos = {
               lat: position.coords.latitude,
               lng: position.coords.longitude
@@ -157,9 +184,9 @@
           handleLocationError(false, infoWindow, map.getCenter());
         }
         addYourLocationButton(map, userLocation);
- 
+
       }//END MAPINIT
-        
+
       //Handle Geolocation Errors
       function handleLocationError(browserHasGeolocation, infoWindow, pos) {
         infoWindow.setPosition(pos);
@@ -168,7 +195,7 @@
                               'Error: Your browser doesn\'t support geolocation.');
         infoWindow.open(map);
       }
-    
+
       function selectSUV(){
         document.getElementById('carType').innerHTML = "SUV";
         document.getElementById('carType').value = "SUV";
@@ -181,23 +208,23 @@
         document.getElementById('carType').innerHTML = "Hatchback";
         document.getElementById('carType').value = "Hatchback";
       }
-     
+
       function updateStartDate(){
         var getStartDate = document.getElementById('startDate').value;
-        
+
         document.getElementById("startDateField").innerHTML = getStartDate;
 	      document.getElementById("startDateField").value = getStartDate;
-    
+
     }
-    
+
 
     function calcHours(){
-        
+
         var getEndDate = document.getElementById('endDate').value;
 
           document.getElementById("endDateField").innerHTML = getEndDate;
           document.getElementById("endDateField").value = getEndDate;
-        
+
         var start = document.getElementById("startDateField").value;
         var end = document.getElementById("endDateField").value;
         var startDate = new Date(start);
@@ -206,12 +233,12 @@
 
         document.getElementById("hoursField").innerHTML = diff;
 	      document.getElementById("hoursField").value = diff;
-        
-        
 
 
-        //Calc Price Based on Hours 
-        var totalCost = diff * 5; 
+
+
+        //Calc Price Based on Hours
+        var totalCost = diff * 5;
         document.getElementById("hoursField").innerHTML = "$"+totalCost;
         document.getElementById("Pricefield").value = "$"+totalCost;
     }

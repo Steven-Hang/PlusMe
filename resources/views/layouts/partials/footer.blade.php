@@ -26,7 +26,7 @@
                     </a>
                 </li>
                 <li class="list-inline-item mr-3">
-                    <a href="#">
+                    <a href="https://trello.com/b/MFVWA57U/pp1-plus-me-car-share">
                         <img class="footer-img mx-1" src="./css/images/trello.svg" width=25px>
                     </a>
                 </li>
