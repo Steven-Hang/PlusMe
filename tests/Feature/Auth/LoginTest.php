@@ -90,10 +90,10 @@ class LoginTest extends TestCase
         $this->assertAuthenticatedAs($user);    //  Asserting if the user is Authenticated
     }
     */
-    // public function test_User_Cannot_Login_With_Email_That_Does_Not_Exist()
-    // {
-    //     $response = $this->from('login')->post('login', [   //  Using email and password that doesnt exist
-    //         'email' => 'nobody@example.com',
+    /// public function test_User_Cannot_Login_With_Email_That_Does_Not_Exist()
+    /// {
+    ///     $response = $this->from('login')->post('login', [   //  Using email and password that doesnt exist
+    ///        'email' => 'nobody@example.com',
     //         'password' => 'invalid-password',
     //     ]);
     //     $response->assertRedirect('login');    //  redirecting back the user to login
