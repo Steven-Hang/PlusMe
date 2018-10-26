@@ -7,7 +7,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class completeBooking extends Mailable
+class CompleteBooking extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -16,11 +16,12 @@ class completeBooking extends Mailable
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($user)
     {
         //
+        $this->user = $user;
     }
-
+    
     /**
      * Build the message.
      *
@@ -28,6 +29,6 @@ class completeBooking extends Mailable
      */
     public function build()
     {
-        return $this->view('view.name');
+        return $this->view('emails.completeBooking');
     }
 }

@@ -22,7 +22,9 @@ A step by step series of examples that tell you how to get a development env run
 6. run php artisan serve
 
 
-End with an example of getting some data out of the system or using it for a little demo
+Admin Login Credentials:
+Email: admin@plusme.com   
+Password: admin
 
 ## Deployment
 
@@ -35,10 +37,10 @@ live system [Here]()
 
 ## Authors
 
-* **Steven Hang** - [github]()
-* **Yuxuan Cheng**  - [github]()
+* **Steven Hang** - [github](https://github.com/Steven04H)
+* **Yuxuan Cheng**  - [github](https://github.com/rmit-s3516930-yuxuan-cheng)
 * **Omer Khan**  - [github]()
-* **Brian Chen** - [github]()
+* **Brian Chen** - [github](https://github.com/brianchenrmit)
 * **Jiawei Guo** - [github]()
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.

@@ -125,9 +125,35 @@
           map: map,
           title: 'Location Here!'
         });
+        
+        function findNearestMarker(coords) {
+          var minDist = 1000,
+            nearest_text = '*None*',
+            markerDist,
+            // get all objects added to the map
+            objects = map.getObjects(),
+            len = map.getObjects().length,
+            i;
 
+          // iterate over objects and calculate distance between them
+          for (i = 0; i < len; i += 1) {
+            markerDist = markers[i].getPosition().distance(coords);
+            if (markerDist < minDist) {
+              minDist = markerDist;
+              nearest_text = markers[i].getData();
+            }
+          }
 
-
+          alert('The nearest marker is: ' + nearest_text);
+        }
+        
+        function addClickEventListenerToMap(map) {
+          // add 'tap' listener
+          map.addEventListener('tap', function (evt) {
+            var coords =  map.screenToGeo(evt.currentPointer.viewportX, evt.currentPointer.viewportY);
+            findNearestMarker(coords);
+          }, false);
+        }
 
         marker.addListener('click', function() {
         infowindow.open(map, marker);

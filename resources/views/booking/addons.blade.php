@@ -21,10 +21,10 @@
                 <label class="row">${{$price}}</label>
             </div>
    
-    <form  action="{{ route('booking.payment')}}">
+    <form method="POST" action="{{ route('booking.payment')}}">
+    @csrf
     <input type="hidden" name="price" value="{{$price}}"/>
-    
-    <button type="submit" class="btn btn-primary" style="height: 40px;">Proceed to Payment</button>
+    <button type="submit" style="height: 40px;">Proceed to Payment</button>
     </form>
     </div>
     <br />

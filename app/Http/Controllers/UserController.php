@@ -13,7 +13,8 @@ class UserController extends Controller
     public function index()
     {
         $users = User::paginate(15);
-        return view('admin.users', compact('users'));
+        $qUser = Null;
+        return view('admin.users', compact('users', 'qUser'));
     }
     //Edit 
     public function edit()
@@ -67,6 +68,17 @@ class UserController extends Controller
         return back()
             ->with('success','Your Profile Picture Has Been Updated');
  
+    }
+
+    //Search For user via user ID
+    public function searchUser(Request $request){
+
+        $users = User::paginate(15);    
+        $q = $request->get('q');
+        $qUser = User::where('id','=', $q)->get()->first();
+
+        return view('admin.users', compact('qUser', 'users'));
+
     }
   
     //changes user password

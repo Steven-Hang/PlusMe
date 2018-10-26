@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
 
 use App\Vehicles;
 
@@ -15,9 +16,9 @@ class VehiclesController extends Controller
      */
     public function index()
     {
-        //
-        $vehicles = Vehicles::latest()->paginate(5);
-        return view('admin.vehicles', compact('vehicles'))->with('i',(request()->input('page',1) -1) *5);
+        $qvehicle = NULL;
+        $vehicles = Vehicles::latest()->paginate(30);
+        return view('admin.vehicles', compact('vehicles', 'qvehicle'))->with('i',(request()->input('page',1) -1) *5);
     }
 
     /**
@@ -106,6 +107,17 @@ class VehiclesController extends Controller
     {
         //
         Vehicles::find($id)->delete();
-        return redirect()->route('vehicles.index')->with('success','Vehicle deleted successfully');
+        return back()->with('success','Vehicle deleted successfully');
     }
+
+    public function search(Request $request){
+        
+        $vehicles = Vehicles::paginate(35);    
+        $q = $request->get('q');
+        $qvehicle = Vehicles::where('id','=', $q)->get()->first();
+
+        return view('admin.vehicles', compact('vehicles', 'qvehicle'));
+
+    }
+    
 }

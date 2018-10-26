@@ -10,6 +10,7 @@ use Mail;
 use App\Location;
 use Validator;
 use Carbon\Carbon;
+use App\Mail\CompleteBooking;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Redirect;
 
@@ -39,11 +40,27 @@ class BookingController extends Controller
             return view('user.bookinghistory', compact('user'))->with('activeBooking', $activeBooking)->with('pastBooking', $pastBookings);
         }
 
+    //Search for Booking via id 
+    public function searchBooking(Request $request){
+        $bookings = Booking::paginate(35);    
+        $q = $request->get('q');
+        $qbooking= Booking::where('id','=', $q)->get()->first();
+
+        return view('admin.bookings', compact('bookings', 'qbooking'));
+    }
+
+
 
     //show bookings (for admin page)
     public function Index(){
         $bookings = Booking::paginate(35);
-        return view('admin.bookings', compact('bookings'));
+        $qbooking = null; 
+        
+        return view('admin.bookings', compact('bookings', 'qbooking'));
+    }
+    public function comfirmLocation(Request $request){
+
+
     }
 
     //creates bookings for customer 
@@ -96,13 +113,14 @@ class BookingController extends Controller
         //Get Active Booking
         //Set Active Booking to 0
 
-
+        $user = Auth::user();
         Booking::where([
             'user_id' => Auth::id(),
             'is_Active' => '1'
         ])->latest()->limit(1)->update(array('is_Active' => '0'));
 
         //Redirect and Send Mail 
+        Mail::to($user->email)->send(new CompleteBooking($user));
         return Redirect::to('dashboard');
 
     }
