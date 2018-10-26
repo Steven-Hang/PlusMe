@@ -1,5 +1,12 @@
 @extends('layouts.app')
-
+<style>
+    .container{
+        padding-top: 0;
+    }
+    .list-unstyled{
+        min-height: 124px;
+    }
+</style>
 @section('content')
 <div class="container">
     <h1> Review and Add-on </h1>

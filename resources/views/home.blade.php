@@ -152,7 +152,6 @@ sth {
     justify-content: space-between;
     padding:5px 88px 20px 190px;
 }
-
 .container-profile{
     width: 100%;
     min-height: 100vh;
@@ -164,8 +163,8 @@ sth {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
+    margin-left: 100px;
 }
-
 @media (max-width: 576px) {
     .editprofile-form {
         padding: 20px 0 0 0;
@@ -174,16 +173,33 @@ sth {
         font-size: 28px;
     }
 }
-
 @media (max-width: 480px) {
     .editprofile-form {
       padding: 10px 0 0 0;
     }
-
     .profile-title{
         font-size: 18px;
     }
 }
+.mapSerBar input{
+        border-radius: 20px !important;
+    }
+    @media screen and (max-width:750px){
+        #wrapper{
+            flex-wrap:wrap;
+        }
+        .sidebar{
+            width:100% !important;
+            min-height:0 !important;
+            margin-bottom: 60px;
+        }
+        .bookForm input{
+            margin-bottom: 10px !important;
+        }
+        .search-container{
+            margin-bottom: 10px;
+        }
+    }
 
 </style>
 
@@ -205,7 +221,7 @@ sth {
     </ul>
     
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-        <div class="row mb-2">
+        <div class="row mb-2 mapSerBar">
         
             <div class="col-md-4 search-container ">
                 <input class="border py-2 px-1" id="pac-input" type="text" placeholder="Please enter a location....." name="search" size=30px;>
@@ -214,8 +230,8 @@ sth {
                 <input type="hidden" id="endDateField" name="">
 
             </div>
-            <div class="col-md-8">
-                <form method="POST"  name="bookingForm" action="{{ route('booking.process')}}" >
+            <div class="col-md-8 bookForm">
+                <form method="POST" action="{{ route('booking.process')}}" class="bookForm">
                     @csrf
                         Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" requried>
                         End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" requried>
