@@ -44,10 +44,10 @@ live system [Here](plusme.me)
 * **Brian Chen** - [github](https://github.com/brianchenrmit)
 * **Jiawei Guo** - [github]()
 
-See also the list of [contributors](https://www.youtube.com/watch?v=dQw4w9WgXcQ) who participated in this project.
-
 ## Acknowledgments
 
 * Hat tip to anyone whose code was used
 * Inspiration
-* etc
+* -> Shout out to the many Indian Youtube tutorials out there, much Love <3
+* -> stackoverflow 
+* https://www.youtube.com/watch?v=Gs069dndIYk
