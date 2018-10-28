@@ -14,13 +14,14 @@ In Order to run the web app
 
 A step by step series of examples that tell you how to get a development env running
 
-1. Ensure .env is configured 
-2. run Composer install
-3. run npm install
-4. run php artisan migrate 
-5. run php artisan db:seed 
-6. run php artisan serve
-
+1. Ensure .env is configured (either rename env.example -> .env or make your own)
+2. Type the following in your development console
+3. Composer install (or update)
+4. npm install
+5. php artisan migrate 
+6. php artisan db:seed 
+7. php artisan serve
+8. finished enjoy playing around 
 
 Admin Login Credentials:
 Email: admin@plusme.com   
@@ -28,7 +29,7 @@ Password: admin
 
 ## Deployment
 
-live system [Here]()
+live system [Here](plusme.me)
 
 ## Built With
 
@@ -43,7 +44,7 @@ live system [Here]()
 * **Brian Chen** - [github](https://github.com/brianchenrmit)
 * **Jiawei Guo** - [github]()
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://www.youtube.com/watch?v=dQw4w9WgXcQ) who participated in this project.
 
 ## Acknowledgments
 

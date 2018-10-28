@@ -33,10 +33,12 @@ class HomeController extends Controller
         $locations = Location::all();
         //returns profile picture for a user 
         $userprofile = $user = DB::table('users')->where('id', Auth::id())->value('avatar');
+        
         $UserActiveBooking = DB::table('bookings')->where([
             'is_Active' => 1 ,
             'user_id' => Auth::id()])->first();
         
+            $dt = Carbon::today()->toDateString();
             
         return view('home', compact('users','locations','userprofile', 'UserActiveBooking'));
     }
