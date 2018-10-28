@@ -1,6 +1,5 @@
 @include('layouts.partials.head')
 
-</style>
 <body id="page-top">
     @include('layouts.partials.nav')
     <div id="wrapper">
@@ -36,34 +35,55 @@
                     </div>
                 </div>
                 <br>
-                <!-- <div class="referral"> -->
-                <div class="referral">
-                        <!-- Output Referral Link -->
-                        @forelse(auth()->user()->getReferrals() as $referral)
-                        <?php
 
-                        $referrallink = "$referral->link";
-                        ?>
-                            <br>
-                            <h1>Referrals</h1>
-                            <h4>{{ $referral->program->name }}</h4>
-                            <code id="referrallink">{{ $referral->link }}</code>
-                            <br><br>
+                <!-- Button trigger referral modal -->
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#referralsModalCenter">
+                Get Referral Code
+                </button>
 
-                            <!-- The button used to copy the text -->
-                            <button type="button" class="btn btn-primary" data-toggle="modal" onclick="copyToClipboard('#referrallink')">
-                                Copy Link
-                            </button>
-                            <div class="fb-share-button" data-href="<?php echo $referrallink ?>" data-layout="button" data-size="large" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2F127.0.0.1%3A8000%2Fregister%3Fref%3De350934e-c09e-11e8-a5eb-f832e43def64&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div>
-                            <br>
-
-
-                            <br><p>Number of referred users: {{ $referral->relationships()->count() }}</p>
-                        @empty
-                            No referrals
-                        @endforelse
+                <!-- Modal -->
+                <div class="modal fade" id="referralsModalCenter" tabindex="-1" role="dialog" aria-labelledby="referralModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="referralModalLongTitle">Your referral code</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                    <!-- END referral -->
+                    <div class="modal-body">
+                        <p>Share this code to get neat discounts</p> 
+                            <!-- Output Referral Link -->
+                            @forelse(auth()->user()->getReferrals() as $referral)
+                                        <?php
+
+                                        $referrallink = "$referral->link";
+                                        ?>
+                                            
+                                            <h4>{{ $referral->program->name }}</h4>
+                                            <code id="referrallink">{{ $referral->link }}</code>
+                                            <br><br>
+
+                                            <!-- The button used to copy the text -->
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" onclick="copyToClipboard('#referrallink')">
+                                                Copy Link
+                                            </button>
+                                            <div class="fb-share-button" data-href="<?php echo $referrallink ?>" data-layout="button" data-size="large" data-mobile-iframe="true"><a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2F127.0.0.1%3A8000%2Fregister%3Fref%3De350934e-c09e-11e8-a5eb-f832e43def64&amp;src=sdkpreparse" class="fb-xfbml-parse-ignore">Share</a></div>
+                                            <br>
+
+
+                                            <br><p>Number of referred users: {{ $referral->relationships()->count() }}</p>
+                                        @empty
+                                            No referrals
+                                        @endforelse
+                            </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                    </div>
+                </div>
+                </div>               
+
                 </div>
                 <!-- Profile Picture -->
             <div class="col-sm-9 container-profile">

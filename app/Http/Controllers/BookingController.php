@@ -49,8 +49,6 @@ class BookingController extends Controller
         return view('admin.bookings', compact('bookings', 'qbooking'));
     }
 
-
-
     //show bookings (for admin page)
     public function Index(){
         $bookings = Booking::paginate(35);
@@ -62,7 +60,6 @@ class BookingController extends Controller
 
 
     }
-
     //creates bookings for customer 
     public function createBooking(Request $request){
 
@@ -144,6 +141,4 @@ class BookingController extends Controller
         */
         
     }
-    
-    
 }

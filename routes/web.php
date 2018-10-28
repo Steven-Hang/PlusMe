@@ -10,6 +10,9 @@ use App\Location;
 | contains the "web" middleware group. Now create something great!
 |
 */
+//ROUTES FOR Google Login Redirect 
+Route::get('/redirect', 'Auth\LoginController@redirectToProvider');
+Route::get('/callback', 'Auth\LoginController@handleProviderCallback');
 
 //ROUTES FOR MESSAGING SYSTEM
 Route::group(['prefix' => 'messages'], function () {

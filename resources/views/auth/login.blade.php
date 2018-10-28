@@ -63,6 +63,11 @@
                 </button>
             </div>
         </form>
+        <!-- Google Login -->
+        <div class="mb-3">
+            <p>Login with Google</p>
+            <a href="/redirect"><img src="../css/icons/google_logo.png" height='30px' width='30px'></a>
+        </div>
         <div class="mb-3">
             <span class="noaccount">
                 Don’t have an account?

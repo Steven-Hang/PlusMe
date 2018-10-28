@@ -15,16 +15,18 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('google_id');
             $table->string('first_name');
             $table->string('last_name');
-            $table->date('date_of_birth');     
-            $table->integer('contact_number');
+            $table->date('date_of_birth')->nullable();     
+            $table->integer('contact_number')->nullable();
             $table->string('email')->unique();
-            $table->string('password');
-            $table->integer('licence_number');
-            $table->boolean('terms');
+            $table->string('password')->nullable();
+            $table->integer('licence_number')->nullable();
+            $table->boolean('terms')->nullable();
             $table->string('avatar')->default('profile.png');
             $table->string('rating')->default('Good Standing');
+            $table->string('avatar_original')->nullable();
             $table->boolean('is_activated')->default(false);
             $table->boolean('is_admin')->default(false);
             $table->boolean('is_Warning')->default(false);
