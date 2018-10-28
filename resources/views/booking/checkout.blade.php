@@ -3,9 +3,8 @@
 @section('content')
   <title>PlusMe - Payment </title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://js.braintreegateway.com/web/dropin/1.8.1/js/dropin.min.js"></script>
-
-</head>
+  <script src="https://www.paypalobjects.com/api/checkout.js"></script>
+  
 <body>
   <div class="container">
     <div class="row">
@@ -14,37 +13,22 @@
       <p>First Name: {{$user->first_name}}</p> 
       <P>Last Name: {{$user->last_name}}</p>
       <P>Price: ${{$fprice}}</p>
-      <a href="{{route('booking.complete')}}">Complete Booking Route</a>
-       </div>
-       
-       <div class="col">
-       <div id="dropin-container"></div>
-         <button id="submit-button">Request payment method</button>
-       </div>
-     </div>
-     </div>
-  </div>
-  
-  <!-- script in order to run braintree api -->
-  <script>
-    var button = document.querySelector('#submit-button');
+  <hr>
+  <form class="w3-container w3-display-middle w3-card-4 " method="POST" id="payment-form"  action="/booking/checkout/payment">
+      {{ csrf_field() }}
+      <h2 class="w3-text-blue">Payment Form</h2>
+      <p>Please Use the Details Following to Complete Booking: </p>
+      <p>Email: Test_PlusMeUser@mail.com</p>
+      <p> Password:  Plusme12345</p>
+          
+      <input  class="" name="amount" type="hidden" value="{{$fprice}}"></p>      
+      <button class="">Pay with PayPal</button></p>
+  </form>
+  <hr>
+  <p>Skip Paypal - Just Book Me Already! </p>
+    <a href="{{route('booking.complete')}}">Complete Booking Route</a>
+    
 
-    braintree.dropin.create({
-      authorization: "{{ Braintree_ClientToken::generate() }}",
-      container: '#dropin-container'
-    }, function (createErr, instance) {
-      button.addEventListener('click', function () {
-        instance.requestPaymentMethod(function (err, payload) {
-          $.get('{{ route('payment.process') }}', {payload}, function (response) {
-            if (response.success) {
-              alert('Payment successfull!');
-            } else {
-              alert('Payment failed');
-            }
-          }, 'json');
-        });
-      });
-    });
-  </script>
+  
 </body>
 @endsection

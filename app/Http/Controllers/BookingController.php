@@ -72,7 +72,7 @@ class BookingController extends Controller
         $locationAddress = DB::table('locations')->where('id', $locationId)->first();
         //calculates price for a booking 
         $totalDuration = $sDate->diffInHours($eDate); 
-        $price  = $totalDuration * 5; 
+        $price  = $totalDuration * 3; 
 
          $validator = Validator::make($request->all(), [
             'start_date' => 'required',
