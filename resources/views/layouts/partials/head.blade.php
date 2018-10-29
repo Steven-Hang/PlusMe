@@ -15,6 +15,8 @@
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}" defer></script>
         <script type="text/javascript" src="{{asset('js/vue.js')}}"></script>
+        <script src="js/bootstrap-tour.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
         <!-- Fonts -->
         <link rel="dns-prefetch" href="https://fonts.gstatic.com">
@@ -26,6 +28,7 @@
         <link href="{{ asset('css/app.css') }}" rel="stylesheet">
         <link href="{{ asset('css/custom.css') }}" rel="stylesheet">
         <link href="{{ asset('css/about.css') }}" rel="stylesheet">
+        <link href="css/bootstrap-tour.min.css" rel="stylesheet">
 
  </head>
 

@@ -4,37 +4,35 @@
 <div class="container">
     <h1> Review and Add-on </h1>
     <div class="form-group col-md-12">
-     
+
             <div class="col pickup-location-same">
-                <label class="row">Pickup Location</label>
-                <label class="row">{{$locationAddress->address}}</label>
+                <label class="row">Pickup Location: {{$locationAddress->address}}</label>
                 <label class="row"></label>
             </div>
             <div class="col pickup-date-same">
-                <label class="row">Start Date</label>
-                <label class="row">{{$start_date}}</label>       
+                <label class="row">Start Date: {{$start_date}}</label>
             </div>
             <div class="col return-date-same">
-                <label class="row">Return Date</label>
-                <label class="row"> {{$end_date}}</label>
-                <label class="row">Price</label>
-                <label class="row">${{$price}}</label>
+                <label class="row">Return Date: {{$end_date}}</label>
             </div>
-   
+            <div class="col price-same">
+                <label class="row">Price: ${{$price}}</label>
+            </div>
+
     <form  action="{{ route('booking.payment')}}">
     <input type="hidden" name="price" value="{{$price}}"/>
-    
-    <button type="submit" class="btn btn-primary" style="height: 40px;">Proceed to Payment</button>
+
+    <button type="submit" id="submitBooking" height=66px width=200px>Proceed to Payment</button>
     </form>
     </div>
     <br />
     <br />
-    <div class="progress" style="margin: 10px 0">
+    <div class="progress" style="margin: 10px 0;">
         <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 25%">
             <span class="sr-only">25%</span>
         </div>
     </div>
-    
+
     <div class="card-deck mb-3 text-center">
         <div class="card mb-4 box-shadow">
             <div class="card-header">

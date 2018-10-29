@@ -5,39 +5,45 @@
     <div id="wrapper">
         @include('layouts.partials.sidebar')
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
-            <h2>My Booking History</h2>
-                <div class="panel-group" id="accordion">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h2> Active Booking </h2>
-                                <h4 class="panel-title">
-                                @foreach($activeBooking as $activeBooking)
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">{{$activeBooking->id}}</a>
-                                </h4>
-                            </div>
-                            <div id="collapse1" class="panel-collapse collapse in">
-                                <div class="panel-body">
-                        <p><strong>car</strong><br>type:<br>pick up:<br>return: Not returned yet<br>Payment:</p>
-
+            <h2 class="pb-3 border-bottom border-light">My Booking History</h2>
+            <div id="bookingList">
+                <h3> Active Booking </h3>
+                 @foreach($activeBooking as $activeBooking)
+                <div class="card">
+                    <div class="card-header">
+                            Booking ID: {{$activeBooking->id}}
                     </div>
-                    @endforeach
-
-            <h2> Booking History </h2>
-
-            @foreach($pastBooking as $pastBookings)
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                        <h4 class="panel-title">
-                            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">{{$pastBookings->id}}</a>
-                        </h4>
+                    <div class="card-body">
+                            <p><strong>cartype: </strong><br><strong>pick up: </strong></p>
                     </div>
-           
-            <div id="collapse2" class="panel-collapse collapse">
-                <div class="panel-body">
-                    <p><strong>car</strong><br>type:{{$pastBookings->start_date}}<br>pick up:<br>return:{{$pastBookings->end_date}}<br>Payment:</p>
                 </div>
+                @endforeach
+                <br>
+                <h3> Past Bookings </h3>
+                @foreach($pastBooking as $pastBookings)
+                <div class="card" id="accordion">
+                    <div class="card-header">
+                        <a class="collapsed card-link" data-toggle="collapse" href="#collapse">
+                            Booking ID: {{$pastBookings->id}}
+                    </a>
+                    </div>
+                    <div id="collapse" class="collapse" data-parent="#accordion">
+                        <div class="card-body">
+                            <p><strong>cartype: </strong><br>pick up: {{$pastBookings->start_date}}<br>return:{{$pastBookings->end_date}}</p>
+
+                        </div>
+                    </div>
+                </div>
+                @endforeach
             </div>
-            @endforeach
+
+
+
+
+
+
+
+
         </main>
 
     </div>

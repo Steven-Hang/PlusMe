@@ -1,6 +1,6 @@
 <!-- Navigation Bar -->
 <nav class="navbar navbar-expand-lg navbar-light bg-white">
-    <div class="container-fluid">
+    <div class="container-fluid px-0">
         <!-- Left Side Of Navbar -->
         <a class="navbar-brand" href="{{ url('/') }}">
             <img src="/css/images/logo.png" width="40" height="40" alt="">
@@ -24,11 +24,7 @@
                 </li>
                 @else
 
-                <li class="nav-item" >
-                    <a class="nav-link mx-2" href="/messages">
-                        Messages @include('messenger.unread-count')
-                    </a>
-                </li>
+
                 <!-- First Name of the user -->
                 <li class="nav-item">
                     <a class="nav-link mx-2" href="/dashboard" >
@@ -38,6 +34,11 @@
 
                 <li class="nav-item">
                     <a class="nav-link mx-2" href="{{ route('user.show', Auth::user()->id) }}">Profile</a>
+                </li>
+                <li class="nav-item" >
+                    <a class="nav-link mx-2" href="/messages">
+                        Messages @include('messenger.unread-count')
+                    </a>
                 </li>
                  <!-- Logout of the user -->
                  <li class="nav-item">
