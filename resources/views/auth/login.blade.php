@@ -45,18 +45,19 @@
                 @endif
                 <span class="focus-input"></span>
             </div>
-
-                <div class="contact-form-checkbox">
+            <div class="row">
+                <div class="col-md-6 contact-form-checkbox">
                     <input class="input-checkbox" type="checkbox" name="remember" id="remember" value="{{ old('remember') ? 'checked' : '' }}">
                     <label class="label-checkbox" for="remember">
                         {{ __('Remember Me') }}
                     </label>
                 </div>
-                <div>
+                <div class="col-md-6">
                     <a class="forgetpwd" href="{{ route('password.request') }}">
                             {{ __('Forgot Your Password?') }}
                     </a>
                 </div>
+            </div>
             <div class="container-login-form-btn">
                 <button type="submit" class="login-form-btn">
                     {{ __('Login') }}

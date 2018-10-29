@@ -1,6 +1,5 @@
 <!-- Footer -->
-<footer class="footer bg-white">
-    <div class="container">
+<footer class="footer container bg-white">
         <div class="row">
             <div class="col-lg-6 h-100 text-center text-lg-left my-auto">
                 <ul class="list-inline mb-2">
@@ -37,6 +36,5 @@
                 </li>
                 </ul>
             </div>
-        </div>
     </div>
 </footer>

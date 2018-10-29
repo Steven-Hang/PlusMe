@@ -75,7 +75,7 @@ footer.footer {
     padding-bottom: 2rem;
     position: relative;
     bottom: 0;
-    height: 140px;
+    height: 120px;
   }
 
 .footer-link{
@@ -250,6 +250,7 @@ footer.footer {
     margin-top:160px;
 }
 
+
 @media (max-width: 768px) {
     .overlay-video {
         width: 100%;
@@ -274,14 +275,38 @@ footer.footer {
     cursor: pointer;
     padding: 15px;
   }
+@keyframes imageScaleUp {
+    0% { width:0px;height:0px; }
+    80% {  width:120px;height:120px; }
+    100% {  width:100px;height:100px; }
+}
 
+.features-icons-icon img{
+    width: 100px;
+    height:100px;
+    animation: imageScaleUp;
+    animation-duration:2s;
+    animation-delay: 1s;
+}
 .showcase .showcase-text {
     padding: 3rem;
   }
 
+ @keyframes slideIn-left {
+    100% { left: 0; }
+}
+@keyframes slideIn-right {
+    100% { right: 0; }
+}
   .showcase .showcase-img {
     min-height: 30rem;
     background-size: cover;
+  }
+
+  #showcase-img-2{
+    left: -100%;
+    animation: slideIn-left 1.5s forwards;
+    animation-delay: 2.5s;
   }
 
   @media (min-width: 768px) {
@@ -302,6 +327,13 @@ footer.footer {
     padding-bottom: 7rem;
   }
 
+  #signuplink{
+    color:white;
+}
+
+#signuplink:hover{
+    color:#ff8b48;
+}
 
 /* ---------------------------------------------------
     login.blade.php custom style
@@ -329,11 +361,23 @@ footer.footer {
     margin-left: 10%;
 }
 
+@keyframes scaleUp{
+    0%{width: 600px;}
+    20%{width:580px;}
+    80%{width: 650px;}
+    90%{width:590px;}
+    100%{width: 600px;}
+}
+
 .wrap-login {
     width: 600px;
     background: #fff;
     overflow: hidden;
     position: relative;
+
+    animation: scaleUp;
+    animation-duration:1s;
+
 }
 
 /*---- Title ----*/
@@ -758,6 +802,9 @@ footer.footer {
     background: #fff;
     overflow: hidden;
     position: relative;
+
+    animation: scaleUp;
+    animation-duration:1s;
 }
 
   /*---- Title ----*/
@@ -1300,5 +1347,69 @@ header.faq-masthead h1 {
     margin: 0px 18%;
     }
 
+  /* ---------------------------------------------------
+    Booking custom style
+----------------------------------------------------- */
+.infolabel{
+    font-weight: bold;
+}
+#priceField{
+    font-weight: bold;
+    font-size:36px;
+    color:#ff911c;
+}
+
+#submitBooking {
+	border: none;
+	font-family: inherit;
+	font-size: 14px;
+	color: inherit;
+	background: none;
+	cursor: pointer;
+	display: inline-block;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	outline: none;
+	position: relative;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+    transition: all 0.3s;
+    margin-left: 20px;
+
+	border: 2px solid #ff911c;
+	color: #ff911c;
+}
+
+#submitBooking:after {
+	content: '';
+	position: absolute;
+	z-index: -1;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+    transition: all 0.3s;
+
+    width: 0%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	background: #ff911c;
+}
 
 
+#submitBooking:hover,
+#submitBooking:active {
+	color: #fff;
+}
+
+#submitBooking:hover:after,
+#submitBooking:active:after {
+	width: 100%;
+}
+
+#bookingList{
+    text-align: justify;
+}
+
+#bookingList a{
+    color:black;
+}
