@@ -6,6 +6,7 @@ use App\Location;
 use App\Booking;
 use Illuminate\Support\Facades\DB;
 use Auth;
+use Carbon\Carbon;
 
 
 use Illuminate\Http\Request;
