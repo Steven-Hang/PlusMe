@@ -37,12 +37,12 @@
 
             </div>
             <div class="col-md-8 bookForm">
-                <form method="POST" action="{{ route('booking.process')}}" class="bookForm">
+                <form id="booking_form" method="POST" action="{{ route('booking.process')}}" class="bookForm">
                     @csrf
-                        Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" requried>
-                        End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" requried>
-                        <input type="hidden" id="location_id" name="location_id"/>
-                        <button type="submit" id="submitBooking" name="submitBooking"  class="btn btn-dark" >Book</button>
+                        Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" Required>
+                        End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" Required>
+                        <input type="hidden" id="location_id" name="location_id">
+                        <button type="submit" id="submitBooking" name="submitBooking"  class="btn btn-dark">Book</button>
                 </form>
             </div>
         </div>
@@ -101,11 +101,6 @@
 
             <p> Booking Duration Left (In-Hours): </p>
 
-
-
-            <script>
-            document.getElementById('submitBooking').disabled = true;
-            </script>
         @endif
         <div>
             <!-- display the google map -->
@@ -114,5 +109,7 @@
     </main>
 </div>
 <!-- /#wrapper -->
+
+
 
 @endsection

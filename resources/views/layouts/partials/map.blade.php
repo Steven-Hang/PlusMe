@@ -242,7 +242,11 @@
 	      document.getElementById("startDateField").value = getStartDate;
 
     }
-
+    
+    //jquery which disables booking button until location is selected
+    $("form").submit(function() {
+    if ( !$('#location_id')[0].value ) { return false; }
+    });
 
     function calcHours(){
 
@@ -260,11 +264,11 @@
         document.getElementById("hoursField").innerHTML = diff;
 	      document.getElementById("hoursField").value = diff;
 
-
-
+        //jQuery which enables booking button if fields are filled
+     
 
         //Calc Price Based on Hours
-        var totalCost = diff * 5;
+        var totalCost = diff * 3;
         document.getElementById("hoursField").innerHTML = "$"+totalCost;
         document.getElementById("Pricefield").value = "$"+totalCost;
     }
