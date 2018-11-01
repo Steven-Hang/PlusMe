@@ -9,5 +9,7 @@
         <div id="replyMsg" class="mx-auto">
             @include('messenger.partials.form-message')
         </div>
+       
     </div>
-@stop
+    
+    @endsection

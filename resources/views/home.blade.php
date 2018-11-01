@@ -13,7 +13,7 @@
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav navbar-light bg-white">
         <li  style="border-bottom: 1px solid rgb(222,226,230);">
-            <img class="rounded-circle my-4" id="profilepic" src="/storage/avatars/{{$userprofile}}" width="50px" height="50px">
+            <img class="rounded-circle my-4" id="profilepic" src="{{$userprofile}}"  alt="../storage/avatars/profile.png" width="50px" height="50px">
         </li>
         <li>
             <p class="mt-2 infolabel">Price</p><div id="priceField"><p id="hoursField" name="hoursField"></p></div>
@@ -23,6 +23,7 @@
         </li>
         <p class="infolabel">Selected Location </p><div id="locationField"><p id="info" class="info"></p></div>
         <p>Nearest Parking Locations</p>
+        <div id="locations-near-you"></div>
 
     </ul>
 
@@ -49,17 +50,17 @@
          <!-- Show if User Has Active Booking -->
         @if($UserActiveBooking)
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#ExtendModalCenter">Extend Your Booking </button>
-            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#EndModalCenter">End Your Booking </button>
+            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#ExtendModalCenter">Extend Your Booking </button>
+            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#EndModalCenter">End Your Booking </button>
 
 
-
+            
             <!-- ExtendModal -->
-            <div class="modal fade" id="ExtendModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal fade" id="ExtendModalCenter" tabindex="-1" role="dialog" aria-labelledby="ExtendModalCenterTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Extend Your Booking</h5>
+                    <h5 class="modal-title" id="ExtendModalLongTitle">Extend Your Booking</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>
@@ -74,8 +75,8 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Thank you</button>
-                    <button type="button" class="btn btn-primary">Yes, Please extend my booking.</button>
+                    <button type="button" class="btn btn-dark" data-dismiss="modal">No, Thank you</button>
+                    <button type="button" class="btn btn-dark">Yes, Please extend my booking.</button>
                 </div>
                 </div>
             </div>
@@ -92,15 +93,21 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">No, I change my mind</button>
-                    <a href="{{ route('booking.end')}}" type="button" class="btn btn-primary">Yes, Please End my Booking.</a>
+                    <button type="button" class="btn btn-dark" data-dismiss="modal">No, I change my mind</button>
+                    <a href="{{ route('booking.end')}}" type="button" class="btn btn-dark">Yes, Please End my Booking.</a>
                 </div>
                 </div>
             </div>
             </div>
-
-            <p> Booking Duration Left (In-Hours): </p>
-
+            
+            
+            <p> Booking Duration Left (In-Hours):@if($startDate > $dt) <p> Booking Not Yet Started </p> @else <p> {{$durationleft}}  @endif</p>
+           
+            
+            
+            <script>
+            $( "#submitBooking" ).prop( "disabled", true );
+            </script>
         @endif
         <div>
             <!-- display the google map -->

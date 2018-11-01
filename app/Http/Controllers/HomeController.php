@@ -39,8 +39,17 @@ class HomeController extends Controller
             'is_Active' => 1 ,
             'user_id' => Auth::id()])->first();
         
-            $dt = Carbon::today()->toDateString();
+            $startDate = DB::table('bookings')->where([
+                'is_Active' => 1 ,
+                'user_id' => Auth::id()])->value('start_date'); ;
             
-        return view('home', compact('users','locations','userprofile', 'UserActiveBooking'));
+            $dt = Carbon::today();
+            $enddate = DB::table('bookings')->where([
+                'is_Active' => 1 ,
+                'user_id' => Auth::id()])->value('end_date'); ;
+            
+            $durationleft = $dt->diffInHours($enddate); 
+
+        return view('home', compact('users','locations','userprofile', 'UserActiveBooking', 'durationleft', 'dt','startDate'));
     }
 }

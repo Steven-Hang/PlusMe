@@ -23,7 +23,7 @@
             <div class="col-sm-3">
                 <div class="profile-header-container">
                         <div class="profile-header-img">
-                            <img class="rounded-circle" height="100" width="100" src="/storage/avatars/{{ $user->avatar }}" />
+                            <img class="rounded-circle" height="100" width="100" src="{{ $user->avatar }}" alt="/storage/avatars/profile.png" />
                             <!-- badge -->
                             <div class="rank-label-container">
                             <span class="label label-default rank-label">{{$user->name}}</span>

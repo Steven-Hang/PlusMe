@@ -23,11 +23,10 @@
             const $info = document.getElementById('info');
             var markers= @json($locations);
             var marks = [];
-
-
+            
         //Allows User input to Search
         var input = document.getElementById('pac-input');
-
+        
         //creates function to auto complete map searches
         var autocomplete = new google.maps.places.Autocomplete(input);
         // Set the data fields to return when the user selects a place.
@@ -75,6 +74,9 @@
           var state = marker.state;
           var zip = marker.zip;
           var id = marker.id;
+          
+          document.getElementById("locations-near-you").innerHTML = address;
+
 
         var contentString =
             '<h5 id="firstHeading" class="firstHeading">'+ address +'</h1>'+
@@ -84,7 +86,7 @@
             '<button onclick="selectSedan()"> Sedan </button>'+ "(Available)" +'<br>'+
             '<button onclick="selectHatchback()"> Hatchback </button>'+ "(Available)" +'<br>'+
             '</p>';
-
+          
 
         var location = new google.maps.LatLng(marker.lat,marker.lng);
 
@@ -104,10 +106,11 @@
             document.getElementById('location_id').value = id;
         });
 
+        
         return marker;
 
-        }//END addMarkerToMapFu
-
+        }//END addMarkerToMap
+  
         var myLatLng = {lat: -37.809277, lng: 144.960712};
 
         var RMITmarkeroptions = {
@@ -125,28 +128,7 @@
           map: map,
           title: 'Location Here!'
         });
-        
-        function findNearestMarker(coords) {
-          var minDist = 1000,
-            nearest_text = '*None*',
-            markerDist,
-            // get all objects added to the map
-            objects = map.getObjects(),
-            len = map.getObjects().length,
-            i;
-
-          // iterate over objects and calculate distance between them
-          for (i = 0; i < len; i += 1) {
-            markerDist = markers[i].getPosition().distance(coords);
-            if (markerDist < minDist) {
-              minDist = markerDist;
-              nearest_text = markers[i].getData();
-            }
-          }
-
-          alert('The nearest marker is: ' + nearest_text);
-        }
-        
+     
         function addClickEventListenerToMap(map) {
           // add 'tap' listener
           map.addEventListener('tap', function (evt) {
@@ -159,17 +141,7 @@
         infowindow.open(map, marker);
         });
 
-         //Radius around User Location Marker
-         var radiusAroundUser = new google.maps.Circle({
-           strokeColor: '#FF0000',
-           strokeOpacity: 0.8,
-           strokeWeight: 2,
-           fillColor: '#FF0000',
-           fillOpacity: 0.35,
-           map: map,
-           center: userLocation,
-           radius: Math.sqrt(userLocation) * 100
-          });
+        
          //User Location Marker
          var userLocation = new google.maps.Marker({
           map: map,
@@ -184,8 +156,21 @@
         } else {
           userLocation.setAnimation(google.maps.Animation.BOUNCE);
         }
-      }
+      }   
+      
 
+      //Radius around User Location Marker
+      var radiusAroundUser = new google.maps.Circle({
+                strokeColor: '#82CAFF',
+                strokeOpacity: 0.8,
+                strokeWeight: 2,
+                fillColor: '#82CAFF',
+                fillOpacity: 0.35,
+                map: map,
+                radius: 450
+                });
+        radiusAroundUser.bindTo('center', userLocation, 'position');
+       
         //geolocation FIND USER LOCATION and Track.
         if (navigator.geolocation) {
           navigator.geolocation.watchPosition(function(position) {

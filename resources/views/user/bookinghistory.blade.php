@@ -14,7 +14,7 @@
                             Booking ID: {{$activeBooking->id}}
                     </div>
                     <div class="card-body">
-                            <p><strong>cartype: </strong><br><strong>pick up: </strong></p>
+                            <p><strong>cartype:  </strong><br>Booked Date: {{$activeBooking->location_id['id']}} {{$activeBooking->start_date}}<br>Return Date:{{$activeBooking->end_date}} <br> Price of Trip: ${{$activeBooking->price}}<br> Pick-up Location ID: {{$activeBooking->location_id}} <br> Return Confirmed: @if($returned == "1")<p>Yes</p> @else <p> No </p> @endif </p>
                     </div>
                 </div>
                 @endforeach
@@ -29,7 +29,7 @@
                     </div>
                     <div id="collapse" class="collapse" data-parent="#accordion">
                         <div class="card-body">
-                            <p><strong>cartype: </strong><br>pick up: {{$pastBookings->start_date}}<br>return:{{$pastBookings->end_date}}</p>
+                            <p><strong>cartype: </strong><br>Booked Date: {{$pastBookings->location_id['id']}} {{$pastBookings->start_date}}<br>Return Date:{{$pastBookings->end_date}} <br> Price of Trip: ${{$pastBookings->price}}<br> Pick-up Location ID: {{$pastBookings->location_id}} <br> Return Confirmed: @if($returned == "1")<p>Yes</p> @else <p> No </p> @endif </p>
 
                         </div>
                     </div>

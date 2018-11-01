@@ -318,7 +318,7 @@ footer.footer {
   .call-to-action {
     position: relative;
     background-color: #343a40;
-    background: url("./images/parkinglot.jpg") no-repeat center center;
+    background: url("./images/calltoAction.jpg") no-repeat center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
