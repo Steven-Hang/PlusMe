@@ -1,5 +1,9 @@
 @include('layouts.partials.head')
-
+<style>
+    input:focus{
+        border: 1px solid rgb(54,84,99,0.7);
+    }
+</style>
 <body id="page-top">
     @include('layouts.partials.nav')
     <div id="wrapper">
@@ -9,18 +13,18 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom border-dark">
                 <h1 class="h1">Parking lot</h1>
                 <form action="{{route('Location.search')}}">
-                <div class="input-group col-md-6 mb-2">
-                    <input type="text" name="q" class="form-control" placeholder="Search" aria-label="search" aria-describedby="basic-addon2">
+                    <div class="input-group mb-1">
+                    <input type="text" name="q" class="form-control" placeholder="Search by ID" aria-label="search" aria-describedby="basic-addon2">
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit">Search</button>
                     </div>
-                </div>
+                    </div>
 
                 </form>
                 <div class="btn-toolbar mb-2">
                     <div class="download btn-group mr-2">
                     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#LocationModal">Add Location</button>
-                    
+
                         <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="../css/icons/download.png" width="24px"></button>
                         <button class="btn btn-sm btn-outline-light" style="padding-left:15px;padding-right:15px;"><img src="../css/icons/print.png" width="24px"></button>
                     </div>
@@ -63,7 +67,7 @@
                       </form>
                     </td>
                 </tr>
-                @endif 
+                @endif
                 @foreach($locations as $location)
                 <tr>
                     <td>{{$location->id}}</td>
@@ -88,7 +92,7 @@
             </table>
 
       </div>
-  
+
 
       <!-- Add Location Modal -->
   <div class="modal fade" id="LocationModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -135,7 +139,7 @@
             </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> 
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
       </div>
     </div>
   </div>

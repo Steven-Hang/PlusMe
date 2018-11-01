@@ -1,5 +1,9 @@
 @include('layouts.partials.head')
-
+<style>
+    input:focus{
+        border: 1px solid rgb(54,84,99,0.7);
+    }
+</style>
 <body id="page-top">
     @include('layouts.partials.nav')
     <div id="wrapper">
@@ -8,8 +12,8 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom border-dark">
                 <h1 class="h1">Users</h1>
             <form action="{{route('user.search')}}" >
-                <div class="input-group col-md-6 mb-2">
-                    <input type="text" name="q" class="form-control" placeholder="Search" aria-label="search" aria-describedby="basic-addon2">
+                    <div class="input-group mb-1">
+                    <input type="text" name="q" class="form-control" placeholder="Search by ID" aria-label="search" aria-describedby="basic-addon2">
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit">Search</button>
                     </div>
@@ -38,7 +42,7 @@
       </tr>
     </thead>
     <tbody>
-    
+
     @if($qUser)
     <tr>
         <td>{{$qUser->id}}</td>
@@ -50,7 +54,7 @@
         <td>{{$qUser->licence_number}}</td>
         <td><a href="" class="btn">Edit</a></td>
     </tr>
-    @endif 
+    @endif
 
       @foreach($users as $user)
     <tr>

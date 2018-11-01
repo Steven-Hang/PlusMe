@@ -1,4 +1,9 @@
 @include('layouts.partials.head')
+<style>
+    input:focus{
+        border: 1px solid rgb(54,84,99,0.7);
+    }
+</style>
 <body id="page-top">
     @include('layouts.partials.nav')
     <div id="wrapper">
@@ -8,9 +13,11 @@
                 <h1 class="h1">Bookings</h1>
                 <div class="input-group col-md-6 mb-2">
                 <form action="{{ route('booking.search')}}" >
+                    <div class="input-group mb-1">
                     <input type="text" class="form-control" placeholder="Search by Booking ID" aria-label="search" aria-describedby="basic-addon2"  name="q">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="sumbit">Search By Booking ID</button>
+                        <button class="btn btn-outline-secondary" type="sumbit">Search</button>
+                    </div>
                     </div>
                 </div>
                 </form>
@@ -24,18 +31,18 @@
               <!-- table -->
               <div class="table-responsive" style="background-color:white;opacity:0.98;">
             <table class="table table-sm">
-            
+
               <thead>
-              {{ $bookings->links() }}  
+              {{ $bookings->links() }}
                 <tr>
-                  <th>ID</th> 
+                  <th>ID</th>
                   <th>Start Date</th>
                   <th>End Date</th>
                   <th>Cost</th>
                   <th>Active?</th>
                   <th>User ID</th>
-                  <th>Location ID</th>     
-                  <th>Action</th>           
+                  <th>Location ID</th>
+                  <th>Action</th>
                   <th>Location Confirmed</th>
                   <th>Booking Hours Left</th>
                 </tr>
@@ -52,9 +59,9 @@
                     <td>{{$qbooking->location_id}}</td>
                     <td><a href="" class="btn">Edit</a></td>
                 </tr>
-                @endif 
+                @endif
                 @foreach($bookings as $booking)
-                
+
                     <td>{{$booking->id}}</td>
                     <td>{{$booking->start_date}}</td>
                     <td>{{$booking->end_date}}</td>
@@ -66,10 +73,10 @@
                     <td>{{$booking->location_confirm}}</td>
                     <td>{{$booking->location_duration}}</td>
 
-                    
+
                     <td>
-                   
-                  
+
+
                     </td>
                   </tr>
                   @endforeach

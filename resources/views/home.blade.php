@@ -29,20 +29,18 @@
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
         <div class="row mb-2 mapSerBar">
 
-            <div class="col-md-4 search-container ">
-                <input class="border py-2 px-1" id="pac-input" type="text" placeholder="Please enter a location....." name="search" size=30px;>
-
+            <div class="col-lg-2 search-container">
+                <input class="border py-1 px-1 my-1  mx-2" id="pac-input" type="text" placeholder="Please enter a location....." name="search">
                 <input type="hidden" id="startDateField" name="">
                 <input type="hidden" id="endDateField" name="">
-
             </div>
-            <div class="col-md-8 bookForm">
+            <div class="col-lg-10 bookForm">
                 <form method="POST" action="{{ route('booking.process')}}" class="bookForm">
                     @csrf
-                        Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" requried>
-                        End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" requried>
-                        <input type="hidden" id="location_id" name="location_id"/>
-                        <button type="submit" id="submitBooking" name="submitBooking"  class="btn btn-dark" >Book</button>
+                    <span>Start-Date: <input class="border py-1 px-1 my-1 mx-2" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" requried></span>
+                    <span>End-Date:<input class="border py-1 px-1 my-1 mx-2" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" requried></span>
+                    <input type="hidden" id="location_id" name="location_id"/>
+                    <span><button class="px-4 py-1 mx-2" type="submit" id="submitBooking" name="submitBooking">Book</button></span>
                 </form>
             </div>
         </div>

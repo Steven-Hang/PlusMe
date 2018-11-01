@@ -1,5 +1,9 @@
 @include('layouts.partials.head')
-
+<style>
+    input:focus{
+        border: 1px solid rgb(54,84,99,0.7);
+    }
+</style>
 <body id="page-top">
     @include('layouts.partials.nav')
     <div id="wrapper">
@@ -9,7 +13,7 @@
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom border-dark">
                 <h1 class="h1">Vehicles</h1>
                 <form action="{{route('vehicles.search')}}">
-                <div class="input-group col-md-6 mb-2">
+                        <div class="input-group mb-1">
                     <input type="text" name="q" class="form-control" placeholder="Search" aria-label="search" aria-describedby="basic-addon2">
                     <div class="input-group-append">
                         <button class="btn btn-outline-secondary" type="submit">Search</button>
@@ -23,7 +27,7 @@
                     </div>
                 </div>
             </div>
-            <div class="table-responsive" style="background-color:white;opacity:0.98;">
+            <div class="table-responsive">
             <table class="table table-sm">
               <thead>
                 <tr>
@@ -54,7 +58,7 @@
                     </form>
                   </td>
                 </tr>
-                @endif 
+                @endif
               @foreach($vehicles as $vehicle)
                 <tr>
                   <td>{{$vehicle['id']}}</td>
@@ -74,9 +78,6 @@
                 @endforeach
               </tbody>
             </table>
-            <div id="pageno" style="margin:15px;">
-                <span>1</span> of  <span>1</span>
-            </div>
           </div>
 
         </main>
