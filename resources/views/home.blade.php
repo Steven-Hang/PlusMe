@@ -13,7 +13,11 @@
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav navbar-light bg-white">
         <li  style="border-bottom: 1px solid rgb(222,226,230);">
-            <img class="rounded-circle my-4" id="profilepic" src="{{$userprofile}}"  alt="../storage/avatars/profile.png" width="50px" height="50px">
+        @if($userprofile = "profile.png")
+            <img class="rounded-circle my-4" id="profilepic" src="../storage/avatars/{{$userprofile}}"  alt="profile picture" width="50px" height="50px">
+        @else
+            <img class="rounded-circle my-4" id="profilepic" src="{{$userprofile}}"  alt="profile picture" width="50px" height="50px">
+        @endif
         </li>
         <li>
             <p class="mt-2 infolabel">Price</p><div id="priceField"><p id="hoursField" name="hoursField"></p></div>

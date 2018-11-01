@@ -1,5 +1,5 @@
 <!-- Navigation Bar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-white">
+<nav class="navbar navbar-expand navbar-light bg-white">
     <div class="container-fluid px-0">
         <!-- Left Side Of Navbar -->
         <a class="navbar-brand" href="{{ url('/') }}">
