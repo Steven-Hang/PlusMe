@@ -79,7 +79,7 @@ class LoginController extends Controller
         try {
             $user = Socialite::driver('google')->user();
         } catch (\Exception $e) {
-            return redirect('/login');
+            return redirect('/login')->with('sorry try again');
         }
         // check if they're an existing user
         $existingUser = User::where('email', $user->email)->first();
@@ -93,13 +93,13 @@ class LoginController extends Controller
             $newUser->last_name       = $user->user['name']['familyName'];
             $newUser->email           = $user->email;
             $newUser->google_id       = $user->id;
-            $newUser->password        = md5(rand(1,10000));
-            $newUser->avatar          = $user->avatar;
+            $newUser->password        = bcrypt(rand(60,60));
+            $newUser->avatar          = "profile.png";
             $newUser->avatar_original = $user->avatar_original;
             $newUser->terms = 1;
             $newUser->is_activated = 1;
             $newUser->save();
-            Auth::loginUsingId($newUser->id);
+            auth()->login($newUser, true);
         }
         return redirect()->to('/dashboard');
     }

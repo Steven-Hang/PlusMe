@@ -23,11 +23,8 @@
             <div class="col-sm-3">
                 <div class="profile-header-container">
                         <div class="profile-header-img">
-                        @if($userprofile = "profile.png")
-                            <img class="rounded-circle" height="100" width="100" src="../storage/avatars/{{$userprofile}}" alt="/storage/avatars/profile.png" />
-                        @else
-                            <img class="rounded-circle my-4" id="profilepic" src="{{$userprofile}}"  alt="profile picture" width="50px" height="50px">
-                        @endif
+                            <img class="rounded-circle my-4" id="profilepic" src="../storage/avatars/{{$user->avatar}}"  alt="profile picture" width="50px" height="50px">
+                      
                             <!-- badge -->
                             <div class="rank-label-container">
                             <span class="label label-default rank-label">{{$user->name}}</span>

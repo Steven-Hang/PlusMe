@@ -3,10 +3,14 @@
     @include('layouts.partials.nav')
     <div id="wrapper">
         @include('layouts.partials.adminsidebar')
-      <div id="content-wrapper">
-        <div class="container">
-          <!-- Icon Cards-->
-          <div class="row">
+        <div class="col-md-12">
+          <div class="row-md-12">
+        <a class="weatherwidget-io" href="https://forecast7.com/en/n37d81144d96/melbourne/" data-label_1="MELBOURNE" data-label_2="Melbourne" data-theme="original" data-basecolor="#ffffff" data-textcolor="#f6ae45" >MELBOURNE Melbourne</a>
+          <script>
+          !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src='https://weatherwidget.io/js/widget.min.js';fjs.parentNode.insertBefore(js,fjs);}}(document,'script','weatherwidget-io-js');
+          </script>
+        </div>
+        <div class="row">
             <div class="col-xl-4 col-sm-6 mb-4">
               <div class="card text-dark bg-warning o-hidden h-100">
                 <div class="card-body">
@@ -85,8 +89,8 @@
 
     </div>
     <!-- /#wrapper -->
-
-
+        </div>
+        </div><!--end wrapper-->
   </body>
 
 </html>

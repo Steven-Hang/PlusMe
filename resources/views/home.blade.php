@@ -8,16 +8,11 @@
     }
 </style>
 @section('content')
-
 <div id="wrapper">
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav navbar-light bg-white">
         <li  style="border-bottom: 1px solid rgb(222,226,230);">
-        @if($userprofile = "profile.png")
             <img class="rounded-circle my-4" id="profilepic" src="../storage/avatars/{{$userprofile}}"  alt="profile picture" width="50px" height="50px">
-        @else
-            <img class="rounded-circle my-4" id="profilepic" src="{{$userprofile}}"  alt="profile picture" width="50px" height="50px">
-        @endif
         </li>
         <li>
             <p class="mt-2 infolabel">Price</p><div id="priceField"><p id="hoursField" name="hoursField"></p></div>
@@ -44,8 +39,8 @@
             <div class="col-md-8 bookForm">
                 <form id="booking_form" method="POST" action="{{ route('booking.process')}}" class="bookForm">
                     @csrf
-                        Start Date: <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" Required>
-                        End Date:<input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" Required>
+                    <span>Start Date:</span> <input class="border py-2 px-1" type="date" placeholder="Start Time....." id="startDate" name="start_date" onchange="updateStartDate()" Required>
+                    <span>End Date:</span><input class="border py-2 px-1" type="date" placeholder="End Time......" id="endDate" name="end_date" onchange="calcHours()" Required>
                         <input type="hidden" id="location_id" name="location_id">
                         <button type="submit" id="submitBooking" name="submitBooking"  class="btn btn-dark">Book</button>
                 </form>
@@ -102,12 +97,9 @@
                 </div>
             </div>
             </div>
-            
-            
+
             <p> Booking Duration Left (In-Hours):@if($startDate > $dt) <p> Booking Not Yet Started </p> @else <p> {{$durationleft}}  @endif</p>
-           
-            
-            
+
             <script>
             $( "#submitBooking" ).prop( "disabled", true );
             </script>
@@ -122,9 +114,31 @@
     </main>
 </div>
 <!-- /#wrapper -->
+<style>
+    .mapSerBar input{
+        border-radius: 20px !important;
+    }
+    @media screen and (max-width:750px){
+        #wrapper{
+            flex-wrap:wrap;
+        }
+        .sidebar{
+            width:100% !important;
+            min-height:0 !important;
+            margin-bottom: 60px;
+        }
+        .bookForm input{
+            margin-bottom: 10px !important;
+        }
+        .search-container{
+            margin-bottom: 10px;
+        }
+    }
+</style>
+
+
 
 <script>
-    
 // Instance the tour
 var tour = new Tour({
   steps: [
@@ -140,7 +154,7 @@ tour.init();
 
 // Start the tour
 tour.start();
-tour.exit();
+
 </script>
 
 @endsection
