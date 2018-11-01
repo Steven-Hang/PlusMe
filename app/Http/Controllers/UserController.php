@@ -5,6 +5,8 @@ use Auth;
 use Hash;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\Paginator;
+
 
 class UserController extends Controller
 {
@@ -16,18 +18,22 @@ class UserController extends Controller
         $qUser = Null;
         return view('admin.users', compact('users', 'qUser'));
     }
-    //Edit 
-    public function edit()
-    {
-        $users = User::all();
-        return view('admin.users', compact('users'));
-    }
-    public function update()
-    {
-        $users = User::all();
-        return view('admin.users', compact('users'));
+ 
+    
+    public function userUpdate(Request $request, $id){
+        $users = User::paginate(15);
+        $user = User::find($id);
+        $user->is_banned=$request->get('isBan');
+        $user->save();
+        $qUser = NULL;
+        return view('admin.users', compact('users', 'qUser'));
     }
 
+    public function edit($id)
+    {
+    $user = User::find($id);
+    return view('admin.user.edit',compact('user','id'));
+    }
 
     public function __construct()
     {

@@ -10,7 +10,7 @@ use Illuminate\Pagination\Paginator;
 
 class LocationsController extends Controller
 {
-    //
+    //show all locations stored in database
     public function index()
     {
         $qlocation= NULL;
@@ -55,6 +55,7 @@ public function edit($id)
         return view('admin.parkinglot', compact('locations', 'qlocation'));
     }
 
+    
 
 
     public function update(Request $request, $id)

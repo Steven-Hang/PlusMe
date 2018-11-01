@@ -76,6 +76,8 @@ Route::get('avehicles','VehiclesController@index')->name('avehicles');
 Route::get('avehicles/search','VehiclesController@search')->name('vehicles.search');
 Route::get('ausers','UserController@index')->name('ausers');
 Route::get('ausers/search', 'UserController@searchUser')->name('user.search');
+Route::post('ausers/edit/user', 'UserController@edit')->name('user.edit');
+Route::get('ausers/{id}/edit/update', 'UserController@userUpdate')->name('user.update');
 Route::get('aparkinglot','LocationsController@index')->name('aparkinglot');
 Route::get('anotifications','PagesController@notification')->name('anotifications');
 Route::get('adminprofile','PagesController@adminprofile')->name('adminprofile');

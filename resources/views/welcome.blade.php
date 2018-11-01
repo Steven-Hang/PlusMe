@@ -71,10 +71,10 @@
                 </div>
             </div>
                 <div class="row no-gutters">
-                <div class="col-lg-6 order-lg-2 text-white showcase-img" id="showcase-img-3" style="background-image: url('./css/images/cards.jpg');"></div>
-                <div class="col-lg-6 order-lg-1 my-auto showcase-text">
-                    <h2>Easy payment</h2>
-                    <p class="lead mb-0">Master card, credit card, anything you feel comfortable with!</p>
+                <div class="col-lg-12 order-lg-1 my-auto showcase-text">
+                    <h2>5 Star Services</h2>
+                     <p class="lead mb-0">See why we are rated the best <a href="#">Learn more ></a></p>
+                    <img src="./css/images/5-stars.png" height="175px" width="300px">
                 </div>
             </div>
         </div>
@@ -84,7 +84,7 @@
     <section class="call-to-action text-white text-center">
         <div class="container">
             <div class="row">
-                <div class="col-xl-9 mx-auto">
+                <div class="col-xl-12 mx-auto">
                     <h2 class="mb-4">Ready to get started? <a id="signuplink" href="{{ route('register') }}" >Sign up now!</a></h2>
                 </div>
             </div>

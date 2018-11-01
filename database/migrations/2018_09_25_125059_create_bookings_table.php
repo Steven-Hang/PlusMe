@@ -19,6 +19,7 @@ class CreateBookingsTable extends Migration
             $table->date('end_date');
             $table->double('price');
             $table->boolean('is_Active')->default(false);
+            $table->boolean('is_Returned')->default(false);
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('location_id');
             $table->timestamps();

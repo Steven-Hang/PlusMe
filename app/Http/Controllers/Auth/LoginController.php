@@ -43,17 +43,21 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
     
-    //authentication for activation
+    //authentication for activation, admin and user banned redirects
     public function authenticated(Request $request, $user)
     {
         if (!$user->is_activated) {
             auth()->logout();
             return back()->with('warning', 'You need to confirm your account. We have sent you an activation code, please check your email.');
         }elseif($user->is_admin){
-                return redirect('/admin');
+            return redirect('/admin');
+        }elseif($user->is_Banned){
+            auth()->logout();
+            return back()->with('warning', 'Sorry you no longer will be unable to login with this account, please contact plusme support for more information.');
         }
         return redirect()->intended($this->redirectPath());
     }
+
     
     /**
      * Redirect the user to the Google authentication page.

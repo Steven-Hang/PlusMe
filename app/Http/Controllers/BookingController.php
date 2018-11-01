@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Booking;
 use Auth;
 use Mail;
+
 use App\Location;
 use Validator;
 use Carbon\Carbon;
@@ -37,7 +38,10 @@ class BookingController extends Controller
             $pastBookings = Booking::where(['user_id' => Auth::id(),
             'is_Active' => '0'])->get();
 
-            return view('user.bookinghistory', compact('user'))->with('activeBooking', $activeBooking)->with('pastBooking', $pastBookings);
+            $returned = Booking::where(['user_id' => Auth::id(),
+            'is_Active' => '0'])->value('is_Returned');
+            
+            return view('user.bookinghistory', compact('user' , 'returned'))->with('activeBooking', $activeBooking)->with('pastBooking', $pastBookings);
         }
 
     //Search for Booking via id 

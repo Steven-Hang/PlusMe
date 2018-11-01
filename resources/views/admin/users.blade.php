@@ -35,9 +35,10 @@
         <th>First Name</th>
         <th>Last Name</th>
         <th>DOB</th>
-        <th>Cpntact Number</th>
+        <th>Contact Number</th>
         <th>Email</th>
         <th>Licence Number</th>
+        <th>Banned?</th>
         <th colspan="2">Action</th>
       </tr>
     </thead>
@@ -52,6 +53,7 @@
         <td>{{$qUser->contact_number}}</td>
         <td>{{$qUser->email}}</td>
         <td>{{$qUser->licence_number}}</td>
+        <td>{{$qUser->is_Banned}}</td>
         <td><a href="" class="btn">Edit</a></td>
     </tr>
     @endif
@@ -65,7 +67,12 @@
         <td>{{$user['contact_number']}}</td>
         <td>{{$user['email']}}</td>
         <td>{{$user['licence_number']}}</td>
-        <td><a class="">Edit</a></td>
+        @if($user->is_Banned == 1)
+        <td>Yes</td>
+        @else
+        <td>No</td>
+        @endif
+        <td><a href="{{action('UserController@edit', $user['id'])}}">Edit</a></td></td>
         <td>
           <form action="{{action('UserController@destroy', $user['id'])}}" method="post">
             @csrf
@@ -76,6 +83,11 @@
       @endforeach
     </tbody>
   </table>
+ 
+
+
+
+
         </main>
 
     </div>
