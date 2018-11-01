@@ -261,6 +261,8 @@
        var today = new Date().toISOString().split('T')[0];
        document.getElementsByName("start_date")[0].setAttribute('min', today);
        document.getElementsByName("end_date")[0].setAttribute('min', today);
+
+ 
 </script>
 <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQMzhiINq0pfDHofIycq6m_V2dRFULbPc&libraries=places&callback=initMap">

@@ -53,7 +53,6 @@
             <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#ExtendModalCenter">Extend Your Booking </button>
             <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#EndModalCenter">End Your Booking </button>
 
-
             
             <!-- ExtendModal -->
             <div class="modal fade" id="ExtendModalCenter" tabindex="-1" role="dialog" aria-labelledby="ExtendModalCenterTitle" aria-hidden="true">
@@ -108,6 +107,9 @@
             <script>
             $( "#submitBooking" ).prop( "disabled", true );
             </script>
+            @else
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tour/0.11.0/js/bootstrap-tour-standalone.min.js"></script>
+            <link href="../css/bootstrap-tour-standalone.min.css" rel="stylesheet">
         @endif
         <div>
             <!-- display the google map -->
@@ -117,6 +119,24 @@
 </div>
 <!-- /#wrapper -->
 
+<script>
+    
+// Instance the tour
+var tour = new Tour({
+  steps: [
+  {
+    element: "#profilepic",
+    title: "Title of my step",
+    content: "Hi and Welcome to the PlusMe Car Sharing service"
+  }
+]});
 
+// Initialize the tour
+tour.init();
+
+// Start the tour
+tour.start();
+tour.exit();
+</script>
 
 @endsection
