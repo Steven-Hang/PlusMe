@@ -14,11 +14,11 @@ body {
     text-align:center;
 }
 
-input {
+.input {
     outline: none;
     border: none;
 }
-input:focus{
+.input:focus{
     border: none;
     box-shadow: none !important;
 }
@@ -1345,6 +1345,50 @@ header.faq-masthead h1 {
   /* ---------------------------------------------------
     Booking custom style
 ----------------------------------------------------- */
+
+.bookingform .form-group {
+	position: relative;
+	padding: 25px;
+	margin-bottom: 0px;
+}
+
+.bookingform .form-group:after {
+	content: '';
+	background: rgba(129, 131, 144, 0.15);
+	position: absolute;
+	top: 25px;
+	bottom: 0;
+	right: 0px;
+	width: 2px;
+	height: 75px;
+}
+
+.bookingform .form-control {
+	height: 50px;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	font-size: 18px;
+	color: #222;
+	font-weight: 400;
+    padding: 6px;
+    margin-top: 2px;
+}
+
+.bookingform select.form-control {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+
+.bookingform .form-label {
+	color: #ff911c;
+	display: block;
+	font-weight: 400;
+	height: 25px;
+	line-height: 25px;
+	font-size: 18px;
+}
 .infolabel{
     font-weight: bold;
 }
@@ -1413,6 +1457,34 @@ header.faq-masthead h1 {
 
 #bookingList a{
     color:black;
+}
+
+.btn-addon{
+    border: 2px solid #ff911c;
+    border-radius: 1px;
+    background-color:  #fff;
+    padding: 6px 60px;
+    color:#ff911c;
+}
+
+.btn-addon:hover{
+    border: 1px solid #fa8304;
+    background-color:  #fa8304;
+    color: #fff;
+}
+
+#bookinginfo{
+    font-size: 18px;
+}
+
+#paypalpay{
+    background-color:#ffbe32;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+#paypalpay:hover{
+    background-color:#ffae00;
 }
 
   /* ---------------------------------------------------
