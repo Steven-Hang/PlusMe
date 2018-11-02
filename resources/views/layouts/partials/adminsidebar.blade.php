@@ -2,7 +2,7 @@
       <!-- Sidebar -->
       <ul class="sidebar navbar-nav navbar-light bg-white">
         <li style="border-bottom: 1px solid rgb(222,226,230);">
-            <div id="adminid" class="my-3"><h6>admin@plusme.com</h6></div>
+            <div id="adminid" class="my-3"><h5><strong>Admin</strong></h5></div>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{{ route('admindashboard') }}">

@@ -66,7 +66,7 @@
 
                                   <div class="form-group">
                                       <div class="col-md-12">
-                                          <button type="submit" class="btn btn-primary">
+                                          <button type="submit" class="login-form-btn mx-auto">
                                               Change Password
                                           </button>
                                       </div>

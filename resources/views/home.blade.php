@@ -154,54 +154,56 @@
 <script>
 // Instance the tour
 var tour = new Tour({
-  steps: [
-  {
-    element: "#profilepic",
-    title: "Welcome",
-    content: "Hi and Welcome to the PlusMe Car Sharing service.",
-    placement: "right"
-  },
-  {
-    element: "#startDate",
-    title: "Start date",
-    content: "Please select start date you would like to pick up the car.",
-    placement: "bottom"
-  },
-  {
-    element: "#endDate",
-    title: "End date",
-    content: "Please select end date you would like to return the car.",
-    placement: "bottom"
-  },
-  {
-    element: "#map",
-    title: "Pick up location",
-    content: "Please select the pick-up parking lot by clicking on the parking lot icon on the map.",
-    placement: "top"
-  },
-  {
-    element: "#sidebar",
-    title: "Booking info",
-    content: "You can see the details of your booking here!",
-    placement: "right"
-  },
-  {
-    element: "#submitBooking",
-    title: "Book now",
-    content: "One last step ! Click on the book button to proceed your booking.",
-    placement: "bottom"
-  }
-]});
+    backdrop: true,
+    debug:true,
+    storage: false,
+    steps: [
+    {
+        element: "#profilepic",
+        title: "Welcome",
+        content: "Hi and Welcome to the PlusMe Car Sharing service.",
+        placement: "right"
+    },
+    {
+        element: "#startDate",
+        title: "Start date",
+        content: "Please select start date you would like to pick up the car.",
+        placement: "bottom"
+        }
+    },
+    {
+        element: "#endDate",
+        title: "End date",
+        content: "Please select end date you would like to return the car.",
+        placement: "bottom"
+    },
+    {
+        element: "#map",
+        title: "Pick up location",
+        content: "Please select the pick-up parking lot by clicking on the parking lot icon on the map.",
+        placement: "top"
+    },
+    {
+        element: "#sidebar",
+        title: "Booking info",
+        content: "You can see the details of your booking here!",
+        placement: "right"
+    },
+    {
+        element: "#submitBooking",
+        title: "Book now",
+        content: "One last step ! Click on the book button to proceed your booking.",
+        placement: "bottom"
+    }
+    ]
+  });
+
 
 // Initialize the tour
 tour.init();
 
 // Start the tour
 tour.start();
-<<<<<<< HEAD
-
-=======
->>>>>>> updateUI
 </script>
 
 @endsection

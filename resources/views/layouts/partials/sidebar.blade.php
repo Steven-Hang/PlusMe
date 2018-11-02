@@ -5,7 +5,7 @@
     </li>
     <li class="nav-item">
       <a class="nav-link" href="{{ route('user.show', Auth::user()->id) }}">
-        <span><img src="../css/icons/table.png" width="24px"></span>
+        <span><img src="../css/icons/profile.png" width="24px"></span>
         <span>My Profile</span>
       </a>
     </li>
@@ -17,7 +17,7 @@
     </li>
     <li class="nav-item">
       <a class="nav-link" href="{{ route('messages') }}">
-        <span><img src="../css/icons/users.png" width="24px"></span>
+        <span><img src="../css/icons/notification.png" width="24px"></span>
         <span>Message Box</span></a>
     </li>
   </ul>
