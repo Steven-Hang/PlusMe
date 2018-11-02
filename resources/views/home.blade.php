@@ -204,10 +204,6 @@ tour.init();
 
 // Start the tour
 tour.start();
-<<<<<<< HEAD
-
-=======
->>>>>>> updateUI
 </script>
 
 @endsection

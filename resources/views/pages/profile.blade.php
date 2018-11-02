@@ -22,20 +22,21 @@
                 </script>
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom border-dark">
                 <h1 class="h1 profile-title">{{ $user -> first_name }} 's Profile</h1>
-            </div>    
+            </div>
             <div class="row">
             <div class="col-sm-6">
                 <div class="profile-header-container">
-                    <button  id="tooltip" type="button" data-toggle="modal" data-target="#changeProfileAvaModal">
                         <div class="profile-header-img">
                             <img class="rounded-circle my-4" id="profilepic" src="../storage/avatars/{{$user->avatar}}"  alt="profile picture" width="50px" height="50px">
-                      
+
                             <!-- badge -->
                             <div class="rank-label-container">
                             <span class="label label-default rank-label">{{$user->name}}</span>
                             </div>
-                        </div><span class="tooltiptext">Click to change profile picture</span>
-                    </button>
+                        </div>
+                        <button class="btn-lg btn-link" style="color:#ff911c;"  type="button" id="submitBooking"  data-toggle="modal" data-target="#changeProfileAvaModal" >
+                            Click to change profile picture
+                        </button>
 
                 </div>
                 <br>
