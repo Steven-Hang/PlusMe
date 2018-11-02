@@ -23,10 +23,10 @@
             const $info = document.getElementById('info');
             var markers= @json($locations);
             var marks = [];
-            
+
         //Allows User input to Search
         var input = document.getElementById('pac-input');
-        
+
         //creates function to auto complete map searches
         var autocomplete = new google.maps.places.Autocomplete(input);
         // Set the data fields to return when the user selects a place.
@@ -74,7 +74,7 @@
           var state = marker.state;
           var zip = marker.zip;
           var id = marker.id;
-          
+
           document.getElementById("locations-near-you").innerHTML = address;
 
 
@@ -86,7 +86,7 @@
             '<button onclick="selectSedan()"> Sedan </button>'+ "(Available)" +'<br>'+
             '<button onclick="selectHatchback()"> Hatchback </button>'+ "(Available)" +'<br>'+
             '</p>';
-          
+
 
         var location = new google.maps.LatLng(marker.lat,marker.lng);
 
@@ -106,11 +106,11 @@
             document.getElementById('location_id').value = id;
         });
 
-        
+
         return marker;
 
         }//END addMarkerToMap
-  
+
         var myLatLng = {lat: -37.809277, lng: 144.960712};
 
         var RMITmarkeroptions = {
@@ -128,7 +128,7 @@
           map: map,
           title: 'Location Here!'
         });
-     
+
         function addClickEventListenerToMap(map) {
           // add 'tap' listener
           map.addEventListener('tap', function (evt) {
@@ -141,7 +141,7 @@
         infowindow.open(map, marker);
         });
 
-        
+
          //User Location Marker
          var userLocation = new google.maps.Marker({
           map: map,
@@ -156,8 +156,8 @@
         } else {
           userLocation.setAnimation(google.maps.Animation.BOUNCE);
         }
-      }   
-      
+      }
+
 
       //Radius around User Location Marker
       var radiusAroundUser = new google.maps.Circle({
@@ -170,7 +170,7 @@
                 radius: 450
                 });
         radiusAroundUser.bindTo('center', userLocation, 'position');
-       
+
         //geolocation FIND USER LOCATION and Track.
         if (navigator.geolocation) {
           navigator.geolocation.watchPosition(function(position) {
@@ -227,7 +227,7 @@
 	      document.getElementById("startDateField").value = getStartDate;
 
     }
-    
+
     //jquery which disables booking button until location is selected
     $("form").submit(function() {
     if ( !$('#location_id')[0].value ) { return false; }
@@ -250,7 +250,7 @@
 	      document.getElementById("hoursField").value = diff;
 
         //jQuery which enables booking button if fields are filled
-     
+
 
         //Calc Price Based on Hours
         var totalCost = diff * 3;
@@ -262,7 +262,7 @@
        document.getElementsByName("start_date")[0].setAttribute('min', today);
        document.getElementsByName("end_date")[0].setAttribute('min', today);
 
- 
+
 </script>
 <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDQMzhiINq0pfDHofIycq6m_V2dRFULbPc&libraries=places&callback=initMap">

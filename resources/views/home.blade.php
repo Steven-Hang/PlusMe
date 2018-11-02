@@ -6,15 +6,28 @@
         display: block;
         position: relative;
     }
+    .sidebar .tit{
+        background: #eee;
+        border-radius: 11.25px 11.25px 0 0;
+        padding: 16.375px 0;
+        width: 90%;
+        margin: 0 auto;
+        font-size: 16px;
+        height: 48.75px;
+    }
+    input[type="date"]:before{
+        content: attr(placeholder);
+        color:#888;
+    }
 </style>
 @section('content')
 <div id="wrapper">
     <!-- Sidebar -->
-    <ul class="sidebar navbar-nav navbar-light bg-white" id="sidebar">
-        <li  style="border-bottom: 1px solid rgb(222,226,230);">
-            <img class="rounded-circle my-4" id="profilepic" src="../storage/avatars/{{$userprofile}}"  alt="profile picture" width="50px" height="50px">
+    <ul class="sidebar navbar-nav navbar-light bg-white border border-light" style="margin: 11.25px; border-radius: 11.25px 11.25px 11.25px 11.25px;">
+        <li>
+            <img class="rounded-circle my-2" id="profilepic" src="/storage/avatars/profile.png" width="50px" height="50px">
         </li>
-        <!-- Show if User Has Active Booking -->
+            <!-- Show if User Has Active Booking -->
         @if($UserActiveBooking)
         <!-- Button trigger modal -->
         <h5 class="my-2"><strong>You current booking </strong></h5>
@@ -87,45 +100,26 @@
     </ul>
 
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-        <div class="row mb-2 mapSerBar">
-            <div class="bookingForm">
-                <form method="POST" action="{{ route('booking.process')}}" class="bookForm">
-                    @csrf
-                    <div class="row no-margin">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <span class="form-label">Location</span>
-                                <input class="form-control" id="pac-input" type="text" placeholder="Country, ZIP, city..." name="search">
-                            </div>
-                        </div>
-                        <div class="col-md-7">
-                            <div class="row no-margin">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <span class="form-label">Start date</span>
-                                        <input class="form-control" type="date" id="startDate" name="start_date" onchange="updateStartDate()" required>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <span class="form-label">End date</span>
-                                        <input class="form-control" type="date" id="endDate" name="end_date" onchange="calcHours()" required>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-1  my-auto">
-                                <button class="px-4 py-3" type="submit" id="submitBooking" name="submitBooking">Book</button>
-
-                        </div>
-                    </div>
-                    <input  type="hidden" id="startDateField">
-                    <input  type="hidden" id="endDateField">
-                    <input type="hidden" id="location_id" name="location_id"/>
-                </form>
-            </div>
+        <div class="bookingForm row">
+            <form method="POST" action="{{ route('booking.process')}}" sys_get_temp_dir style="display:flex">
+                @csrf
+                <div class="col-md-3">
+                    <input class="border py-2 px-2 mb-2" ype="text" placeholder="Please enter a location" name="search">
+                </div>
+                <div class="col-md-3">
+                    <input class="border py-2 px-1 mx-2 mb-2" type="date" placeholder="Start time " id="startDate" name="start_date" onchange="updateStartDate()" onfocus="this.removeAttribute('placeholder')" requried>
+                </div>
+                <div class="col-md-3">
+                    <input class="border py-2 px-1 mx-2 mb-2" type="date" placeholder="End time " id="endDate" name="end_date" onchange="calcHours()" onfocus="this.removeAttribute('placeholder')" requried>
+                </div>
+                <input  type="hidden" id="startDateField">
+                <input  type="hidden" id="endDateField">
+                <input type="hidden" id="location_id" name="location_id"/>
+                <div class="col-md-3">
+                    <button class="px-4 py-2 mx-1 mb-2" type="submit" id="submitBooking" name="submitBooking" >Book</button>
+                </div>
+            </form>
         </div>
-
         <div>
             <!-- display the google map -->
             @include('layouts.partials.map')

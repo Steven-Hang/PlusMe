@@ -1406,7 +1406,6 @@ header.faq-masthead h1 {
 
 #submitBooking {
 	border: none;
-	font-family: inherit;
 	font-size: 14px;
 	color: inherit;
 	background: none;
@@ -1419,7 +1418,6 @@ header.faq-masthead h1 {
 	-webkit-transition: all 0.3s;
 	-moz-transition: all 0.3s;
     transition: all 0.3s;
-    border-radius:0px;
 
 	border: 2px solid #ff911c;
 	color: #ff911c;
@@ -1457,6 +1455,10 @@ header.faq-masthead h1 {
 
 #bookingList a{
     color:black;
+}
+
+.bookingForm input{
+    border-radius: 20px;
 }
 
 .btn-addon{
