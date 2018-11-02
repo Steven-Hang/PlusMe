@@ -12,13 +12,13 @@
         </div>
         <div class="row">
             <div class="col-xl-4 col-sm-6 mb-4">
-              <div class="card text-dark bg-warning o-hidden h-100">
+              <div class="card text-dark o-hidden h-100">
                 <div class="card-body">
                   <div class="card-body-icon">
                         <img src="./css/icons/bookings.png" width="80px">
                    <!--toLearn <i class="fas fa-fw fa-comments"></i>-->
                   </div>
-                  <div class="mr-5">Bookings</div>
+                  <strong class="mr-5">Bookings</strong>
                 </div>
                 <a class="card-footer text-dark clearfix small z-1" href="{{ route('abookings') }}">
                   <span class="float-left">View Details</span>
@@ -29,12 +29,12 @@
               </div>
             </div>
             <div class="col-xl-4 col-sm-6 mb-4">
-              <div class="card text-dark bg-success o-hidden h-100">
+              <div class="card text-dark o-hidden h-100">
                 <div class="card-body">
                   <div class="card-body-icon">
                         <img src="./css/icons/users.png" width="80px">
                   </div>
-                  <div class="mr-5">Users!</div>
+                  <strong class="mr-5">Users</strong>
                 </div>
                 <a class="card-footer text-dark clearfix small z-1" href="{{ route('ausers') }}">
                   <span class="float-left">View Details</span>
@@ -47,12 +47,12 @@
           </div>
           <div class="row">
             <div class="col-xl-4 col-sm-6 mb-3">
-              <div class="card text-dark bg-info o-hidden h-100">
+              <div class="card text-dark o-hidden h-100">
                 <div class="card-body">
                   <div class="card-body-icon">
                         <img src="./css/icons/car.png" width="80px">
                   </div>
-                  <div class="mr-5">Vehicles</div>
+                  <strong class="mr-5">Vehicles</strong>
                 </div>
                 <a class="card-footer text-dark clearfix small z-1" href="{{ route('avehicles') }}">
                   <span class="float-left">View Details</span>
@@ -63,12 +63,12 @@
               </div>
             </div>
             <div class="col-xl-4 col-sm-6 mb-3">
-              <div class="card text-dark bg-light o-hidden h-100">
+              <div class="card text-dark o-hidden h-100">
                 <div class="card-body">
                   <div class="card-body-icon">
                         <img src="./css/icons/carpark.png" width="80px">
                   </div>
-                  <div class="mr-5">Parking lot</div>
+                  <strong class="mr-5">Parking lot</strong>
                 </div>
                 <a class="card-footer text-dark clearfix small z-1" href="{{ route('aparkinglot') }}">
                   <span class="float-left">View Details</span>

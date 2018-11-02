@@ -14,11 +14,11 @@ body {
     text-align:center;
 }
 
-input {
+.input {
     outline: none;
     border: none;
 }
-input:focus{
+.input:focus{
     border: none;
     box-shadow: none !important;
 }
@@ -159,14 +159,9 @@ footer.footer {
   .sidebar .nav-item .nav-link:active,
   .sidebar .nav-item .nav-link:focus,
   .sidebar .nav-item .nav-link:hover {
-    background-color: #ffd0a0;
+    background-color: #ffc88c;
     border:none !important;
     color:#343a40 !important;
-  }
-
-  .sidebar .nav-item .nav-link.active{
-      background-color: #ffb970;
-      color:black;
   }
 
   @media (min-width: 768px) {
@@ -632,7 +627,7 @@ footer.footer {
     align-items: center;
     padding: 0 20px;
     min-width: 160px;
-    height: 50px;
+    height: 46px;
     background-color: #ff9d41;
 
     font-size: 16px;
@@ -1350,6 +1345,50 @@ header.faq-masthead h1 {
   /* ---------------------------------------------------
     Booking custom style
 ----------------------------------------------------- */
+
+.bookingform .form-group {
+	position: relative;
+	padding: 25px;
+	margin-bottom: 0px;
+}
+
+.bookingform .form-group:after {
+	content: '';
+	background: rgba(129, 131, 144, 0.15);
+	position: absolute;
+	top: 25px;
+	bottom: 0;
+	right: 0px;
+	width: 2px;
+	height: 75px;
+}
+
+.bookingform .form-control {
+	height: 50px;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	font-size: 18px;
+	color: #222;
+	font-weight: 400;
+    padding: 6px;
+    margin-top: 2px;
+}
+
+.bookingform select.form-control {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+}
+
+
+.bookingform .form-label {
+	color: #ff911c;
+	display: block;
+	font-weight: 400;
+	height: 25px;
+	line-height: 25px;
+	font-size: 18px;
+}
 .infolabel{
     font-weight: bold;
 }
@@ -1358,6 +1397,12 @@ header.faq-masthead h1 {
     font-size:36px;
     color:#ff911c;
 }
+
+#carTypeField,#locationField{
+    font-weight: bold;
+    color:#ff911c;
+}
+
 
 #submitBooking {
 	border: none;
@@ -1374,7 +1419,7 @@ header.faq-masthead h1 {
 	-webkit-transition: all 0.3s;
 	-moz-transition: all 0.3s;
     transition: all 0.3s;
-    margin-left: 20px;
+    border-radius:0px;
 
 	border: 2px solid #ff911c;
 	color: #ff911c;
@@ -1412,4 +1457,65 @@ header.faq-masthead h1 {
 
 #bookingList a{
     color:black;
+}
+
+.btn-addon{
+    border: 2px solid #ff911c;
+    border-radius: 1px;
+    background-color:  #fff;
+    padding: 6px 60px;
+    color:#ff911c;
+}
+
+.btn-addon:hover{
+    border: 1px solid #fa8304;
+    background-color:  #fa8304;
+    color: #fff;
+}
+
+#bookinginfo{
+    font-size: 18px;
+}
+
+#paypalpay{
+    background-color:#ffbe32;
+    border-radius: 6px;
+    padding: 12px;
+}
+
+#paypalpay:hover{
+    background-color:#ffae00;
+}
+
+  /* ---------------------------------------------------
+    user profile custom style
+----------------------------------------------------- */
+
+
+#tooltip .tooltiptext {
+    visibility: hidden;
+    width: 220px;
+    background-color: #ff911c;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    margin-top: 1px;
+    border-radius:2px;
+
+    position: absolute;
+    z-index: 1;
+}
+
+@media(max-width: 480px){
+    #tooltip .tooltiptext {
+        background-color: #fff;
+        color:  #ff911c;
+        font-size: 12px;
+        visibility: visible;
+        position: inherit;
+    }
+}
+
+#tooltip:hover .tooltiptext {
+visibility: visible;
 }

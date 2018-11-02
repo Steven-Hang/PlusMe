@@ -20,8 +20,7 @@
     <a href="#" id="backtotop"><img src="../css/icons/backtotop.png" width=40px></a>
     <!-- Icons Grid -->
     <section class="features-icons bg-light text-center" id="iconsGrid">
-        <div class="container">
-            <div class="row">
+        <div class="row">
             <div class="col-lg-4">
                 <div class="features-icons-item mx-auto mt-5 mb-5">
                 <div class="features-icons-icon">
@@ -48,7 +47,6 @@
                 <h3>Easy payment</h3>
                 <p class="lead mb-0">Master card, credit card, anything you want!</p>
                 </div>
-            </div>
             </div>
         </div>
     </section>
@@ -82,13 +80,11 @@
 
     <!-- Call to Action -->
     <section class="call-to-action text-white text-center">
-        <div class="container">
             <div class="row">
                 <div class="col-xl-12 mx-auto">
                     <h2 class="mb-4">Ready to get started? <a id="signuplink" href="{{ route('register') }}" >Sign up now!</a></h2>
                 </div>
             </div>
-        </div>
     </section>
     <script>
         // When the user scrolls down 20px from the top of the document, show the button
