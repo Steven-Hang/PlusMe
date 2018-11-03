@@ -22,7 +22,7 @@
                 <label class="row">Return Date: <strong> {{$end_date}}</strong></label>
             </div>
             <div class="col price-same">
-                <label class="row">Price: <strong> ${{$price}}</strong></label>
+                <label class="row">Price: <strong>  ${{$price}}</strong></label>
             </div>
             <div id="addons">
             </div>

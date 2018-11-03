@@ -72,7 +72,7 @@
         </script>
         @else
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tour/0.11.0/js/bootstrap-tour-standalone.min.js"></script>
-        <link href="../css/bootstrap-tour-standalone.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tour/0.11.0/css/bootstrap-tour-standalone.min.css" />
         @endif
         <li>
             <p class="mt-2 infolabel">Price</p><div id="priceField"><p id="hoursField" name="hoursField"></p></div>
@@ -154,12 +154,10 @@
         }
     }
 </style>
-
-
-
 <script>
 // Instance the tour
 var tour = new Tour({
+    backdrop: true,
   steps: [
   {
     element: "#profilepic",
@@ -205,5 +203,4 @@ tour.init();
 // Start the tour
 tour.start();
 </script>
-
 @endsection

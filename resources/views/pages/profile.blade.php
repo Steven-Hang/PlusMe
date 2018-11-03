@@ -27,7 +27,7 @@
             <div class="col-sm-6">
                 <div class="profile-header-container">
                         <div class="profile-header-img">
-                            <img class="rounded-circle my-4" id="profilepic" src="../storage/avatars/{{$user->avatar}}"  alt="profile picture" width="50px" height="50px">
+                            <img class="rounded-circle my-4" id="profilepic" src="../storage/avatars/{{$user->avatar}}"  alt="profile picture" width="150px" height="150px">
 
                             <!-- badge -->
                             <div class="rank-label-container">
