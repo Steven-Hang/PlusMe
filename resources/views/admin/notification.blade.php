@@ -9,16 +9,9 @@
                 <h1 class="h1">Notifications</h1>
                 <a href="{{ route('messages.create') }}"><button id="submitBooking" style="padding-left:15px;padding-right:15px;">Compose</button></a>
             </div>
-            <!-- To Fix -->
-            <!--@ include('messenger.partials.flash') -->
-
-            <!--@ each('messenger.partials.thread', $threads, 'thread', 'messenger.partials.no-threads') -->
-
-        </main>
-
-    </div>
-    <!-- /#wrapper -->
-
+            @include('messenger.partials.flash')
+                @each('messenger.partials.thread', $threads, 'thread', 'messenger.partials.no-threads')
+            </main>
+        </div>
     </body>
-
-    </html>
+</html>

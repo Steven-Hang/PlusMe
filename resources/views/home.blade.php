@@ -13,6 +13,7 @@
     <ul class="sidebar navbar-nav navbar-light bg-white" id="sidebar">
         <li  style="border-bottom: 1px solid rgb(222,226,230);">
             <img class="rounded-circle my-4" id="profilepic" src="../storage/avatars/{{$userprofile}}"  alt="profile picture" width="50px" height="50px">
+            <a id="initialise_tour" class="" href=""><img src="../css/icons/tour_start_icon.png" height="20px" width="20px"/></a>
         </li>
         <!-- Show if User Has Active Booking -->
         @if($UserActiveBooking)
@@ -125,7 +126,7 @@
                 </form>
             </div>
         </div>
-
+        
         <div>
             <!-- display the google map -->
             @include('layouts.partials.map')
@@ -202,5 +203,9 @@ tour.init();
 
 // Start the tour
 tour.start();
+
+ $('#initialise_tour').click(function(){
+     tour.restart();
+  });
 </script>
 @endsection

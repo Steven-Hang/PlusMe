@@ -57,8 +57,10 @@ class BookingController extends Controller
     public function Index(){
         $bookings = Booking::paginate(35);
         $qbooking = null; 
+
+        $isReturned = 0;
         
-        return view('admin.bookings', compact('bookings', 'qbooking'));
+        return view('admin.bookings', compact('bookings', 'qbooking', 'isReturned'));
     }
     public function comfirmLocation(Request $request){
 

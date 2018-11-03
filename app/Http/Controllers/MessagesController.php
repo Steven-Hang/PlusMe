@@ -124,4 +124,10 @@ class MessagesController extends Controller
         }
         return redirect()->route('messages.show', $id);
     }
+    public function showAdmin()
+    {
+        $user = Auth::user();
+        $threads = Thread::getAllLatest()->get();
+        return view('admin.notification', compact('threads', 'user'));
+    }
 }
