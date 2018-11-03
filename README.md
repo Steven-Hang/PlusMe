@@ -48,6 +48,6 @@ live system [Here](plusme.me)
 
 * Hat tip to anyone whose code was used
 * Inspiration
-* -> Shout out to the many Indian Youtube tutorials out there, much Love <3
-* -> stackoverflow 
+* Shout out to the many Indian Youtube tutorials out there, much Love <3
+* stackoverflow 
 * https://www.youtube.com/watch?v=Gs069dndIYk
