@@ -25,7 +25,7 @@
             var marks = [];
 
         //Allows User input to Search
-        var input = document.getElementById('pac-input');
+        var input = document.getElementById('searchMap');
 
         //creates function to auto complete map searches
         var autocomplete = new google.maps.places.Autocomplete(input);
@@ -194,7 +194,7 @@
           // Browser doesn't support Geolocation
           handleLocationError(false, infoWindow, map.getCenter());
         }
-        addYourLocationButton(map, userLocation);
+      
 
       }//END MAPINIT
 

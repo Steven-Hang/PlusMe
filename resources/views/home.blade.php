@@ -105,18 +105,22 @@
             <form method="POST" action="{{ route('booking.process')}}" sys_get_temp_dir style="display:flex">
                 @csrf
                 <div class="col-md-3">
-                    <input class="border py-2 px-2 mb-2" ype="text" placeholder="Please enter a location" name="search">
+                <span>Search Location:</span>
+                    <input class="border py-2 px-2 mb-2" type="text" id="searchMap" placeholder="Please enter a location" name="search" >
                 </div>
                 <div class="col-md-3">
-                    <input class="border py-2 px-1 mx-2 mb-2" type="date" placeholder="Start time " id="startDate" name="start_date" onchange="updateStartDate()" onfocus="this.removeAttribute('placeholder')" requried>
+                <span>Start time: </span>
+                    <input class="border py-2 px-1 mx-2 mb-2" type="date" id="startDate" name="start_date" onchange="updateStartDate()"  requried>
                 </div>
                 <div class="col-md-3">
-                    <input class="border py-2 px-1 mx-2 mb-2" type="date" placeholder="End time " id="endDate" name="end_date" onchange="calcHours()" onfocus="this.removeAttribute('placeholder')" requried>
+                <span>End time:</span>
+                    <input class="border py-2 px-1 mx-2 mb-2" type="date"  id="endDate" name="end_date" onchange="calcHours()" requried>
                 </div>
                 <input  type="hidden" id="startDateField">
                 <input  type="hidden" id="endDateField">
                 <input type="hidden" id="location_id" name="location_id"/>
                 <div class="col-md-3">
+                <br>
                     <button class="px-4 py-2 mx-1 mb-2" type="submit" id="submitBooking" name="submitBooking" >Book</button>
                 </div>
             </form>
