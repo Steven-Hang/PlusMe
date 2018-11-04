@@ -23,9 +23,10 @@
 @section('content')
 <div id="wrapper">
     <!-- Sidebar -->
-    <ul class="sidebar navbar-nav navbar-light bg-white border border-light" style="margin: 11.25px; border-radius: 11.25px 11.25px 11.25px 11.25px;">
-        <li>
-            <img class="rounded-circle my-2" id="profilepic" src="/storage/avatars/profile.png" width="50px" height="50px">
+    <ul class="sidebar navbar-nav navbar-light bg-white" id="sidebar">
+        <li  style="border-bottom: 1px solid rgb(222,226,230);">
+            <img class="rounded-circle my-4" id="profilepic" src="../storage/avatars/{{$userprofile}}"  alt="profile picture" width="50px" height="50px">
+            <a id="initialise_tour" class="" href=""><img src="../css/icons/tour_start_icon.png" height="20px" width="20px"/></a>
         </li>
             <!-- Show if User Has Active Booking -->
         @if($UserActiveBooking)
@@ -85,7 +86,7 @@
         </script>
         @else
         <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tour/0.11.0/js/bootstrap-tour-standalone.min.js"></script>
-        <link href="../css/bootstrap-tour-standalone.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tour/0.11.0/css/bootstrap-tour-standalone.min.css" />
         @endif
         <li>
             <p class="mt-2 infolabel">Price</p><div id="priceField"><p id="hoursField" name="hoursField"></p></div>
@@ -120,6 +121,7 @@
                 </div>
             </form>
         </div>
+        
         <div>
             <!-- display the google map -->
             @include('layouts.partials.map')
@@ -148,62 +150,57 @@
         }
     }
 </style>
-
-
-
 <script>
 // Instance the tour
 var tour = new Tour({
     backdrop: true,
-    debug:true,
-    storage: false,
-    steps: [
-    {
-        element: "#profilepic",
-        title: "Welcome",
-        content: "Hi and Welcome to the PlusMe Car Sharing service.",
-        placement: "right"
-    },
-    {
-        element: "#startDate",
-        title: "Start date",
-        content: "Please select start date you would like to pick up the car.",
-        placement: "bottom"
-        }
-    },
-    {
-        element: "#endDate",
-        title: "End date",
-        content: "Please select end date you would like to return the car.",
-        placement: "bottom"
-    },
-    {
-        element: "#map",
-        title: "Pick up location",
-        content: "Please select the pick-up parking lot by clicking on the parking lot icon on the map.",
-        placement: "top"
-    },
-    {
-        element: "#sidebar",
-        title: "Booking info",
-        content: "You can see the details of your booking here!",
-        placement: "right"
-    },
-    {
-        element: "#submitBooking",
-        title: "Book now",
-        content: "One last step ! Click on the book button to proceed your booking.",
-        placement: "bottom"
-    }
-    ]
-  });
-
+  steps: [
+  {
+    element: "#profilepic",
+    title: "Welcome",
+    content: "Hi and Welcome to the PlusMe Car Sharing service.",
+    placement: "right"
+  },
+  {
+    element: "#startDate",
+    title: "Start date",
+    content: "Please select start date you would like to pick up the car.",
+    placement: "bottom"
+  },
+  {
+    element: "#endDate",
+    title: "End date",
+    content: "Please select end date you would like to return the car.",
+    placement: "bottom"
+  },
+  {
+    element: "#map",
+    title: "Pick up location",
+    content: "Please select the pick-up parking lot by clicking on the parking lot icon on the map.",
+    placement: "top"
+  },
+  {
+    element: "#sidebar",
+    title: "Booking info",
+    content: "You can see the details of your booking here!",
+    placement: "right"
+  },
+  {
+    element: "#submitBooking",
+    title: "Book now",
+    content: "One last step ! Click on the book button to proceed your booking.",
+    placement: "bottom"
+  }
+]});
 
 // Initialize the tour
 tour.init();
 
 // Start the tour
 tour.start();
-</script>
 
+ $('#initialise_tour').click(function(){
+     tour.restart();
+  });
+</script>
 @endsection

@@ -58,6 +58,12 @@
                     <td>{{$qbooking->user_id}}</td>
                     <td>{{$qbooking->location_id}}</td>
                     <td><a href="" class="btn">Edit</a></td>
+                    @if($qbooking->returned == '0')
+                    <td>No</td>
+                    @else
+                    <td>Yes</td>
+                    @endif
+                    <td></td>
                 </tr>
                 @endif
                 @foreach($bookings as $booking)
@@ -70,9 +76,12 @@
                     <td>{{$booking->user_id}}</td>
                     <td>{{$booking->location_id}}</td>
                     <td><a href="" class="btn">Edit</a></td>
-                    <td>{{$booking->location_confirm}}</td>
-                    <td>{{$booking->location_duration}}</td>
-
+                    @if($isReturned)
+                    <td>Yes</td>
+                    @else
+                    <td>No</td>
+                    @endif
+                    <td>-</td>
 
                     <td>
 

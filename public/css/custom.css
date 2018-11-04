@@ -1489,35 +1489,3 @@ header.faq-masthead h1 {
     background-color:#ffae00;
 }
 
-  /* ---------------------------------------------------
-    user profile custom style
------------------------------------------------------ */
-
-
-#tooltip .tooltiptext {
-    visibility: hidden;
-    width: 220px;
-    background-color: #ff911c;
-    color: #fff;
-    text-align: center;
-    padding: 5px 0;
-    margin-top: 1px;
-    border-radius:2px;
-
-    position: absolute;
-    z-index: 1;
-}
-
-@media(max-width: 480px){
-    #tooltip .tooltiptext {
-        background-color: #fff;
-        color:  #ff911c;
-        font-size: 12px;
-        visibility: visible;
-        position: inherit;
-    }
-}
-
-#tooltip:hover .tooltiptext {
-visibility: visible;
-}
