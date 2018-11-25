@@ -29,7 +29,8 @@ Password: admin
 
 ## Deployment
 
-live system [Here](plusme.me)
+Old Domain(aws + domain name + ssl cert for https via cloudflare [Here](https://www.plusme.me)
+live Production site [Here](https://hidden-coast-61941.herokuapp.com/)
 
 ## Built With
 
@@ -48,6 +49,4 @@ live system [Here](plusme.me)
 
 * Hat tip to anyone whose code was used
 * Inspiration
-* Shout out to the many Indian Youtube tutorials out there, much Love <3
-* stackoverflow 
-* https://www.youtube.com/watch?v=Gs069dndIYk
+

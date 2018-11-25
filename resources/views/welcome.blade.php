@@ -5,7 +5,7 @@
     <header class="text-white text-center">
         <div class="container-video">
             <!-- The background video -->
-            <video autoplay muted loop id="bg-video">
+            <video autoplay loop id="bg-video">
                 <source src="../css/images/plusme.mp4" type="video/mp4">
             </video>
             <!-- overlay content to the video -->
@@ -24,7 +24,7 @@
             <div class="col-lg-4">
                 <div class="features-icons-item mx-auto mt-5 mb-5">
                 <div class="features-icons-icon">
-                    <img src="./css/images/maps.PNG">
+                    <img src="./css/images/maps.png">
                 </div>
                 <h3>Real time tracking</h3>
                 <p class="lead mb-0">No matter where you are, we can keep in touch!</p>
@@ -55,7 +55,7 @@
     <section class="showcase">
         <div class="container-fluid p-0">
             <div class="row no-gutters">
-                <div class="col-lg-6 order-lg-2 text-white showcase-img" id="showcase-img-1" style="background-image: url('./css/images/mapcapture.PNG');"></div>
+                <div class="col-lg-6 order-lg-2 text-white showcase-img" id="showcase-img-1" style="background-image: url('./css/images/mapcapture.png');"></div>
                 <div class="col-lg-6 order-lg-1 my-auto showcase-text">
                     <h2>Real time tracking</h2>
                     <p class="lead mb-0">Anywhere and everywhere life takes you, let PlusMe take you there! Every step of the way.</p>
