@@ -33,7 +33,7 @@ li {
 }
 
 
-@media (max-height: 576px) {
+@media (max-height: 800px) {
     .sidenav {float:none;width: 100%;position:unset  }
     .sidenav a { float: none;width:100%;}
 }

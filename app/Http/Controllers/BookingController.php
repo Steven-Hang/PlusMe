@@ -57,7 +57,6 @@ class BookingController extends Controller
     public function Index(){
         $bookings = Booking::paginate(35);
         $qbooking = null; 
-
         $isReturned = 0;
         
         return view('admin.bookings', compact('bookings', 'qbooking', 'isReturned'));
@@ -135,16 +134,6 @@ class BookingController extends Controller
             'user_id' => Auth::id(),
             'is_Active' => '1'
         ])->latest()->limit(1)->update(array('is_Active' => '0'));
-        
-        /*
-        $getStartDate =  
-        
-        $updateEndDate =
-
-        $getDurationAdded =
-
-        $getNewPrice =
-        */
         
     }
 }

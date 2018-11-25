@@ -30,7 +30,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-         //outputs locations for the google map api to place in as 
+        //outputs locations for the google map api to place in as 
         $locations = Location::all();
         //returns profile picture for a user 
         $userprofile = $user = DB::table('users')->where('id', Auth::id())->value('avatar');
