@@ -38,7 +38,7 @@ return [
     'google' => [
         'client_id'     => '484868336502-aqlcdfvi6mb48egd99pjitmk0j8c1r08.apps.googleusercontent.com' ,
         'client_secret' => '484868336502-aqlcdfvi6mb48egd99pjitmk0j8c1r08.apps.googleusercontent.com',
-        'redirect'      => 'https://hidden-coast-61941.herokuapp.com//callback'
+        'redirect'      => 'https://hidden-coast-61941.herokuapp.com/callback'
     ],
 
 ];
