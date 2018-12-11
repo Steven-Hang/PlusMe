@@ -36,11 +36,9 @@ return [
     ],
 
     'google' => [
-        'client_id'     => env('GOOGLE_CLIENT_ID'),
-        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
-        'redirect'      => env('GOOGLE_REDIRECT')
+        'client_id'     => '484868336502-aqlcdfvi6mb48egd99pjitmk0j8c1r08.apps.googleusercontent.com' ,
+        'client_secret' => '484868336502-aqlcdfvi6mb48egd99pjitmk0j8c1r08.apps.googleusercontent.com',
+        'redirect'      => 'https://hidden-coast-61941.herokuapp.com//callback'
     ],
-
-    
 
 ];
