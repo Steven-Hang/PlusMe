@@ -58,7 +58,7 @@
                 <div class="col-lg-6 order-lg-2 text-white showcase-img" id="showcase-img-1" style="background-image: url('./css/images/mapcapture.png');"></div>
                 <div class="col-lg-6 order-lg-1 my-auto showcase-text">
                     <h2>Real time tracking</h2>
-                    <p class="lead mb-0">Anywhere and everywhere life takes you, let PlusMe take you there! Every step of the way.</p>
+                    <p class="lead mb-0">Anywhere and everywhere life takes you, let Plusme take you there! Every step of the way.</p>
                 </div>
             </div>
             <div class="row no-gutters">
@@ -71,13 +71,12 @@
                 <div class="row no-gutters">
                 <div class="col-lg-12 order-lg-1 my-auto showcase-text">
                     <h2>5 Star Services</h2>
-                     <p class="lead mb-0">See why we are rated the best <a href="#">Learn more ></a></p>
+                     <p class="lead mb-0">See why we are rated the best <a href="#">Learn more</a></p>
                     <img src="./css/images/5-stars.png" height="175px" width="300px">
                 </div>
             </div>
         </div>
     </section>
-
     <!-- Call to Action -->
     <section class="call-to-action text-white text-center">
             <div class="row">
@@ -98,7 +97,6 @@
             }
         }
     </script>
-
 @endsection
 
 

@@ -1,4 +1,4 @@
-# Plus Me - Real Time Car Sharing Application
+# Plus Me - Real Time Car Sharing Application For PP1 
 
 
 ## Getting Started
@@ -7,8 +7,7 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-In Order to run the web app
-[Laravel Installation Requirements](https://laravel.com/docs/5.6/installation)
+See [Laravel Installation Requirements](https://laravel.com/docs/5.6/installation)
 
 ### Installing
 
@@ -29,8 +28,8 @@ Password: admin
 
 ## Deployment
 
-Old Domain(aws + domain name + ssl cert for https via cloudflare [Here](https://www.plusme.me)
-live Production site [Here](https://hidden-coast-61941.herokuapp.com/)
+* Old Domain(No longer available) [Here](https://www.plusme.me)
+* Current site [Here](https://hidden-coast-61941.herokuapp.com/)
 
 ## Built With
 
