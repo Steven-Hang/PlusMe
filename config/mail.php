@@ -56,7 +56,7 @@ return [
     */
 
     'from' => [
-        'address' => 'PlusMe@gmail.com',
+        'address' => 'plusmebot@gmail.com',
         'name' => 'PlusMeBot',
     ],
 
@@ -84,7 +84,7 @@ return [
     |
     */
 
-    'username' => 'PlusMe@gmail.com',
+    'username' => 'plusmebot@gmail.com',
 
     'password' => 'plusme123',
 
