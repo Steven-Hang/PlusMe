@@ -94,13 +94,13 @@
 
         <div class="mySlides">
           <div class="numbertext">2 / 4</div>
-          <img src="./css/images/SUV.jpg" width: 700px height="400px">
+          <img src="./css/images/suv.jpg" width: 700px height="400px">
           <div class="text">SUV</div>
         </div>
 
         <div class="mySlides">
           <div class="numbertext">3 / 4</div>
-          <img src="./css/images/SEDAN.jpg" width: 700px height="400px">
+          <img src="./css/images/sedan.jpg" width: 700px height="400px">
           <div class="text">Sedan</div>
         </div>
 
