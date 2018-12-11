@@ -109,11 +109,11 @@
                     <input class="border py-2 px-2 mb-2" type="text" id="searchMap" placeholder="Please enter a location" name="search" >
                 </div>
                 <div class="col-md-3">
-                <span>Start time: </span>
+                <span>Pick-up Date: </span>
                     <input class="border py-2 px-1 mx-2 mb-2" type="date" id="startDate" name="start_date" onchange="updateStartDate()"  requried>
                 </div>
                 <div class="col-md-3">
-                <span>End time:</span>
+                <span>Return Date:</span>
                     <input class="border py-2 px-1 mx-2 mb-2" type="date"  id="endDate" name="end_date" onchange="calcHours()" requried>
                 </div>
                 <input  type="hidden" id="startDateField">
