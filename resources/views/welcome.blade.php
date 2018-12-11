@@ -6,7 +6,7 @@
         <div class="container-video">
             <!-- The background video -->
             <video autoplay loop id="bg-video">
-                <source src="../css/images/plusme.mp4" type="video/mp4">
+                <source src="./css/images/plusme.mp4" type="video/mp4">
             </video>
             <!-- overlay content to the video -->
             <div class="overlay-video">
@@ -55,7 +55,7 @@
     <section class="showcase">
         <div class="container-fluid p-0">
             <div class="row no-gutters">
-                <div class="col-lg-6 order-lg-2 text-white showcase-img" id="showcase-img-1" style="background-image: url('./css/images/mapcapture.png');"></div>
+                <div class="col-lg-6 order-lg-2 text-white showcase-img" id="showcase-img-1" style="background-image: url('./css/images/mapcapture.PNG');"></div>
                 <div class="col-lg-6 order-lg-1 my-auto showcase-text">
                     <h2>Real time tracking</h2>
                     <p class="lead mb-0">Anywhere and everywhere life takes you, let Plusme take you there! Every step of the way.</p>
