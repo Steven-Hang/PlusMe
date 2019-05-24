@@ -39,7 +39,7 @@ Password: admin
 ## Authors
 
 * **Steven Hang** - [github](https://github.com/Steven04H)
-* **Yuxuan Cheng**  - [github](https://github.com/rmit-s3516930-yuxuan-cheng)
+* **Yuxuan Cheng**  - [github](https://github.com/yuxuancheng77)
 * **Omer Khan**  - [github]()
 * **Brian Chen** - [github](https://github.com/brianchenrmit)
 * **Jiawei Guo** - [github]()
